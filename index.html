@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starfield Background</title>
+  <style>
+    /* Reset margins and ensure the canvas acts as a fixed background */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0b0c10;
+      overflow-x: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #ffffff;
+    }
+
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* Keeps canvas strictly behind all content */
+      pointer-events: none; /* Allows mouse clicks to pass through to elements below */
+    }
+
+    /* Example content overlay */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 100px auto;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="starfield"></canvas>
+
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+
+    // Configuration parameters requested
+    const STAR_COUNT = 240;
+    const MAX_DISTANCE = 100;
+    const SPEED = 0.075;
+
+    // Star-to-star links share MAX_DISTANCE with the cursor links
+    const MAX_DISTANCE_SQ = MAX_DISTANCE * MAX_DISTANCE;
+    const LINK_MAX_ALPHA = 0.25;   // peak opacity, when two stars nearly touch
+    const LINK_WIDTH = 0.6;
+    const MOUSE_LINK_WIDTH = 1.6;
+
+    let width, height;
+    let stars = [];
+
+    // Track mouse position offscreen by default
+    const mouse = { x: -1000, y: -1000 };
+
+    function resize() {
+      const prevWidth = width;
+      const prevHeight = height;
+
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+
+      // Rescale existing stars into the new viewport. Without this, every star
+      // outside the new bounds is wrapped onto exactly x=0 / y=0 by update() on
+      // the next frame, piling them into a clump that takes minutes to disperse
+      // at SPEED - and that clump is very visible once stars are linked.
+      if (prevWidth && prevHeight && stars.length) {
+        const scaleX = width / prevWidth;
+        const scaleY = height / prevHeight;
+        stars.forEach(star => {
+          star.x *= scaleX;
+          star.y *= scaleY;
+        });
+      }
+    }
+
+    class Star {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = Math.random() * 1.5 + 1; // Base star size
+
+        // Random direction normalized by SPEED constraint
+        const angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(angle) * SPEED;
+        this.vy = Math.sin(angle) * SPEED;
+
+        // Base color (Off-white / pale blue)
+        this.baseColor = { r: 220, g: 225, b: 240 };
+        // Target glow color when near mouse (Vibrant Blue/Purple)
+        this.glowColor = { r: 168, g: 85, b: 247 }; // Purple tone
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        // Screen boundary wrap-around
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+      }
+
+      draw(distToMouse) {
+        let r = this.baseColor.r;
+        let g = this.baseColor.g;
+        let b = this.baseColor.b;
+        let alpha = 0.7;
+
+        // If mouse is close, transition color toward blue/purple
+        if (distToMouse < MAX_DISTANCE) {
+          const ratio = 1 - (distToMouse / MAX_DISTANCE); // 0 (far) to 1 (close)
+
+          r = Math.round(this.baseColor.r + (this.glowColor.r - this.baseColor.r) * ratio);
+          g = Math.round(this.baseColor.g + (this.glowColor.g - this.baseColor.g) * ratio);
+          b = Math.round(this.baseColor.b + (this.glowColor.b - this.baseColor.b) * ratio);
+          alpha = 0.7 + (0.3 * ratio); // Glow brighter
+        }
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function init() {
+      resize();
+      stars = [];
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push(new Star());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Move every star before drawing anything, so all the connections in a
+      // frame are computed against the same set of positions.
+      stars.forEach(star => star.update());
+
+      // Pass 1: faint white links between stars that drift near each other.
+      // Drawn first so the stars themselves sit on top of the web.
+      ctx.lineWidth = LINK_WIDTH;
+      for (let i = 0; i < stars.length; i++) {
+        const a = stars[i];
+        for (let j = i + 1; j < stars.length; j++) {
+          const b = stars[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distSq = dx * dx + dy * dy;
+
+          // Reject on squared distance so the common case costs no sqrt
+          if (distSq >= MAX_DISTANCE_SQ) continue;
+
+          const opacity = (1 - Math.sqrt(distSq) / MAX_DISTANCE) * LINK_MAX_ALPHA;
+
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(220, 225, 240, ${opacity})`;
+          ctx.stroke();
+        }
+      }
+
+      // Pass 2: cursor links and the stars themselves
+      ctx.lineWidth = MOUSE_LINK_WIDTH;
+      stars.forEach(star => {
+        // Calculate distance between this star and mouse cursor
+        const dx = mouse.x - star.x;
+        const dy = mouse.y - star.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Draw connecting line ONLY if near mouse cursor
+        if (dist < MAX_DISTANCE) {
+          const opacity = 1 - (dist / MAX_DISTANCE);
+
+          ctx.beginPath();
+          ctx.moveTo(star.x, star.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          // Purple/Blue line gradient alpha
+          ctx.strokeStyle = `rgba(186, 120, 255, ${opacity})`;
+          ctx.stroke();
+        }
+
+        // Draw star with dynamic color shift
+        star.draw(dist);
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    // Track mouse movement across the global window object
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    // Reset mouse when cursor leaves the browser viewport
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
+    window.addEventListener('resize', resize);
+
+    init();
+    animate();
+  </script>
+</body>
+</html>
