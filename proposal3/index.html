@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jason A. Macialek: Operations Governance to Autonomous Systems</title>
+<meta name="description" content="Seventeen years governing distributed operations under regulatory audit, now building an autonomous trading platform in Python. Every figure on this page is read off the host or counted in the repository.">
+<meta name="author" content="Jason A. Macialek">
+<meta name="theme-color" content="#11111b">
+<link rel="canonical" href="https://www.dawnmud.com/proposal3/">
+
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Jason A. Macialek: Operations Governance to Autonomous Systems">
+<meta property="og:description" content="Governance is the hard part of autonomy. Seventeen years running distributed operations under audit, now 30,043 lines of Python and 793 tests building an autonomous trading platform.">
+<meta property="og:url" content="https://www.dawnmud.com/proposal3/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" href="assets/fonts/ibm-plex-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-500-800-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2311111b'/><path d='M7 9h18M7 16h12M7 23h15' stroke='%23cba6f7' stroke-width='2.4' stroke-linecap='round'/></svg>">
+
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   Catppuccin Mocha. Crust carries the page so the starfield has somewhere to
+   sit; mantle and base build the panels above it. Accents keep their upstream
+   roles: mauve leads, blue links, green means verified, peach flags a stated
+   limitation, red marks a gate. Nothing glows and no text is a gradient.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --crust:#11111b;
+  --mantle:#181825;
+  --base:#1e1e2e;
+  --surface0:#313244;
+  --surface1:#45475a;
+
+  --text:#cdd6f4;
+  --subtext1:#bac2de;
+  --subtext0:#a6adc8;
+  --overlay1:#7f849c;
+  --overlay0:#6c7086;
+
+  --mauve:#cba6f7;
+  --blue:#89b4fa;
+  --sapphire:#74c7ec;
+  --teal:#94e2d5;
+  --green:#a6e3a1;
+  --peach:#fab387;
+  --red:#f38ba8;
+  --lavender:#b4befe;
+
+  --bg:var(--crust);
+  --panel:rgba(30,30,46,.66);
+  --panel-2:rgba(49,50,68,.55);
+  --line:rgba(205,214,244,.08);
+  --line-2:rgba(205,214,244,.15);
+
+  --ink:var(--text);
+  --ink-2:var(--subtext0);
+  --ink-3:var(--overlay1);
+
+  --display:'Archivo',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  --gut:clamp(20px,5vw,64px);
+  --maxw:1240px;
+  --r:12px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;color-scheme:dark}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--body);font-size:16.5px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.1;letter-spacing:-.02em;margin:0}
+p{margin:0}
+a{color:inherit}
+img,svg{max-width:100%}
+::selection{background:rgba(203,166,247,.26);color:#fff}
+:focus-visible{outline:2px solid var(--mauve);outline-offset:3px;border-radius:4px}
+
+.skip{position:absolute;left:-9999px;top:0;z-index:200;background:var(--mauve);color:var(--crust);
+  padding:12px 20px;font:600 14px/1 var(--body);border-radius:0 0 8px 0}
+.skip:focus{left:0}
+
+/* ── starfield ─────────────────────────────────────────────────────────── */
+#field{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  mask-image:radial-gradient(140% 100% at 50% 0%,#000 35%,rgba(0,0,0,.5) 100%)}
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(1100px 620px at 84% -10%,rgba(203,166,247,.055),transparent 62%),
+    radial-gradient(900px 560px at 6% 14%,rgba(137,180,250,.045),transparent 60%),
+    linear-gradient(180deg,transparent 0%,rgba(17,17,27,.42) 72%,var(--bg) 100%)}
+
+/* ── layout ────────────────────────────────────────────────────────────── */
+.shell{position:relative;z-index:2}
+.wrap{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:var(--gut)}
+section{padding-block:clamp(76px,10vw,132px);position:relative}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2) 22%,var(--line-2) 78%,transparent)}
+
+.eyebrow{
+  font:600 11.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--mauve);display:flex;align-items:center;gap:12px;margin-bottom:22px
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(203,166,247,.28),transparent);max-width:180px}
+h2.sec{font-size:clamp(1.95rem,4.4vw,3rem);margin-bottom:18px;max-width:19ch}
+.lede{color:var(--ink-2);font-size:clamp(1rem,1.45vw,1.1rem);max-width:66ch}
+.lede strong{color:var(--ink);font-weight:600}
+
+/* ── nav ───────────────────────────────────────────────────────────────── */
+.nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  background:rgba(17,17,27,.72);border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+.nav[data-stuck]{border-bottom-color:var(--line);background:rgba(17,17,27,.92)}
+.nav-in{display:flex;align-items:center;gap:18px;height:62px}
+.brand{display:flex;align-items:baseline;gap:11px;text-decoration:none;font-family:var(--display);
+  font-weight:800;font-size:15.5px;letter-spacing:-.02em;white-space:nowrap}
+.brand span{font:500 10.5px/1 var(--mono);letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.nav-links{display:flex;gap:2px;margin-left:auto}
+.nav-links a{text-decoration:none;font:500 11.5px/1 var(--mono);letter-spacing:.1em;color:var(--ink-3);
+  padding:9px 11px;border-radius:6px;transition:color .18s,background .18s;text-transform:uppercase}
+.nav-links a:hover,.nav-links a[aria-current]{color:var(--ink);background:rgba(205,214,244,.05)}
+.nav-links a[aria-current]{color:var(--mauve)}
+.kbd-btn{display:flex;align-items:center;gap:8px;background:rgba(205,214,244,.04);
+  border:1px solid var(--line);color:var(--ink-3);border-radius:7px;padding:7px 11px;cursor:pointer;
+  font:500 11.5px/1 var(--mono);transition:.18s}
+.kbd-btn:hover{border-color:var(--line-2);color:var(--ink)}
+.kbd-btn kbd{font:inherit;background:rgba(205,214,244,.07);border-radius:4px;padding:2px 5px;color:var(--ink-2)}
+@media (max-width:900px){.nav-links{display:none}}
+@media (max-width:520px){.kbd-btn kbd{display:none}}
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero{padding-top:clamp(56px,9vw,104px);padding-bottom:clamp(50px,7vw,78px)}
+.tag{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);
+  background:rgba(205,214,244,.03);border-radius:100px;padding:6px 14px 6px 10px;
+  font:500 11.5px/1 var(--mono);letter-spacing:.06em;color:var(--ink-2);margin-bottom:26px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+@media (prefers-reduced-motion:no-preference){.dot{animation:pulse 2.8s ease-in-out infinite}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+h1{font-size:clamp(2.5rem,7.2vw,5rem);letter-spacing:-.035em;line-height:.98;max-width:15ch}
+h1 em{font-style:normal;color:var(--mauve)}
+.hero-lede{margin-top:28px;max-width:63ch;font-size:clamp(1.02rem,1.6vw,1.18rem);color:var(--ink-2)}
+.hero-kicker{margin-top:20px;max-width:63ch;font:400 14px/1.65 var(--mono);color:var(--sapphire);
+  border-left:2px solid rgba(116,199,236,.32);padding-left:16px}
+
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:38px}
+.btn{display:inline-flex;align-items:center;gap:9px;text-decoration:none;border-radius:8px;
+  padding:12px 20px;font:600 14px/1 var(--body);border:1px solid transparent;cursor:pointer;transition:.2s}
+.btn-1{background:var(--mauve);color:var(--crust)}
+.btn-1:hover{background:var(--lavender)}
+.btn-2{border-color:var(--line-2);color:var(--ink);background:rgba(205,214,244,.03)}
+.btn-2:hover{background:rgba(205,214,244,.07);border-color:rgba(205,214,244,.26)}
+
+/* ── metric strip ──────────────────────────────────────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:52px}
+.metric{background:var(--mantle);padding:20px 20px 18px;position:relative}
+.metric::before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--mauve);
+  transform:scaleY(0);transform-origin:top;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.metric.in::before{transform:scaleY(1)}
+.metric b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,3vw,2.2rem);
+  letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;color:var(--text)}
+.metric i{font-style:normal;color:var(--mauve);font-size:.62em;margin-left:1px;vertical-align:super}
+.metric span{display:block;margin-top:9px;font:500 11px/1.45 var(--mono);letter-spacing:.05em;
+  color:var(--ink-3);text-transform:uppercase}
+.metric em{display:block;margin-top:6px;font-style:normal;font:400 11px/1.4 var(--mono);color:rgba(116,199,236,.62)}
+
+/* ── mapping table ─────────────────────────────────────────────────────── */
+.xfer{margin-top:54px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}
+.xfer-head,.xfer-row{display:grid;grid-template-columns:1fr 46px 1fr;gap:0}
+.xfer-head{background:rgba(205,214,244,.035);border-bottom:1px solid var(--line)}
+.xfer-head div{padding:13px 22px;font:600 10.8px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3)}
+.xfer-head div:nth-child(3){color:var(--mauve)}
+.xfer-row{border-bottom:1px solid var(--line);transition:background .22s}
+.xfer-row:last-child{border-bottom:0}
+.xfer-row:hover,.xfer-row:focus-within{background:rgba(203,166,247,.05)}
+.xc{padding:20px 22px}
+.xc h4{font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.xc p{font-size:14px;color:var(--ink-2);line-height:1.55}
+.xc.right h4{color:var(--mauve)}
+.xc code{font:500 .92em var(--mono);color:inherit}
+.arrow{display:grid;place-items:center;border-inline:1px solid var(--line);color:var(--ink-3);transition:color .22s}
+.xfer-row:hover .arrow,.xfer-row:focus-within .arrow{color:var(--mauve)}
+.arrow svg{width:16px;height:16px}
+.src{display:inline-block;margin-top:11px;font:500 11.5px/1 var(--mono);color:var(--blue);
+  background:rgba(137,180,250,.1);border-radius:5px;padding:5px 9px;text-decoration:none;
+  border:1px solid rgba(137,180,250,.2);transition:.18s}
+a.src:hover{background:rgba(137,180,250,.2);border-color:rgba(137,180,250,.44)}
+@media (max-width:860px){
+  .xfer-head{display:none}
+  .xfer-row{grid-template-columns:1fr}
+  .arrow{border-inline:0;border-block:1px solid var(--line);padding:8px 0;transform:rotate(90deg)}
+  .xc.right{background:rgba(203,166,247,.04)}
+}
+
+/* ── cards ─────────────────────────────────────────────────────────────── */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:24px;
+  transition:border-color .25s,background .25s}
+.card:hover{border-color:var(--line-2);background:var(--panel-2)}
+.card h3{font-size:1.08rem;margin-bottom:9px;letter-spacing:-.015em}
+.card p{font-size:14.4px;color:var(--ink-2)}
+.card p + p{margin-top:12px}
+.card code{font:500 .92em var(--mono);color:var(--sapphire)}
+.chip{display:inline-flex;align-items:center;gap:6px;font:500 10.8px/1 var(--mono);letter-spacing:.08em;
+  text-transform:uppercase;padding:5px 9px;border-radius:100px;border:1px solid var(--line-2);color:var(--ink-3)}
+.chip.ok{color:var(--green);border-color:rgba(166,227,161,.3);background:rgba(166,227,161,.08)}
+.chip.mv{color:var(--mauve);border-color:rgba(203,166,247,.3);background:rgba(203,166,247,.09)}
+.chip.bl{color:var(--blue);border-color:rgba(137,180,250,.28);background:rgba(137,180,250,.09)}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px}
+
+/* ── architecture diagram ──────────────────────────────────────────────── */
+.diagram{margin-top:38px;border:1px solid var(--line);border-radius:var(--r);background:var(--mantle);
+  padding:8px;overflow-x:auto}
+.diagram svg{display:block;min-width:820px;width:100%;height:auto}
+.dg-label{font:600 10px var(--mono);letter-spacing:.13em;text-transform:uppercase;fill:var(--overlay0)}
+.dg-title{font:700 13.5px var(--display);fill:var(--text)}
+.dg-sub{font:400 11px var(--mono);fill:var(--overlay1)}
+.dg-box{fill:rgba(205,214,244,.03);stroke:var(--line-2);stroke-width:1}
+.dg-box.hot{fill:rgba(203,166,247,.08);stroke:rgba(203,166,247,.4)}
+.dg-box.cool{fill:rgba(137,180,250,.07);stroke:rgba(137,180,250,.34)}
+.dg-box.gate{fill:rgba(243,139,168,.07);stroke:rgba(243,139,168,.4)}
+.dg-link{stroke:rgba(205,214,244,.18);stroke-width:1.4;fill:none;marker-end:url(#ah)}
+.dg-link.hot{stroke:rgba(203,166,247,.46)}
+@media (prefers-reduced-motion:no-preference){
+  .dg-flow{stroke-dasharray:5 9;animation:flow 1.9s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-14}}
+}
+.dg-note{font:400 10.5px var(--mono);fill:var(--overlay0)}
+
+/* ── code viewer ───────────────────────────────────────────────────────── */
+.code{margin-top:38px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--crust)}
+.tabs{display:flex;overflow-x:auto;background:rgba(205,214,244,.03);border-bottom:1px solid var(--line);
+  scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;color:var(--ink-3);
+  font:500 12.2px/1 var(--mono);padding:14px 18px;cursor:pointer;white-space:nowrap;transition:.2s}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]{color:var(--mauve);border-bottom-color:var(--mauve);background:rgba(203,166,247,.06)}
+.pane{display:none}
+.pane[data-on]{display:block}
+.pane-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:12px 20px;border-bottom:1px solid var(--line);background:rgba(205,214,244,.015)}
+.pane-head code{font:500 12px var(--mono);color:var(--sapphire)}
+.pane-head p{font-size:12.6px;color:var(--ink-3);max-width:62ch}
+pre{margin:0;padding:22px 20px;overflow-x:auto;font:400 12.9px/1.72 var(--mono);
+  color:var(--text);tab-size:4}
+/* Catppuccin Mocha syntax roles, upstream assignments. */
+pre .c{color:var(--overlay0);font-style:italic}
+pre .k{color:var(--mauve)}
+pre .s{color:var(--green)}
+pre .n{color:var(--peach)}
+pre .f{color:var(--blue)}
+pre .d{color:#f9e2af}
+
+/* ── operating rules ───────────────────────────────────────────────────── */
+.rules{margin-top:38px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);
+  border-radius:var(--r);overflow:hidden}
+.rule-i{background:var(--mantle);padding:22px 24px;display:grid;grid-template-columns:auto 1fr;gap:18px;
+  align-items:start;transition:background .22s}
+.rule-i:hover{background:rgba(203,166,247,.04)}
+.rule-n{font:600 12px/1 var(--mono);color:var(--mauve);background:rgba(203,166,247,.1);
+  border:1px solid rgba(203,166,247,.24);border-radius:5px;padding:7px 9px;letter-spacing:.04em}
+.rule-i h4{font-size:15.5px;margin-bottom:7px;letter-spacing:-.012em}
+.rule-i p{font-size:14.2px;color:var(--ink-2)}
+
+/* ── timeline ──────────────────────────────────────────────────────────── */
+.tl{margin-top:44px;position:relative;padding-left:30px}
+.tl::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;
+  background:linear-gradient(180deg,var(--mauve),rgba(203,166,247,.25) 30%,var(--line) 100%)}
+.tl-i{position:relative;padding-bottom:34px}
+.tl-i:last-child{padding-bottom:0}
+.tl-i::before{content:"";position:absolute;left:-30px;top:7px;width:11px;height:11px;border-radius:50%;
+  background:var(--bg);border:2px solid var(--mauve)}
+.tl-i.past::before{border-color:var(--overlay0)}
+.tl-when{font:500 11.5px/1 var(--mono);letter-spacing:.08em;color:var(--mauve);text-transform:uppercase}
+.tl-i.past .tl-when{color:var(--ink-3)}
+.tl-i h3{font-size:1.12rem;margin:9px 0 3px;letter-spacing:-.015em}
+.tl-org{font:400 13px/1 var(--mono);color:var(--ink-3);margin-bottom:11px}
+.tl-i ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:14.4px}
+.tl-i li{margin-bottom:6px}
+.tl-i li::marker{color:rgba(203,166,247,.5)}
+
+/* ── telemetry ─────────────────────────────────────────────────────────── */
+.tel{margin-top:40px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--mantle)}
+.tel-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:13px 20px;border-bottom:1px solid var(--line);background:rgba(205,214,244,.025)}
+.tel-bar b{font:600 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.tel-bar span{font:400 11.5px/1 var(--mono);color:var(--ink-3)}
+.tel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:1px;background:var(--line)}
+.tel-c{background:var(--mantle);padding:17px 20px}
+.tel-c dt{font:500 10.6px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px}
+.tel-c dd{margin:0;font:500 14.2px/1.35 var(--mono);color:var(--ink);word-break:break-word}
+.tel-c dd.hi{color:var(--mauve)}
+.tel-c dd.ic{color:var(--sapphire)}
+.tel-c dd.gd{color:var(--green)}
+.tel-note{padding:14px 20px;border-top:1px solid var(--line);font:400 12.4px/1.6 var(--mono);color:var(--ink-3)}
+.tel-note code{color:var(--sapphire)}
+
+/* ── contact ───────────────────────────────────────────────────────────── */
+.contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:38px}
+.cc{display:flex;flex-direction:column;gap:7px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r);padding:20px;text-decoration:none;transition:.22s;cursor:pointer;text-align:left;
+  font-family:inherit}
+.cc:hover{border-color:rgba(203,166,247,.4);background:rgba(203,166,247,.06)}
+.cc dt{font:500 10.6px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.cc dd{margin:0;font:500 15px/1.3 var(--mono);color:var(--ink)}
+
+footer{border-top:1px solid var(--line);padding-block:34px;margin-top:24px}
+.foot{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;
+  font:400 11.6px/1.6 var(--mono);color:var(--ink-3);letter-spacing:.04em}
+
+/* ── command palette ───────────────────────────────────────────────────── */
+.pal{position:fixed;inset:0;z-index:100;display:none;padding:12vh 20px 20px;
+  background:rgba(9,9,15,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.pal[open]{display:block}
+.pal-box{max-width:580px;margin-inline:auto;background:var(--base);border:1px solid var(--surface0);
+  border-radius:12px;overflow:hidden;box-shadow:0 32px 90px -20px rgba(0,0,0,.8)}
+.pal-in{width:100%;border:0;background:none;color:var(--ink);font:400 16px/1 var(--body);
+  padding:19px 20px;border-bottom:1px solid var(--line);outline:0}
+.pal-in::placeholder{color:var(--ink-3)}
+.pal-list{max-height:min(52vh,420px);overflow-y:auto;padding:7px}
+.pal-i{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;border-radius:7px;
+  padding:11px 13px;cursor:pointer;text-align:left;color:var(--ink-2);font:400 14.4px/1.3 var(--body)}
+.pal-i[data-sel]{background:rgba(203,166,247,.14);color:var(--ink)}
+.pal-i b{font-weight:500}
+.pal-i em{margin-left:auto;font-style:normal;font:500 10.6px/1 var(--mono);letter-spacing:.1em;
+  color:var(--ink-3);text-transform:uppercase}
+.pal-i svg{width:15px;height:15px;flex:0 0 15px;color:var(--mauve)}
+.pal-empty{padding:26px;text-align:center;color:var(--ink-3);font-size:14px}
+.pal-foot{border-top:1px solid var(--line);padding:9px 16px;display:flex;gap:16px;
+  font:500 10.8px/1 var(--mono);color:var(--ink-3);letter-spacing:.07em}
+
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,18px);z-index:120;
+  background:var(--mauve);color:var(--crust);padding:11px 20px;border-radius:8px;
+  font:600 13.5px/1 var(--body);opacity:0;pointer-events:none;transition:.28s}
+.toast[data-on]{opacity:1;transform:translate(-50%,0)}
+
+/* ── reveal ────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion:no-preference){
+  .rv{opacity:0;transform:translateY(16px);transition:opacity .62s cubic-bezier(.16,1,.3,1),transform .62s cubic-bezier(.16,1,.3,1)}
+  .rv.in{opacity:1;transform:none}
+}
+
+/* ── print: the page becomes a clean resume ────────────────────────────── */
+@media print{
+  :root{--ink:#111;--ink-2:#333;--ink-3:#666;--line:#ddd;--line-2:#ccc;
+        --mauve:#5b3f86;--blue:#1f4e79;--sapphire:#1f4e79;--text:#111;--mantle:#fff}
+  #field,.veil,.nav,.pal,.toast,.cta,.diagram,.tabs,.code,.skip,.tel-note{display:none!important}
+  body{background:#fff;color:#111;font-size:10.5pt;line-height:1.42}
+  section{padding-block:14pt;break-inside:avoid}
+  .wrap{max-width:none;padding-inline:0}
+  h1{font-size:23pt;color:#111}
+  h1 em{color:#5b3f86}
+  h2.sec{font-size:14pt;margin-bottom:6pt}
+  .card,.xfer,.rules,.tel,.metrics,.rule-i,.metric,.tel-c{background:#fff;border-color:#ddd;break-inside:avoid}
+  .metric b{color:#111}
+  a{text-decoration:none}
+  .src{background:none;border:0;padding:0;color:#1f4e79}
+  .rv{opacity:1!important;transform:none!important}
+  .tl-i{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<canvas id="field" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<div class="shell">
+
+<!-- ═══ NAV ═══ -->
+<nav class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top">Jason&nbsp;A.&nbsp;Macialek <span>Ops&nbsp;/&nbsp;Autonomy</span></a>
+    <div class="nav-links">
+      <a href="#mapping">01 Mapping</a>
+      <a href="#system">02 System</a>
+      <a href="#method">03 Method</a>
+      <a href="#record">04 Record</a>
+      <a href="#machine">05 Machine</a>
+    </div>
+    <button class="kbd-btn" id="palBtn" aria-label="Open command palette">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Jump to<kbd>⌘K</kbd>
+    </button>
+  </div>
+</nav>
+
+<main id="main">
+<span id="top"></span>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+<div class="wrap">
+  <div class="tag"><span class="dot"></span> Farmingville, NY &nbsp;/&nbsp; EmblemHealth 2009 to now &nbsp;/&nbsp; open to director and senior IC roles</div>
+
+  <h1>Governance is the <em>hard part</em> of autonomy.</h1>
+
+  <p class="hero-lede">Seventeen years making a hundred-plus distributed people produce correct, auditable output under CMS, NCQA and HIPAA load. I now build autonomous trading software in Python, and it turns out to be the same job. Writing the strategy is the easy half. Building something that keeps deciding correctly when nobody is watching is the half I already knew.</p>
+
+  <p class="hero-kicker">This page is served from a box I built and configured. Every number on it was read off that host at deploy time or counted in the repository, not typed in by hand.</p>
+
+  <div class="cta">
+    <a class="btn btn-1" href="#mapping">See the mapping
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn btn-2" href="https://github.com/jmacialek/webull-trading" target="_blank" rel="noopener">The codebase
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+    <button class="btn btn-2" data-act="print">Print as resume</button>
+  </div>
+
+  <div class="metrics" id="metrics">
+    <div class="metric"><b data-count="17">0</b><span>Years, EmblemHealth</span><em>2009 to now</em></div>
+    <div class="metric"><b data-count="100">0</b><i>+</i><span>Offshore contractors governed</span><em>Cognizant audit and config</em></div>
+    <div class="metric"><b data-count="30043">0</b><span>Lines of Python shipped</span><em>webull-trading, mypy strict</em></div>
+    <div class="metric"><b data-count="793">0</b><span>Test functions</span><em>across 85 test modules</em></div>
+    <div class="metric"><b data-count="16">0</b><span>Architecture decision records</span><em>each with its trade-off</em></div>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ 01 MAPPING ═══ -->
+<section id="mapping">
+<div class="wrap">
+  <p class="eyebrow rv">01 &nbsp;/&nbsp; The mapping</p>
+  <h2 class="sec rv">The discipline transferred better than the syntax did.</h2>
+  <p class="lede rv">Most career changers hand you a skills list. A list is a claim, not evidence. So here is a mapping instead. On the left, work I have been paid to do since 2009. On the right, the file in the trading platform where the same discipline is committed. Every entry on the right is a link you can open and read.</p>
+
+  <div class="xfer rv">
+    <div class="xfer-head">
+      <div>Enterprise operations, 2009 to now</div><div></div>
+      <div>webull-trading, 2026</div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Root cause analysis, then corrective action</h4>
+        <p>Every defect traced to a cause, a documented corrective action, a retest, and a final disposition. Nothing closes on a hunch.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4><code>LESSONS.md</code>: 14 rules the code may not contradict</h4>
+        <p>A predecessor system's incident history, distilled into section-anchored rules. The plan and every file are written against it, and a change that contradicts §2 or §3 gets rejected on that basis alone.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/blob/main/docs/LESSONS.md" target="_blank" rel="noopener">docs/LESSONS.md</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Knowledge architecture, SOPs, train-the-trainer</h4>
+        <p>Audit consistency across a hundred people is a vocabulary problem before it is a skill problem. Two graders using one word differently produce two different defect rates.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4><code>CONTEXT.md</code>: a canonical vocabulary with banned synonyms</h4>
+        <p>Strategy, Agent, Agent Run, Fill Source, Fetcher, Regime, Setup, Sweep, Dead Knob, Plateau. Each is defined once, and each carries an explicit list of words to avoid. Same problem as the audit floor, same fix, different medium.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/blob/main/CONTEXT.md" target="_blank" rel="noopener">CONTEXT.md</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Compliance gates nobody can waive</h4>
+        <p>The control that matters is the one nobody can talk their way around at 4:45 on a Friday. A default setting is not a control.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4>Live trading is structurally unreachable</h4>
+        <p>A code-level <code>frozenset</code> allowlist of order-capable endpoints, with deliberately no environment-variable override. Going live requires a committed edit to that file and to the test pinning it. Checked at construction, then re-checked inside place and cancel.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/blob/main/src/webull_trading/safety/endpoints.py" target="_blank" rel="noopener">safety/endpoints.py</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Calibration sessions, so the graders stop drifting</h4>
+        <p>Distributed reviewers drift. You measure the drift on known cases before you trust any number they produce.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4>The dead-knob test and the plateau rule</h4>
+        <p>Before tuning a parameter, prove it does anything: a sweep producing byte-identical trades is a dead knob. A supported value comes from a plateau of at least three points, never from the edge of the tested range. A sweep never applies a value; the operator does.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/tree/main/src/webull_trading/research" target="_blank" rel="noopener">research/sweep.py</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Escalation that fails safe instead of guessing</h4>
+        <p>An unexplained variance gets stopped and raised. It does not get a plausible assumption and a green checkmark.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4>Reconciliation halts on anything it cannot explain</h4>
+        <p>ADR-0005: orphaned positions are adopted at real cost basis or not at all. There is no <em>probably fine</em> branch. The rule exists because a predecessor's orphan-flattener skipped its own exclusion when a file was merely absent, and flattened the whole account.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/blob/main/docs/adr/0005-reconciliation-fails-closed.md" target="_blank" rel="noopener">ADR-0005</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>Decision documentation for audit</h4>
+        <p>Auditors do not ask what you chose. They ask what you rejected, and why, and when. An undocumented decision is an unmade one.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4>16 ADRs, each recording the trade-off it accepted</h4>
+        <p>Including the uncomfortable ones. ADR-0010 states plainly that broker-side protective stops are regular hours only, so an overnight gap is unprotected by construction. Writing down what a system cannot do is how you tell whether the rest of it is trustworthy.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/tree/main/docs/adr" target="_blank" rel="noopener">docs/adr/</a></div>
+    </div>
+
+    <div class="xfer-row" tabindex="0">
+      <div class="xc"><h4>SLA trackers and defect-trend scorecards</h4>
+        <p>If the vendor's number and my number disagree, the discrepancy is the deliverable. Reporting either runs itself on a schedule or it does not run.</p></div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="xc right"><h4>Nine systemd units for audit, backfill and backup</h4>
+        <p>A bar-integrity audit, a deep backfill walk and a database backup, each a unit plus a timer, backed by a <code>job_runs</code> table and a metrics module so a job that quietly stopped running shows up. The predecessor's own lesson: watching whether it is trading at all found bugs that P&amp;L never would.</p>
+        <a class="src" href="https://github.com/jmacialek/webull-trading/tree/main/deploy/systemd" target="_blank" rel="noopener">deploy/systemd/</a></div>
+    </div>
+  </div>
+
+  <div class="card rv" style="margin-top:16px">
+    <span class="chip mv">Straight about where I am</span>
+    <h3 style="margin-top:14px">The honest version</h3>
+    <p>I am not a career software engineer, and one year does not replace ten. I read code better than I write it quickly, and I lean hard on a written spec because I know what I do not yet know by feel. Anyone hiring me for raw throughput on a mature codebase is hiring the wrong person.</p>
+    <p>What I bring instead is seventeen years of being personally accountable when something in production goes wrong at a health plan, under regulators who do not accept a shrug. I learned expensively that failures live in the seams: reconciliation, silent no-ops, controls with an override nobody wrote down, and the report that stopped running three weeks before anybody noticed. That is the half of autonomous systems most people underestimate, and it is the half I already know cold.</p>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ 02 SYSTEM ═══ -->
+<section id="system">
+<div class="wrap">
+  <p class="eyebrow rv">02 &nbsp;/&nbsp; The system</p>
+  <h2 class="sec rv">webull-trading</h2>
+  <p class="lede rv">An autonomous paper-trading platform for US equities over the Webull OpenAPI. Python 3.14, PostgreSQL as the single source of truth, a FastAPI control plane running in-process with the backend, and a React 19 dashboard. It trades against the sandbox broker and a simulated fill engine. That is deliberate, and it is enforced in code rather than in a config file.</p>
+
+  <div class="chips rv" style="margin-top:22px">
+    <span class="chip">Python 3.14</span><span class="chip">PostgreSQL</span><span class="chip">FastAPI</span>
+    <span class="chip">React 19 + Vite 7</span><span class="chip">ECharts</span><span class="chip">TypeScript</span>
+    <span class="chip">mypy --strict</span><span class="chip">pytest</span><span class="chip">vitest</span>
+    <span class="chip">systemd</span><span class="chip">nginx</span><span class="chip">uv</span>
+  </div>
+
+  <div class="grid g3 rv" style="margin-top:16px">
+    <div class="card"><h3>30,043 <span style="font-size:.6em;color:var(--ink-3);font-family:var(--mono);font-weight:500">lines Python</span></h3>
+      <p>Plus 2,006 lines of TypeScript and React in the dashboard, and 246 lines of SQL migrations. Type-checked under <code>mypy --strict</code> across both <code>src/</code> and <code>agents/</code>.</p></div>
+    <div class="card"><h3>793 <span style="font-size:.6em;color:var(--ink-3);font-family:var(--mono);font-weight:500">test functions</span></h3>
+      <p>Across 85 test modules, with a fake broker, a runtime harness, an API harness and synthetic-bar fixtures, so the order lifecycle can be tested against failure modes a live sandbox will not reproduce on demand.</p></div>
+    <div class="card"><h3>10 <span style="font-size:.6em;color:var(--ink-3);font-family:var(--mono);font-weight:500">operator CLIs</span></h3>
+      <p><code>migrate</code>, <code>backfill</code>, <code>audit-bars</code>, <code>backup</code>, <code>orders</code>, <code>agents</code>, <code>backtest</code>, <code>research</code> and more. A system you cannot inspect and correct by hand is not autonomous. It is just unattended.</p></div>
+  </div>
+
+  <h3 class="rv" style="margin-top:52px;font-size:1.3rem">Architecture</h3>
+  <p class="lede rv" style="margin-top:10px;font-size:1rem">One process is the structural chokepoint (ADR-0002). Strategies are pure functions of a bar window and never touch a broker, a clock or the database. That is what makes a new strategy incapable of bypassing safety, sizing or the order lifecycle, and what makes the same code run identically in backtest and live.</p>
+
+  <div class="diagram rv">
+  <svg viewBox="0 0 900 430" role="img" aria-label="Architecture: Webull OpenAPI feeds a single Fetcher, which writes to PostgreSQL. The Agent Runtime reads bars from the database, calls pure Strategy functions, passes decisions through the risk layer and order engine, and every order passes a safety chokepoint before reaching the sandbox broker or the simulated fill engine.">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 10 5 0 10z" fill="rgba(205,214,244,.3)"/>
+      </marker>
+    </defs>
+
+    <text class="dg-label" x="14" y="20">Ingest, single owner</text>
+    <text class="dg-label" x="330" y="20">Decision, pure functions</text>
+    <text class="dg-label" x="672" y="20">Execution, gated</text>
+
+    <rect class="dg-box cool" x="14" y="34" width="200" height="66" rx="9"/>
+    <text class="dg-title" x="30" y="60">Webull OpenAPI</text>
+    <text class="dg-sub" x="30" y="80">SDK 2.0.18, pinned to a git tag</text>
+
+    <rect class="dg-box" x="14" y="126" width="200" height="78" rx="9"/>
+    <text class="dg-title" x="30" y="152">Fetcher</text>
+    <text class="dg-sub" x="30" y="171">the only caller of market data;</text>
+    <text class="dg-sub" x="30" y="187">rate-limit aware, bars frozen</text>
+
+    <rect class="dg-box hot" x="14" y="230" width="200" height="88" rx="9"/>
+    <text class="dg-title" x="30" y="256">PostgreSQL</text>
+    <text class="dg-sub" x="30" y="275">source of truth. Nothing</text>
+    <text class="dg-sub" x="30" y="291">re-derivable is stored twice.</text>
+    <text class="dg-sub" x="30" y="307">bars, events, positions, state</text>
+
+    <rect class="dg-box" x="14" y="344" width="200" height="66" rx="9"/>
+    <text class="dg-title" x="30" y="370">systemd timers</text>
+    <text class="dg-sub" x="30" y="390">audit, backfill, backup</text>
+
+    <rect class="dg-box hot" x="278" y="126" width="212" height="88" rx="9"/>
+    <text class="dg-title" x="294" y="152">Agent Runtime</text>
+    <text class="dg-sub" x="294" y="171">owns the FSM, state, clock,</text>
+    <text class="dg-sub" x="294" y="187">persistence and every side effect</text>
+    <text class="dg-sub" x="294" y="203">FLAT / WATCHING / ARMED / IN_POSITION</text>
+
+    <rect class="dg-box" x="278" y="34" width="212" height="66" rx="9"/>
+    <text class="dg-title" x="294" y="60">Strategies x6</text>
+    <text class="dg-sub" x="294" y="80">pure(bar window) returns Decision</text>
+
+    <rect class="dg-box" x="278" y="240" width="212" height="78" rx="9"/>
+    <text class="dg-title" x="294" y="266">Risk layer</text>
+    <text class="dg-sub" x="294" y="285">stop floor, ratchet, sizing by</text>
+    <text class="dg-sub" x="294" y="301">risk, day limits, breakers</text>
+
+    <rect class="dg-box" x="278" y="344" width="212" height="66" rx="9"/>
+    <text class="dg-title" x="294" y="370">Research</text>
+    <text class="dg-sub" x="294" y="390">sweeps, replay, MFE/MAE</text>
+
+    <rect class="dg-box" x="556" y="126" width="200" height="78" rx="9"/>
+    <text class="dg-title" x="572" y="152">Order engine</text>
+    <text class="dg-sub" x="572" y="171">lifecycle and reconciliation,</text>
+    <text class="dg-sub" x="572" y="187">which halts on the unexplained</text>
+
+    <rect class="dg-box gate" x="556" y="230" width="200" height="70" rx="9"/>
+    <text class="dg-title" x="572" y="256">Safety chokepoint</text>
+    <text class="dg-sub" x="572" y="276">frozenset allowlist, no override</text>
+
+    <rect class="dg-box cool" x="556" y="326" width="94" height="84" rx="9"/>
+    <text class="dg-title" x="570" y="352">Sandbox</text>
+    <text class="dg-sub" x="570" y="371">broker</text>
+    <text class="dg-sub" x="570" y="387">real fills</text>
+
+    <rect class="dg-box cool" x="662" y="326" width="94" height="84" rx="9"/>
+    <text class="dg-title" x="676" y="352">Sim fills</text>
+    <text class="dg-sub" x="676" y="371">spread and</text>
+    <text class="dg-sub" x="676" y="387">slippage</text>
+
+    <rect class="dg-box" x="796" y="126" width="90" height="174" rx="9"/>
+    <text class="dg-title" x="810" y="152">Control</text>
+    <text class="dg-sub" x="810" y="172">FastAPI</text>
+    <text class="dg-sub" x="810" y="188">CSRF</text>
+    <text class="dg-sub" x="810" y="204">tokens</text>
+    <text class="dg-sub" x="810" y="228">React 19</text>
+    <text class="dg-sub" x="810" y="244">ECharts</text>
+    <text class="dg-sub" x="810" y="268">nginx</text>
+    <text class="dg-sub" x="810" y="284">SPA</text>
+
+    <path class="dg-link dg-flow" d="M114 100 V120"/>
+    <path class="dg-link dg-flow" d="M114 204 V224"/>
+    <path class="dg-link hot dg-flow" d="M214 268 H252 V170 H272"/>
+    <path class="dg-link" d="M384 100 V120"/>
+    <path class="dg-link dg-flow" d="M384 214 V234"/>
+    <path class="dg-link dg-flow" d="M490 168 H550"/>
+    <path class="dg-link dg-flow" d="M656 204 V224"/>
+    <path class="dg-link dg-flow" d="M624 300 V320"/>
+    <path class="dg-link dg-flow" d="M690 300 V320"/>
+    <path class="dg-link" d="M756 168 H790"/>
+    <path class="dg-link" d="M214 378 H272"/>
+    <path class="dg-link" d="M214 288 H240 V378 H272" opacity=".45"/>
+
+    <text class="dg-note" x="14" y="424">Every other component reads market data from the database, never from the API.</text>
+  </svg>
+  </div>
+
+  <h3 class="rv" style="margin-top:52px;font-size:1.3rem">Code, as committed</h3>
+  <p class="lede rv" style="margin-top:10px;font-size:1rem">Four excerpts, unedited, from the repository above. These are the ones that show judgment rather than syntax.</p>
+
+  <div class="code rv">
+    <div class="tabs" role="tablist" aria-label="Source excerpts">
+      <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="true">safety/endpoints.py</button>
+      <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false">agents/strategy.py</button>
+      <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false">risk/limits.py</button>
+      <button class="tab" role="tab" id="t4" aria-controls="p4" aria-selected="false">git log</button>
+    </div>
+
+    <div class="pane" id="p1" role="tabpanel" aria-labelledby="t1" data-on>
+      <div class="pane-head"><code>src/webull_trading/safety/endpoints.py</code>
+        <p>The control with no override. The comment explains why, which is the part that survives a refactor.</p></div>
+<pre><span class="c">"""§2: live trading is structurally unreachable, not merely non-default.
+
+The allowlist below is deliberately a code-level frozenset with no env-var
+override. Enabling live trading requires a committed edit to this file (and
+to the test that pins it).
+"""</span>
+
+<span class="n">ORDER_CAPABLE_ENDPOINTS</span> = <span class="f">frozenset</span>({<span class="s">"api.sandbox.webull.com"</span>})
+
+<span class="n">SANDBOX_TRADE_ENDPOINT</span> = <span class="s">"api.sandbox.webull.com"</span>
+
+
+<span class="k">class</span> <span class="d">SafetyError</span>(<span class="f">Exception</span>):
+    <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="d">EndpointNotOrderCapableError</span>(<span class="d">SafetyError</span>):
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="f">assert_order_capable</span>(<span class="n">endpoint</span>: <span class="d">str</span>) -&gt; <span class="k">None</span>:
+    <span class="k">if</span> <span class="n">endpoint</span> <span class="k">not in</span> <span class="n">ORDER_CAPABLE_ENDPOINTS</span>:
+        <span class="k">raise</span> <span class="d">EndpointNotOrderCapableError</span>(
+            <span class="s">f"endpoint {endpoint!r} is not order-capable; "</span>
+            <span class="s">f"allowlist: {sorted(ORDER_CAPABLE_ENDPOINTS)}"</span>
+        )</pre>
+    </div>
+
+    <div class="pane" id="p2" role="tabpanel" aria-labelledby="t2">
+      <div class="pane-head"><code>src/webull_trading/agents/strategy.py</code>
+        <p>The contract that makes a new strategy incapable of bypassing safety, and makes backtest and live provably the same path.</p></div>
+<pre><span class="c">"""The Strategy contract (ADR-0007).
+
+A Strategy is a *pure function of a bar window*: on every bar close of a
+ticker it receives a ``TickerView`` — bars for any universe symbol and
+timeframe, the ticker's FSM state, its setup, its open position — and
+returns one ``Decision``. It never sees a database, a broker, an order
+engine, or a clock; the runtime owns every side effect. That is what
+makes a generated Agent unable to bypass safety, the order lifecycle,
+persistence, or the risk layer — and what makes the same Strategy run
+identically through the backtest and live paths (§7.12).
+
+The FSM the runtime enforces (spec §4)::
+
+    FLAT ──Watch──▶ WATCHING ──Arm──▶ ARMED ──Enter──▶ IN_POSITION
+      ▲               │ Reset          │ Reset            │ stop fill /
+      └───────────────┴────────────────┘                  │ Exit / flatten
+      ◀────────────── COOLDOWN (cooldown bars, loss streak) ◀┘
+
+Decisions outside the current state's row are rejected and recorded,
+never applied. Stops a Strategy proposes pass through the risk layer's
+floor at entry and the ratchet afterwards. Sizing is not the Strategy's
+to decide; it may only scale its risk budget down (``risk_scale``).
+"""</span></pre>
+    </div>
+
+    <div class="pane" id="p3" role="tabpanel" aria-labelledby="t3">
+      <div class="pane-head"><code>src/webull_trading/risk/limits.py</code>
+        <p>Guardrails as pure decisions over persisted state, so a restart cannot reset a kill switch. Note the last line: calibration guidance kept deliberately out of the code.</p></div>
+<pre><span class="c">"""Account-level guardrails (spec §8, §7.11): the day's loss budget, the
+giveback limit off ``peak_equity``, loss-streak cooldowns, and the
+concurrency cap. Pure decisions over numbers the runtime reads from
+``agent_day_state`` — the persisted, restart-surviving kill-switch
+state (§6). Calibration guidance, not code: set the daily loss limit
+~1.8× the worst backtested day once history exists.
+"""</span>
+
+<span class="k">from</span> dataclasses <span class="k">import</span> <span class="f">dataclass</span>
+<span class="k">from</span> decimal <span class="k">import</span> <span class="d">Decimal</span>
+
+
+<span class="k">class</span> <span class="d">LimitParamError</span>(<span class="f">ValueError</span>):
+    <span class="k">pass</span>
+
+
+<span class="n">@dataclass</span>(frozen=<span class="k">True</span>)
+<span class="k">class</span> <span class="d">LimitParams</span>:
+    <span class="n">daily_loss_fraction</span>: <span class="d">Decimal</span>
+    <span class="n">giveback_fraction</span>: <span class="d">Decimal</span>
+    <span class="n">giveback_min_gain</span>: <span class="d">Decimal</span>
+    <span class="n">max_open_positions</span>: <span class="d">int</span>
+    <span class="n">ticker_loss_streak</span>: <span class="d">int</span>
+    <span class="n">book_loss_streak</span>: <span class="d">int</span>
+
+    <span class="k">def</span> <span class="f">__post_init__</span>(<span class="n">self</span>) -&gt; <span class="k">None</span>:
+        <span class="k">if not</span> <span class="n">0</span> &lt; <span class="n">self</span>.daily_loss_fraction &lt; <span class="n">1</span>:
+            <span class="k">raise</span> <span class="d">LimitParamError</span>(<span class="s">"daily_loss_fraction must be in (0, 1)"</span>)</pre>
+    </div>
+
+    <div class="pane" id="p4" role="tabpanel" aria-labelledby="t4">
+      <div class="pane-head"><code>jmacialek/webull-trading, most recent commit</code>
+        <p>A failure mode you only think to handle if you have been on the wrong end of one.</p></div>
+<pre><span class="n">commit 94013d5</span>
+<span class="c">Date:   2026-09-04 18:41:42 -0400</span>
+
+    <span class="s">A stop the broker drops and refuses to re-place is a market exit;</span>
+    <span class="s">a bare position carries no order id (#53) (#54)</span>
+
+<span class="c"># The broker acknowledged a protective stop, dropped it, then refused
+# to re-place it. The position is now naked.
+#
+# The tempting handling is a retry and a warning in the log. The correct
+# handling is to treat the protective invariant as gone and exit at
+# market, then make the resulting position honest about having no order
+# id behind it, so nothing downstream reconciles against an order that
+# does not exist.
+#
+# ADR-0010 states the adjacent limit out loud: broker-side protective
+# stops are regular hours only, so an overnight gap is unprotected by
+# construction. Writing that down is what makes the rest of the numbers
+# usable. You can size against a gap you have measured.</span></pre>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ 03 METHOD ═══ -->
+<section id="method">
+<div class="wrap">
+  <p class="eyebrow rv">03 &nbsp;/&nbsp; The method</p>
+  <h2 class="sec rv">Rules the code is not allowed to contradict.</h2>
+  <p class="lede rv">A predecessor system was retired for applying the opposite of the evidence, automatically, every week. Its tuner could only raise entry selectivity, while widening stops turned out to be the winning lever twice. Before writing a line of the replacement I distilled that history into rules with section anchors. The plan, the ADRs and every module are written against them. Six of the fourteen:</p>
+
+  <div class="rules rv">
+    <div class="rule-i"><span class="rule-n">§7.1</span><div>
+      <h4>Prove a knob does something before tuning it.</h4>
+      <p>Four of seven agents' score gates were non-functional: a dead code path, zero outcome correlation, never binding, or a field that did not exist. Weeks of tuning moved nothing. A sweep producing byte-identical output is the cheapest test in existence.</p></div></div>
+
+    <div class="rule-i"><span class="rule-n">§7.7</span><div>
+      <h4>Win rate without expectancy is meaningless.</h4>
+      <p>The old research grid contained an 83.4% win rate that loses money, profit factor 0.63, manufactured trivially by barrier geometry: a wide stop and a tight target. A number that geometry alone can produce is not a result.</p></div></div>
+
+    <div class="rule-i"><span class="rule-n">§7.12</span><div>
+      <h4>Backtest and live must share the exact same exit and sizing functions.</h4>
+      <p>The best backtest, profit factor 1.11 to 1.18, went 0.54 live over 134 trades. Every divergence source turned out to be measurable and boring: unmodeled slippage at 0.024% per fill, enough on its own to invalidate every prior tuning decision; a session window mismatch; no portfolio-level state; and ATR computed 27 to 38% larger live.</p></div></div>
+
+    <div class="rule-i"><span class="rule-n">§7.11</span><div>
+      <h4>Circuit breakers sit outside the backtested distribution.</h4>
+      <p>About 1.8 times the worst observed day, plus a hard notional cap independent of all sizing logic. A limit derived from the same distribution it is meant to protect you from is not a limit.</p></div></div>
+
+    <div class="rule-i"><span class="rule-n">§7.13</span><div>
+      <h4>Short samples find regimes and dress them as effects.</h4>
+      <p>A gap-fade showed 22.6 basis points per day across a 33-session archive and was negative over ten years. The convenient window is the one that flatters you.</p></div></div>
+
+    <div class="rule-i"><span class="rule-n">§7.14</span><div>
+      <h4>Retiring a strategy is a legitimate outcome. A refuted hypothesis is a good week.</h4>
+      <p>This is the hard one to hold, and it is the one seventeen years of audit work taught me. The pressure is always to find something. The discipline is reporting that there was nothing there.</p></div></div>
+  </div>
+
+  <div class="grid g2 rv" style="margin-top:16px">
+    <div class="card">
+      <span class="chip bl">Agentic development, in practice</span>
+      <h3 style="margin-top:14px">How the pace holds up</h3>
+      <p>Working with coding agents at this rate only holds because the constraints are written down and machine-readable. A repo-level <code>CLAUDE.md</code> points at the vocabulary, the plan and the lessons, and says a conflict gets flagged rather than quietly overridden. Domain lookup, issue triage and label vocabulary are separate documented skills. Issues live in GitHub under five canonical triage roles. An agent proposing something that contradicts §2 gets stopped by the spec, not by whether I happened to catch it.</p>
+      <div class="chips">
+        <span class="chip">CLAUDE.md</span><span class="chip">agent skills</span><span class="chip">ADR conflict flagging</span>
+        <span class="chip">gh issues and triage labels</span><span class="chip">single-context domain docs</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="chip mv">Infrastructure, hands-on</span>
+      <h3 style="margin-top:14px">The boxes underneath</h3>
+      <p>Proxmox VE hosts, Ubuntu LTS containers, nginx with Let's Encrypt via certbot on a DNS-01 wildcard, a Cloudflare Zero Trust tunnel at the edge, SSH hardened to keys only with root login disabled, and systemd units and timers as the scheduling layer. Deployment is a script in the repository rather than a sequence of remembered commands, including this page, which renders from a telemetry file that a collector regenerates from the live host on every deploy.</p>
+      <div class="chips">
+        <span class="chip">Proxmox VE</span><span class="chip">Ubuntu 26.04 LTS</span><span class="chip">nginx</span>
+        <span class="chip">certbot DNS-01</span><span class="chip">Cloudflare Tunnel</span><span class="chip">systemd</span><span class="chip">git and gh</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ 04 RECORD ═══ -->
+<section id="record">
+<div class="wrap">
+  <p class="eyebrow rv">04 &nbsp;/&nbsp; The record</p>
+  <h2 class="sec rv">Seventeen years, one company, six roles.</h2>
+  <p class="lede rv">Started as a customer service specialist in 2009 and was promoted through every layer of the operation. When the Benefit Configuration director's seat emptied, the work kept arriving, so I did it: vendor reviews, SLAs, audits, requirement vetting, executive reporting, the training program, the escalations. Director scope, carried under the title I already had.</p>
+
+  <div class="tl">
+    <div class="tl-i">
+      <div class="tl-when">May 2021 to present</div>
+      <h3>Vendor Operations Knowledge Manager, Benefit Configuration</h3>
+      <div class="tl-org">EmblemHealth</div>
+      <ul>
+        <li>Operational oversight and quality governance for 100+ offshore Cognizant contractors, audit teams and configuration resources. Daily communication cadences, productivity metrics and calibration sessions improved first-pass quality and cut defect trends across distributed teams.</li>
+        <li>Validated complex benefit configuration and claim adjudication parameters (deductibles, copays, coinsurance, accumulators, network tiers, authorization rules) against SPDs, SBCs, benefit booklets and client-specific mapping legends.</li>
+        <li>Built repeatable, auditable QA standards and audit workflows running from defect identification through root cause analysis, corrective action, retest and final disposition.</li>
+        <li>Designed executive dashboards, SLA trackers and defect-trend scorecards giving leadership real visibility into operational risk and audit progress.</li>
+        <li>Standardized claims, eligibility and inbound/outbound data formats to close configuration gaps across core platforms. Ran requirement vetting with Product, Clinical Administration, Utilization Management and IT for annual renewals, ASO implementations and regulatory mandates.</li>
+        <li>Owned the knowledge architecture (SharePoint and Teams structure, SOPs, train-the-trainer programs, onboarding paths) against CMS, NCQA and HIPAA standards.</li>
+      </ul>
+    </div>
+
+    <div class="tl-i past">
+      <div class="tl-when">Sep 2020 to May 2021</div>
+      <h3>Non-Clinical Supervisor, Medical Management</h3>
+      <div class="tl-org">EmblemHealth</div>
+      <ul>
+        <li>Supervised clinical and non-clinical staff for benefit administration accuracy, clinical policy execution and timely access to care.</li>
+        <li>Analyzed facility volume trends against caseload longevity and patient acuity to align staffing, and reported process, quality and timeliness measures to department leadership.</li>
+        <li>Enforced State, Federal and NCQA compliance, ran performance plans and reviews, and organized after-hours coverage.</li>
+      </ul>
+    </div>
+
+    <div class="tl-i past">
+      <div class="tl-when">Jun 2020 to Sep 2020</div>
+      <h3>Senior Quality Analyst, Medical Management</h3>
+      <div class="tl-org">EmblemHealth</div>
+      <ul>
+        <li>Partnered directly with the Director on daily operations of all non-clinical administrative functions.</li>
+        <li>Derived business requirements for initiatives with a non-clinical administrative component, and identified process gaps through compliance audits that turned into documented best practice.</li>
+      </ul>
+    </div>
+
+    <div class="tl-i past">
+      <div class="tl-when">Jun 2016 to Jun 2020</div>
+      <h3>Quality Analyst, Medical Management</h3>
+      <div class="tl-org">EmblemHealth</div>
+      <ul>
+        <li>Led a multi-site international call center team of 70+ intake advocates, directing workflow, technical training and coaching against HIPAA and CMS requirements.</li>
+        <li>Deployed on site in Manila, Philippines to train and launch a new overseas team, transitioning Medical Management intake functions.</li>
+        <li>Handled all escalated social media and high-level corporate complaints for the intake department, and managed ACD routing against fluctuating volume to hold SLAs.</li>
+        <li>Built and launched a communication plan for policy and workflow changes that measurably reduced customer abrasion.</li>
+      </ul>
+    </div>
+
+    <div class="tl-i past">
+      <div class="tl-when">2009 to Jun 2016</div>
+      <h3>Intake Specialist II, then Customer Service Specialist II</h3>
+      <div class="tl-org">EmblemHealth, via Greystone Staffing 2008 to 2009</div>
+      <ul>
+        <li>Created job aids that reduced departmental errors and cross-departmental escalations, and audited new-hire training documentation for process accuracy.</li>
+        <li>Acted as supervisor for escalated requests, and served as SME for complex policy inquiries, appeals and claims adjustments.</li>
+        <li>Worked across HMO, EPO, PPO, POS and Indemnity lines of business, which is where the benefit-structure depth the current role runs on came from.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ 05 MACHINE ═══ -->
+<section id="machine">
+<div class="wrap">
+  <p class="eyebrow rv">05 &nbsp;/&nbsp; The machine</p>
+  <h2 class="sec rv">The page is its own reference.</h2>
+  <p class="lede rv">Everything below was read off this host by <code>scripts/collect-telemetry.sh</code> at deploy time and written to a JSON file this page fetches. Nothing in the panel is typed by hand, so it cannot quietly go stale and it cannot be inflated. If the certificate expiry shown here is wrong, the page is wrong. The collector needs no root, and it reads the certificate from the live listener rather than from disk, so it reports what you were served.</p>
+
+  <div class="tel rv">
+    <div class="tel-bar">
+      <b>Host telemetry</b>
+      <span>collected <span data-tel="generated_at" data-fmt="ago">.</span> &nbsp;/&nbsp; <span data-tel="deploy.commit">.</span></span>
+    </div>
+    <div class="tel-grid">
+      <div class="tel-c"><dt>Host</dt><dd data-tel="host.hostname">.</dd></div>
+      <div class="tel-c"><dt>Operating system</dt><dd data-tel="host.os">.</dd></div>
+      <div class="tel-c"><dt>Kernel</dt><dd data-tel="host.kernel">.</dd></div>
+      <div class="tel-c"><dt>Virtualization</dt><dd class="ic" data-tel="host.virtualization" data-fmt="upper">.</dd></div>
+      <div class="tel-c"><dt>Cores and memory</dt><dd><span data-tel="host.cores">.</span> vCPU, <span data-tel="host.memory_gb">.</span> GB</dd></div>
+      <div class="tel-c"><dt>Uptime</dt><dd data-tel="host.uptime_seconds" data-fmt="dur">.</dd></div>
+
+      <div class="tel-c"><dt>Web server</dt><dd class="hi">nginx <span data-tel="web.version">.</span></dd></div>
+      <div class="tel-c"><dt>TLS protocols</dt><dd data-tel="web.tls_protocols">.</dd></div>
+      <div class="tel-c"><dt>Certificate issuer</dt><dd data-tel="tls.issuer">.</dd></div>
+      <div class="tel-c"><dt>Certificate covers</dt><dd data-tel="tls.domains">.</dd></div>
+      <div class="tel-c"><dt>Certificate expires</dt><dd class="gd"><span data-tel="tls.days_remaining">.</span> days, <span data-tel="tls.renewal">.</span></dd></div>
+      <div class="tel-c"><dt>Edge</dt><dd class="ic">cloudflared <span data-tel="edge.cloudflared_version">.</span>, <span data-tel="edge.tunnel_state">.</span></dd></div>
+
+      <div class="tel-c"><dt>SSH hardening</dt><dd class="gd" data-tel="hardening" data-fmt="harden">.</dd></div>
+      <div class="tel-c"><dt>Deployed commit</dt><dd class="hi" data-tel="deploy.commit">.</dd></div>
+      <div class="tel-c"><dt>Committed</dt><dd data-tel="deploy.committed_at" data-fmt="date">.</dd></div>
+      <div class="tel-c"><dt>Repository</dt><dd><a class="src" data-tel="deploy.repository" data-fmt="link" href="https://github.com/jmacialek/webcore" target="_blank" rel="noopener">jmacialek/webcore</a></dd></div>
+      <div class="tel-c"><dt>Page weight</dt><dd><span data-tel="page.bytes" data-fmt="kb">.</span>, <span data-tel="page.bytes_gzipped" data-fmt="kb">.</span> gzipped</dd></div>
+      <div class="tel-c"><dt>Third-party requests</dt><dd class="gd" data-tel="page.third_party_requests">.</dd></div>
+    </div>
+    <div class="tel-note">
+      <code>$ ./scripts/collect-telemetry.sh &amp;&amp; ./scripts/deploy.sh</code> &nbsp; The collector regenerates <code>telemetry.json</code>; the deploy script syncs the repository to the document root and reloads nginx. The repository is the source of truth and the document root is a copy.
+    </div>
+  </div>
+
+  <div class="grid g3 rv" style="margin-top:16px">
+    <div class="card"><h3>No build step, no framework</h3>
+      <p>One HTML file, self-hosted font subsets, one JSON file. No bundler, no npm install, nothing to rot. The complexity budget went into the trading platform, where it earns something.</p></div>
+    <div class="card"><h3>Zero third-party requests</h3>
+      <p>The typefaces are subset and served from this host, so the page makes no request to any origin but its own. No CDN outage, no font-provider telemetry, no flash of unstyled text.</p></div>
+    <div class="card"><h3>The starfield is O(n), not O(n²)</h3>
+      <p>Linking nearby stars naively costs a comparison per pair. This one bins stars into a uniform grid sized to the link radius and checks only the four forward neighbor cells, so each pair is considered once. It also respects <code>prefers-reduced-motion</code> and stops animating on a hidden tab.</p></div>
+  </div>
+</div>
+</section>
+
+<div class="wrap"><div class="rule"></div></div>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact">
+<div class="wrap">
+  <p class="eyebrow rv">06 &nbsp;/&nbsp; Contact</p>
+  <h2 class="sec rv">If any of the above is the shape of your problem.</h2>
+  <p class="lede rv">I am looking for a role where operational judgment and building are the same job. Director-level operations with real technical depth, technical program management, platform or reliability work with a governance edge, or an engineering team that wants someone who has been personally accountable for production consequences for a long time.</p>
+
+  <dl class="contact rv">
+    <button class="cc" data-copy="macialek.jason@gmail.com"><dt>Email (click to copy)</dt><dd>macialek.jason@gmail.com</dd></button>
+    <button class="cc" data-copy="631-428-5023"><dt>Phone (click to copy)</dt><dd>631&nbsp;428&nbsp;5023</dd></button>
+    <a class="cc" href="https://github.com/jmacialek" target="_blank" rel="noopener"><dt>GitHub</dt><dd>github.com/jmacialek</dd></a>
+    <div class="cc" style="cursor:default"><dt>Location</dt><dd>Farmingville, NY</dd></div>
+  </dl>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>© 2026 Jason A. Macialek &nbsp;/&nbsp; <span data-tel="host.hostname">webcore</span> &nbsp;/&nbsp; commit <span data-tel="deploy.commit">.</span></div>
+    <div>nginx, Let's Encrypt, Cloudflare Tunnel, Proxmox VE</div>
+  </div>
+</footer>
+</div>
+
+<!-- Fallback telemetry: the page must render correctly even if the fetch fails
+     (opened from disk, nginx misconfigured, JSON temporarily absent). -->
+<script type="application/json" id="tel-fallback">
+{"generated_at":null,"host":{"hostname":"webcore","os":"Ubuntu 26.04.1 LTS","kernel":"7.0.14-14-pve","virtualization":"lxc","cores":16,"memory_gb":32,"uptime_seconds":0},"web":{"version":"1.28.3","tls_protocols":"TLSv1.2 TLSv1.3"},"tls":{"issuer":"Let's Encrypt","domains":"dawnmud.com, *.dawnmud.com","days_remaining":0,"renewal":"certbot, DNS-01"},"edge":{"cloudflared_version":"n/a","tunnel_state":"unknown"},"hardening":{"root_login_disabled":true,"password_auth_disabled":true,"ssh_nondefault_port":true},"deploy":{"commit":"unknown","committed_at":null,"repository":"https://github.com/jmacialek/webcore"},"page":{"bytes":0,"bytes_gzipped":0,"third_party_requests":0}}
+</script>
+
+<!-- ═══ COMMAND PALETTE ═══ -->
+<div class="pal" id="pal" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="pal-box">
+    <input class="pal-in" id="palIn" type="text" placeholder="Jump to a section, copy contact details, print" autocomplete="off" spellcheck="false" aria-controls="palList">
+    <div class="pal-list" id="palList" role="listbox" aria-label="Commands"></div>
+    <div class="pal-foot"><span>up down navigate</span><span>enter select</span><span>esc close</span></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Jason A. Macialek",
+"email":"macialek.jason@gmail.com","telephone":"+1-631-428-5023",
+"jobTitle":"Vendor Operations Knowledge Manager, Benefit Configuration",
+"address":{"@type":"PostalAddress","addressLocality":"Farmingville","addressRegion":"NY","addressCountry":"US"},
+"worksFor":{"@type":"Organization","name":"EmblemHealth"},
+"url":"https://www.dawnmud.com/proposal3/",
+"sameAs":["https://github.com/jmacialek"],
+"knowsAbout":["Benefit configuration","Claims adjudication","Vendor governance","Root cause analysis","CMS Medicare Stars","NCQA","HIPAA","Python","PostgreSQL","FastAPI","React","Linux systems administration","nginx","systemd","Agentic development"]}
+</script>
+
+<script>
+(() => {
+'use strict';
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+/* ══ toast ══════════════════════════════════════════════════════════════ */
+const toastEl = $('#toast');
+let toastT;
+const toast = msg => {
+  toastEl.textContent = msg;
+  toastEl.setAttribute('data-on', '');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => toastEl.removeAttribute('data-on'), 2100);
+};
+
+/* ══ starfield ══════════════════════════════════════════════════════════
+   Three parallax depth layers. Only the near layer links, and the link pass
+   bins stars into a uniform grid whose cell size equals the link radius: a
+   star can then only reach partners in its own cell and the eight around it,
+   and testing just the four "forward" neighbors visits every pair exactly
+   once. That is O(n) in the star count instead of the naive O(n^2), which is
+   what lets the near layer stay dense without costing frames.
+   ══════════════════════════════════════════════════════════════════════ */
+const cvs = $('#field'), ctx = cvs.getContext('2d', { alpha: true });
+// Canvas can be unavailable: privacy extensions block getContext, and some
+// embedded viewers return null. The field is decoration, so degrade to a
+// plain background and let everything else on the page carry on.
+const hasField = !!ctx;
+const LINK = 116, LINK2 = LINK * LINK;
+const LAYERS = [
+  { n: 46, speed: .018, r: [.5, 1.0], a: .26, link: false },
+  { n: 64, speed: .040, r: [.7, 1.4], a: .46, link: false },
+  { n: 96, speed: .075, r: [.9, 1.9], a: .74, link: true  }
+];
+// Catppuccin Mocha: stars sit at text, and warm toward mauve near the cursor.
+const STAR_RGB = [205, 214, 244];
+const HOT_RGB  = [203, 166, 247];
+let W = 0, H = 0, dpr = 1, stars = [], raf = 0, paused = false;
+const mouse = { x: -9e3, y: -9e3 };
+
+function size() {
+  const pw = W, ph = H;
+  dpr = Math.min(devicePixelRatio || 1, 2);
+  W = innerWidth; H = innerHeight;
+  cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
+  cvs.style.width = W + 'px'; cvs.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Rescale rather than re-seed: stars outside the new viewport would
+  // otherwise all wrap onto x=0/y=0 and sit there as a visible clump.
+  if (pw && ph && stars.length) {
+    const sx = W / pw, sy = H / ph;
+    for (const s of stars) { s.x *= sx; s.y *= sy; }
+  }
+}
+
+function seed() {
+  stars = [];
+  // Thin the field on small screens: the same density reads as noise there.
+  const scale = W < 700 ? .5 : W < 1100 ? .75 : 1;
+  LAYERS.forEach(L => {
+    for (let i = 0; i < Math.round(L.n * scale); i++) {
+      const a = Math.random() * Math.PI * 2;
+      stars.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: Math.cos(a) * L.speed, vy: Math.sin(a) * L.speed,
+        r: L.r[0] + Math.random() * (L.r[1] - L.r[0]),
+        a: L.a * (.6 + Math.random() * .4),
+        link: L.link
+      });
+    }
+  });
+}
+
+// Grid buckets, allocated once and refilled per frame.
+let cols = 0, rows = 0, cells = [];
+function grid(near) {
+  cols = Math.max(1, Math.ceil(W / LINK));
+  rows = Math.max(1, Math.ceil(H / LINK));
+  const need = cols * rows;
+  if (cells.length !== need) { cells = Array.from({ length: need }, () => []); }
+  else { for (const c of cells) c.length = 0; }
+  for (const s of near) {
+    const cx = Math.min(cols - 1, Math.max(0, (s.x / LINK) | 0));
+    const cy = Math.min(rows - 1, Math.max(0, (s.y / LINK) | 0));
+    cells[cy * cols + cx].push(s);
+  }
+}
+// Own cell plus four forward neighbors covers every neighboring pair once.
+const NB = [[1, 0], [-1, 1], [0, 1], [1, 1]];
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const near = [];
+  for (const s of stars) {
+    s.x += s.vx; s.y += s.vy;
+    if (s.x < -2) s.x = W + 2; else if (s.x > W + 2) s.x = -2;
+    if (s.y < -2) s.y = H + 2; else if (s.y > H + 2) s.y = -2;
+    if (s.link) near.push(s);
+  }
+
+  grid(near);
+  ctx.lineWidth = .55;
+  for (let cy = 0; cy < rows; cy++) {
+    for (let cx = 0; cx < cols; cx++) {
+      const cell = cells[cy * cols + cx];
+      if (!cell.length) continue;
+      for (let i = 0; i < cell.length; i++) {
+        const a = cell[i];
+        for (let j = i + 1; j < cell.length; j++) pair(a, cell[j]);
+        for (const [dx, dy] of NB) {
+          const nx = cx + dx, ny = cy + dy;
+          if (nx < 0 || nx >= cols || ny >= rows) continue;
+          const other = cells[ny * cols + nx];
+          for (let j = 0; j < other.length; j++) pair(a, other[j]);
+        }
+      }
+    }
+  }
+
+  for (const s of stars) {
+    const dx = mouse.x - s.x, dy = mouse.y - s.y, d2 = dx * dx + dy * dy;
+    let col = STAR_RGB.join(','), al = s.a;
+    if (s.link && d2 < LINK2) {
+      const t = 1 - Math.sqrt(d2) / LINK;
+      col = STAR_RGB.map((c, i) => (c + (HOT_RGB[i] - c) * t) | 0).join(',');
+      al = Math.min(1, s.a + .28 * t);
+      ctx.strokeStyle = `rgba(203,166,247,${(t * .3).toFixed(3)})`;
+      ctx.lineWidth = 1.1;
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, 6.2832);
+    ctx.fillStyle = `rgba(${col},${al.toFixed(3)})`;
+    ctx.fill();
+  }
+}
+function pair(a, b) {
+  const dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+  if (d2 >= LINK2) return;
+  // Lavender, so the web reads as part of the palette rather than as haze.
+  ctx.strokeStyle = `rgba(180,190,254,${((1 - Math.sqrt(d2) / LINK) * .15).toFixed(3)})`;
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+}
+
+function loop() { if (paused) return; draw(); raf = requestAnimationFrame(loop); }
+function start() { if (raf || paused) return; raf = requestAnimationFrame(loop); }
+function stop()  { cancelAnimationFrame(raf); raf = 0; }
+
+let motion = hasField && !reduced.matches;
+function boot() {
+  if (!hasField) { cvs.style.display = 'none'; return; }
+  size(); seed();
+  if (motion) { paused = false; start(); } else { paused = true; stop(); draw(); }
+}
+boot();
+
+let rt;
+addEventListener('resize', () => {
+  if (!hasField) return;
+  clearTimeout(rt); rt = setTimeout(() => { size(); if (!motion) draw(); }, 140);
+});
+addEventListener('pointermove', e => {
+  if (!hasField) return;
+  mouse.x = e.clientX; mouse.y = e.clientY;
+}, { passive: true });
+addEventListener('pointerleave', () => { mouse.x = mouse.y = -9e3; });
+// A background tab should not burn a core.
+document.addEventListener('visibilitychange', () => {
+  if (!hasField) return;
+  if (document.hidden) { paused = true; stop(); }
+  else if (motion) { paused = false; start(); }
+});
+reduced.addEventListener('change', () => { motion = hasField && !reduced.matches; boot(); });
+
+/* ══ nav state ══════════════════════════════════════════════════════════ */
+const nav = $('#nav');
+const sentinel = document.createElement('div');
+document.body.prepend(sentinel);
+new IntersectionObserver(([e]) => nav.toggleAttribute('data-stuck', !e.isIntersecting))
+  .observe(sentinel);
+
+const links = $$('.nav-links a');
+const secs = links.map(a => $(a.getAttribute('href'))).filter(Boolean);
+const spy = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    links.forEach(a => a.removeAttribute('aria-current'));
+    const hit = links.find(a => a.getAttribute('href') === '#' + e.target.id);
+    if (hit) hit.setAttribute('aria-current', 'true');
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+secs.forEach(s => spy.observe(s));
+
+/* ══ reveal + counters ══════════════════════════════════════════════════ */
+const rv = new IntersectionObserver((entries, o) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); o.unobserve(e.target); } });
+}, { rootMargin: '0px 0px -8% 0px', threshold: .05 });
+$$('.rv').forEach(el => rv.observe(el));
+
+const fmtInt = n => n.toLocaleString('en-US');
+const counters = new IntersectionObserver((entries, o) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    o.unobserve(e.target);
+    e.target.classList.add('in');
+    const el = $('[data-count]', e.target);
+    if (!el) return;
+    const target = +el.dataset.count;
+    if (reduced.matches) { el.textContent = fmtInt(target); return; }
+    const dur = 1150, t0 = performance.now();
+    const tick = now => {
+      const p = Math.min(1, (now - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmtInt(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}, { threshold: .4 });
+$$('#metrics .metric').forEach(m => counters.observe(m));
+
+/* ══ code tabs ══════════════════════════════════════════════════════════ */
+const tabs = $$('.tab');
+const select = i => {
+  tabs.forEach((t, n) => {
+    t.setAttribute('aria-selected', String(n === i));
+    $('#' + t.getAttribute('aria-controls')).toggleAttribute('data-on', n === i);
+  });
+  tabs[i].focus();
+};
+tabs.forEach((t, i) => {
+  t.addEventListener('click', () => select(i));
+  t.addEventListener('keydown', e => {
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    select((i + d + tabs.length) % tabs.length);
+  });
+});
+
+/* ══ telemetry ══════════════════════════════════════════════════════════ */
+const get = (o, path) => path.split('.').reduce((a, k) => (a == null ? a : a[k]), o);
+const ago = iso => {
+  if (!iso) return 'at deploy';
+  const s = (Date.now() - Date.parse(iso)) / 1000;
+  if (!isFinite(s)) return 'at deploy';
+  const u = [[86400, 'day'], [3600, 'hour'], [60, 'minute']];
+  for (const [n, name] of u) if (s >= n) { const v = Math.floor(s / n); return `${v} ${name}${v > 1 ? 's' : ''} ago`; }
+  return 'moments ago';
+};
+const dur = s => {
+  s = +s || 0;
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : `${m}m`;
+};
+const fmt = {
+  ago, dur,
+  kb: v => (+v / 1024).toFixed(1) + ' KB',
+  upper: v => String(v).toUpperCase(),
+  date: v => v ? new Date(v).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'unknown',
+  harden: v => [v?.root_login_disabled && 'no root login',
+                v?.password_auth_disabled && 'keys only',
+                v?.ssh_nondefault_port && 'non-default port'].filter(Boolean).join(', ') || 'unknown'
+};
+
+function paint(data) {
+  $$('[data-tel]').forEach(el => {
+    const raw = get(data, el.dataset.tel);
+    if (raw == null && el.dataset.fmt !== 'ago') return;
+    const f = el.dataset.fmt;
+    if (f === 'link') {
+      el.href = raw;
+      el.textContent = String(raw).replace(/^https?:\/\/github\.com\//, '');
+      return;
+    }
+    el.textContent = f && fmt[f] ? fmt[f](raw) : (typeof raw === 'number' ? fmtInt(raw) : String(raw));
+  });
+}
+paint(JSON.parse($('#tel-fallback').textContent));
+// The live panel is an enhancement over the inline fallback, so it must not
+// be able to take the rest of the page down with it: no fetch (or a fetch
+// that throws synchronously) leaves the fallback painted and the navigation,
+// palette and tabs below still wired up.
+try {
+  if (typeof fetch === 'function') {
+    fetch('telemetry.json', { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(paint)
+      .catch(() => { /* a stale panel beats an empty one */ });
+  }
+} catch { /* ignore */ }
+
+/* ══ command palette ════════════════════════════════════════════════════ */
+const pal = $('#pal'), palIn = $('#palIn'), palList = $('#palList');
+const ICON = {
+  go:   'M5 12h14M13 6l6 6-6 6',
+  copy: 'M9 9h10v10H9zM5 15V5h10',
+  ext:  'M7 17 17 7M9 7h8v8',
+  tool: 'M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2'
+};
+const CMDS = [
+  { t: 'The mapping, operations discipline as committed files', k: 'go', a: () => go('#mapping'), h: '01' },
+  { t: 'The system, webull-trading architecture', k: 'go', a: () => go('#system'), h: '02' },
+  { t: 'The method, rules the code may not contradict', k: 'go', a: () => go('#method'), h: '03' },
+  { t: 'The record, seventeen years and six roles', k: 'go', a: () => go('#record'), h: '04' },
+  { t: 'The machine, live host telemetry', k: 'go', a: () => go('#machine'), h: '05' },
+  { t: 'Contact', k: 'go', a: () => go('#contact'), h: '06' },
+  { t: 'Copy email address', k: 'copy', a: () => copy('macialek.jason@gmail.com', 'Email copied'), h: 'copy' },
+  { t: 'Copy phone number', k: 'copy', a: () => copy('631-428-5023', 'Phone copied'), h: 'copy' },
+  { t: 'Copy all contact details', k: 'copy', h: 'copy',
+    a: () => copy('Jason A. Macialek\nFarmingville, NY\nmacialek.jason@gmail.com\n631-428-5023\ngithub.com/jmacialek', 'Contact details copied') },
+  { t: 'Open jmacialek/webull-trading', k: 'ext', a: () => open('https://github.com/jmacialek/webull-trading', '_blank', 'noopener'), h: 'github' },
+  { t: 'Open jmacialek/webcore, this site', k: 'ext', a: () => open('https://github.com/jmacialek/webcore', '_blank', 'noopener'), h: 'github' },
+  { t: 'Open telemetry.json, the raw host data', k: 'ext', a: () => open('telemetry.json', '_blank', 'noopener'), h: 'data' },
+  { t: 'Print this page as a resume', k: 'tool', a: () => print(), h: 'print' },
+  hasField && { t: 'Toggle starfield motion', k: 'tool', h: 'display',
+    a: () => { motion = !motion; paused = !motion; motion ? start() : (stop(), draw()); toast(motion ? 'Motion on' : 'Motion off'); } }
+].filter(Boolean);
+let shown = CMDS, sel = 0;
+
+const go = hash => {
+  close();
+  const el = $(hash);
+  el?.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'start' });
+  history.replaceState(null, '', hash);
+};
+const copy = async (text, msg) => {
+  close();
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(msg);
+  } catch {
+    // Clipboard API needs a secure context and can still be refused.
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.append(ta); ta.select();
+    toast(document.execCommand('copy') ? msg : 'Copy blocked: ' + text);
+    ta.remove();
+  }
+};
+
+function render() {
+  palList.innerHTML = '';
+  if (!shown.length) {
+    palList.innerHTML = '<p class="pal-empty">Nothing matches that.</p>';
+    return;
+  }
+  shown.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'pal-i';
+    b.type = 'button';
+    b.setAttribute('role', 'option');
+    b.setAttribute('aria-selected', String(i === sel));
+    if (i === sel) b.setAttribute('data-sel', '');
+    b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="${ICON[c.k]}"/></svg><b></b><em></em>`;
+    b.querySelector('b').textContent = c.t;
+    b.querySelector('em').textContent = c.h;
+    b.addEventListener('click', c.a);
+    b.addEventListener('mousemove', () => { if (sel !== i) { sel = i; render(); } });
+    palList.append(b);
+  });
+  palList.querySelector('[data-sel]')?.scrollIntoView({ block: 'nearest' });
+}
+function openPal() {
+  pal.setAttribute('open', '');
+  palIn.value = ''; shown = CMDS; sel = 0; render();
+  palIn.focus();
+}
+function close() { pal.removeAttribute('open'); }
+
+$('#palBtn').addEventListener('click', openPal);
+pal.addEventListener('mousedown', e => { if (e.target === pal) close(); });
+palIn.addEventListener('input', () => {
+  const q = palIn.value.trim().toLowerCase();
+  shown = q ? CMDS.filter(c => (c.t + ' ' + c.h).toLowerCase().includes(q)) : CMDS;
+  sel = 0; render();
+});
+addEventListener('keydown', e => {
+  const isOpen = pal.hasAttribute('open');
+  if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+    e.preventDefault(); isOpen ? close() : openPal(); return;
+  }
+  if (!isOpen) {
+    // "/" is a familiar search shortcut, but not while the user is typing.
+    if (e.key === '/' && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) {
+      e.preventDefault(); openPal();
+    }
+    return;
+  }
+  if (e.key === 'Escape') { e.preventDefault(); close(); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); sel = (sel + 1) % shown.length; render(); }
+  else if (e.key === 'ArrowUp')   { e.preventDefault(); sel = (sel - 1 + shown.length) % shown.length; render(); }
+  else if (e.key === 'Enter')     { e.preventDefault(); shown[sel]?.a(); }
+});
+
+/* ══ misc actions ═══════════════════════════════════════════════════════ */
+$$('[data-copy]').forEach(el => el.addEventListener('click', () => copy(el.dataset.copy, 'Copied')));
+$$('[data-act="print"]').forEach(el => el.addEventListener('click', () => print()));
+})();
+</script>
+</body>
+</html>

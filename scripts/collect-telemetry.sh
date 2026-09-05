@@ -1,19 +1,27 @@
 #!/usr/bin/env bash
-# collect-telemetry.sh — read real facts off this host and emit proposal2/telemetry.json
+# collect-telemetry.sh - read real facts off this host into <site>/telemetry.json
 #
-# Everything the proposal2 page states about its own infrastructure comes from
-# here. Nothing is hand-written into the page, so nothing can quietly go stale
-# or be inflated: if a number is on the page, this script read it off the box.
+#   ./scripts/collect-telemetry.sh                  # every site that wants it
+#   ./scripts/collect-telemetry.sh proposal3        # just one
+#
+# Everything a page states about its own infrastructure comes from here.
+# Nothing is hand-written into the page, so nothing can quietly go stale or be
+# inflated: if a number is on the page, this script read it off the box.
+#
+# Host facts are gathered once; page weight and third-party counts are measured
+# per site, so each page reports its own size rather than a sibling's.
 #
 # Deliberately needs no root. The TLS block is read from the cert nginx is
-# actually serving on :443 rather than from /etc/letsencrypt, so it reflects
-# what a visitor gets, not what is on disk.
+# serving on :443 rather than from /etc/letsencrypt, so it reflects what a
+# visitor gets, not what is on disk.
 
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OUT="$REPO/proposal2/telemetry.json"
-PAGE="$REPO/proposal2/index.html"
+
+# Sites whose pages render a telemetry panel. proposal1 predates the collector
+# and asserts its own figures, so it is deliberately not in this list.
+if [ $# -gt 0 ]; then SITES=("$@"); else SITES=(proposal2 proposal3); fi
 
 j() { python3 -c 'import json,sys; print(json.dumps(sys.argv[1]))' "$1"; }
 
@@ -69,10 +77,20 @@ GIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 0)
 GIT_DIRTY=$([ -n "$(git status --porcelain 2>/dev/null)" ] && echo True || echo False)
 GIT_REMOTE=$(git remote get-url origin 2>/dev/null | sed 's|\.git$||' || echo "")
 
-# ---- page weight (measured, not asserted) -----------------------------------
-PAGE_BYTES=$([ -f "$PAGE" ] && stat -c%s "$PAGE" || echo 0)
-PAGE_GZIP=$([ -f "$PAGE" ] && gzip -9 -c "$PAGE" | wc -c || echo 0)
-FONT_BYTES=$(du -sb "$REPO/proposal2/assets/fonts" 2>/dev/null | cut -f1 || echo 0)
+# ---- per-site ---------------------------------------------------------------
+for SITE in "${SITES[@]}"; do
+
+PAGE="$REPO/$SITE/index.html"
+OUT="$REPO/$SITE/telemetry.json"
+if [ ! -f "$PAGE" ]; then
+    echo "skip $SITE (no index.html)" >&2
+    continue
+fi
+
+# Page weight is measured off the file, never asserted.
+PAGE_BYTES=$(stat -c%s "$PAGE")
+PAGE_GZIP=$(gzip -9 -c "$PAGE" | wc -c)
+FONT_BYTES=$(du -sb "$REPO/$SITE/assets/fonts" 2>/dev/null | cut -f1 || echo 0)
 
 python3 - "$OUT" "$PAGE" <<PY
 import json, re, sys
@@ -160,3 +178,4 @@ open(sys.argv[1], "a").write("\n")
 PY
 
 echo "wrote $OUT"
+done

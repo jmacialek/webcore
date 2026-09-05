@@ -21,7 +21,7 @@ DRY=""
 [ "${1:-}" = "--dry-run" ] && DRY="--dry-run"
 
 # Directories this repository publishes. Add a site here and it deploys.
-SITES=(proposal1 proposal2)
+SITES=(proposal1 proposal2 proposal3)
 
 cd "$REPO"
 
