@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jason A. Macialek | Enterprise Operations Director &amp; Agentic AI Architect</title>
+  <meta name="description" content="15+ Years Enterprise Operational Leadership meets Autonomous Agentic AI Engineering, Model Context Protocol (MCP), and TimescaleDB Infrastructure.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --bg-surface: rgba(13, 19, 33, 0.75);
+      --bg-surface-hover: rgba(20, 28, 48, 0.85);
+      --bg-surface-elevated: rgba(18, 25, 44, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 240, 255, 0.35);
+      --border-glow: rgba(168, 85, 247, 0.4);
+      
+      --cyan: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.25);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.25);
+      --emerald: #00ff9d;
+      --emerald-glow: rgba(0, 255, 157, 0.2);
+      --amber: #ffb703;
+      --rose: #ff0055;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-tech: 'Space Grotesk', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Interactive Canvas Background */
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Ambient Nebulas */
+    .nebula-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.22;
+      animation: pulseGlow 14s ease-in-out infinite alternate;
+    }
+    .nebula-1 {
+      top: 5%;
+      left: 10%;
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, #00f0ff 0%, #3b82f6 50%, transparent 70%);
+    }
+    .nebula-2 {
+      bottom: 20%;
+      right: 5%;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, #a855f7 0%, #6366f1 50%, transparent 70%);
+      animation-delay: -7s;
+    }
+    .nebula-3 {
+      top: 50%;
+      left: 45%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #00ff9d 0%, #0284c7 60%, transparent 75%);
+      opacity: 0.12;
+      animation-delay: -3s;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9) translate(0, 0); opacity: 0.15; }
+      50% { transform: scale(1.1) translate(20px, -20px); opacity: 0.28; }
+      100% { transform: scale(0.95) translate(-15px, 15px); opacity: 0.18; }
+    }
+
+    /* Page Container */
+    .app-container {
+      position: relative;
+      z-index: 1;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px 80px 24px;
+    }
+
+    /* Top Sticky HUD Navbar */
+    .navbar {
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: rgba(10, 14, 26, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 9999px;
+      margin-top: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+    .navbar:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      animation: blink 2.2s infinite ease-in-out;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .brand-title {
+      font-family: var(--font-tech);
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+      font-family: var(--font-tech);
+      letter-spacing: 0.02em;
+    }
+    .nav-links a:hover {
+      color: var(--cyan);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn-glow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(168, 85, 247, 0.3));
+      border: 1px solid var(--border-accent);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .btn-glow:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.35);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 90px 0 60px 0;
+      text-align: center;
+      position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #d8b4fe;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow span.dot {
+      width: 6px;
+      height: 6px;
+      background: var(--purple);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--purple);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5.2vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .gradient-text-cyan {
+      background: linear-gradient(135deg, #ffffff 30%, #00f0ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gradient-text-purple {
+      background: linear-gradient(135deg, #38bdf8 0%, #a855f7 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 840px;
+      margin: 0 auto 36px auto;
+      font-weight: 400;
+      line-height: 1.65;
+    }
+    .hero-subtitle strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .btn-primary {
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00f0ff 0%, #6366f1 100%);
+      color: #040814;
+      font-weight: 700;
+      font-family: var(--font-tech);
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 45px rgba(0, 240, 255, 0.65);
+      color: #000;
+    }
+    .btn-secondary {
+      padding: 14px 28px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-weight: 600;
+      font-family: var(--font-tech);
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: 1px solid var(--border-subtle);
+      backdrop-filter: blur(10px);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    /* Key Stats Grid */
+    .stats-hud {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 20px auto 40px auto;
+      max-width: 1060px;
+    }
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px 18px;
+      text-align: left;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-accent);
+      background: var(--bg-surface-hover);
+    }
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .stat-value span.highlight-cyan {
+      color: var(--cyan);
+    }
+    .stat-value span.highlight-purple {
+      color: var(--purple);
+    }
+    .stat-value span.highlight-emerald {
+      color: var(--emerald);
+    }
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* Section Headers */
+    .section-container {
+      margin-top: 100px;
+    }
+    .section-header {
+      margin-bottom: 40px;
+    }
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3.2vw, 2.7rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+      margin-bottom: 14px;
+    }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    /* The "Unsung Director" Manifesto / Story Card */
+    .manifesto-card {
+      background: linear-gradient(135deg, rgba(13, 19, 33, 0.9) 0%, rgba(20, 24, 40, 0.8) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+    .manifesto-card::after {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .manifesto-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.45;
+      margin-bottom: 24px;
+      position: relative;
+      padding-left: 24px;
+      border-left: 4px solid var(--cyan);
+    }
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .manifesto-pillar {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.25s ease;
+    }
+    .manifesto-pillar:hover {
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .pillar-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+    .pillar-title {
+      font-family: var(--font-tech);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .pillar-text {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    /* Flagship Architecture Section (Webull Multi-Agent Trading System) */
+    .arch-spotlight {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      padding: 36px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 240, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .arch-tabs {
+      display: flex;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 16px;
+      margin-bottom: 28px;
+      overflow-x: auto;
+    }
+    .arch-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .arch-tab-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .arch-tab-btn.active {
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.1);
+      border-color: rgba(0, 240, 255, 0.35);
+    }
+
+    .arch-panel {
+      display: none;
+    }
+    .arch-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Node Graph Visualizer */
+    .node-graph-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .agent-node {
+      background: rgba(10, 15, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .agent-node:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .agent-node.highlight-hub {
+      border-color: var(--purple);
+      background: linear-gradient(135deg, rgba(20, 15, 35, 0.9), rgba(12, 18, 32, 0.9));
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+    }
+    .node-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .node-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(0, 240, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+    .node-badge.purple {
+      background: rgba(168, 85, 247, 0.12);
+      color: #d8b4fe;
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+    .node-badge.emerald {
+      background: rgba(0, 255, 157, 0.12);
+      color: var(--emerald);
+      border-color: rgba(0, 255, 157, 0.3);
+    }
+    .node-badge.amber {
+      background: rgba(255, 183, 3, 0.12);
+      color: var(--amber);
+      border-color: rgba(255, 183, 3, 0.3);
+    }
+    .node-title {
+      font-family: var(--font-tech);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .node-desc {
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+    .node-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tool-chip {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+    }
+
+    /* Live Agent Terminal Simulation */
+    .terminal-container {
+      background: #05070d;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+    .terminal-header {
+      background: #0d121f;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .terminal-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .control-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .terminal-title {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    .terminal-body {
+      padding: 20px;
+      font-size: 0.84rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .term-line {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .term-prompt {
+      color: var(--cyan);
+      user-select: none;
+    }
+    .term-output {
+      color: var(--text-muted);
+    }
+    .term-highlight {
+      color: var(--emerald);
+    }
+    .term-warn {
+      color: var(--amber);
+    }
+    .term-purple {
+      color: #c084fc;
+    }
+
+    /* Interactive Command Launcher in Terminal */
+    .terminal-shortcuts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      background: #080c16;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .cmd-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.74rem;
+      color: var(--cyan);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-mono);
+    }
+    .cmd-pill:hover {
+      background: rgba(0, 240, 255, 0.15);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+
+    /* Dual Capabilities Matrix */
+    .dual-matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .matrix-column {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 32px;
+      backdrop-filter: blur(16px);
+      transition: all 0.3s ease;
+    }
+    .matrix-column:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .matrix-column.tech-pillar {
+      border-top: 4px solid var(--cyan);
+    }
+    .matrix-column.enterprise-pillar {
+      border-top: 4px solid var(--purple);
+    }
+    .matrix-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .matrix-header-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .matrix-header-icon.cyan-bg {
+      background: rgba(0, 240, 255, 0.1);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+    .matrix-header-icon.purple-bg {
+      background: rgba(168, 85, 247, 0.1);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.25);
+    }
+    .matrix-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .matrix-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .skill-card-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+    .skill-card-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .skill-item-title {
+      font-family: var(--font-tech);
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .skill-item-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .skill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #94a3b8;
+    }
+    .skill-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Timeline Section */
+    .timeline {
+      position: relative;
+      margin-top: 30px;
+      padding-left: 32px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 7px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--cyan) 0%, var(--purple) 60%, rgba(255, 255, 255, 0.05) 100%);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 36px;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -32px;
+      top: 4px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 3px solid var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+    .timeline-dot.purple {
+      border-color: var(--purple);
+      box-shadow: 0 0 10px var(--purple);
+    }
+    .timeline-dot.dim {
+      border-color: var(--text-dim);
+      box-shadow: none;
+    }
+    .timeline-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      transition: all 0.25s ease;
+    }
+    .timeline-card:hover {
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: translateX(4px);
+    }
+    .timeline-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .timeline-role {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .timeline-period {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      background: rgba(0, 240, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+    .timeline-company {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .timeline-bullets {
+      list-style: none;
+    }
+    .timeline-bullets li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .timeline-bullets li::before {
+      content: '▹';
+      position: absolute;
+      left: 0;
+      color: var(--cyan);
+    }
+
+    /* Contact & Direct Connect HUD */
+    .contact-hud {
+      background: linear-gradient(135deg, rgba(13, 19, 33, 0.95), rgba(15, 23, 42, 0.95));
+      border: 1px solid var(--border-accent);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 35px rgba(0, 240, 255, 0.1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 36px;
+    }
+    .contact-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .contact-card:hover {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.06);
+      transform: translateY(-3px);
+    }
+    .contact-card-icon {
+      font-size: 1.5rem;
+      color: var(--cyan);
+    }
+    .contact-card-label {
+      font-family: var(--font-tech);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .contact-card-val {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Toast Notification */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--cyan);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--cyan-glow);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .toast-msg.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .stats-hud { grid-template-columns: repeat(2, 1fr); }
+      .manifesto-grid { grid-template-columns: 1fr; }
+      .node-graph-container { grid-template-columns: 1fr; }
+      .dual-matrix-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 640px) {
+      .stats-hud { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .navbar { border-radius: 14px; padding: 12px 16px; }
+      .hero-cta-group { flex-direction: column; width: 100%; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Canvas -->
+  <canvas id="starfield"></canvas>
+  
+  <!-- Glowing Nebulas -->
+  <div class="nebula-glow nebula-1"></div>
+  <div class="nebula-glow nebula-2"></div>
+  <div class="nebula-glow nebula-3"></div>
+
+  <div class="app-container">
+
+    <!-- Top Sticky HUD Navbar -->
+    <nav class="navbar">
+      <a href="#" class="brand-group">
+        <div class="brand-indicator"></div>
+        <span class="brand-title">Jason A. Macialek</span>
+        <span class="brand-badge">VOKM // AGENTIC ARCHITECT</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#manifesto">// 01. ORIGIN</a></li>
+        <li><a href="#trading-platform">// 02. AGENTIC MESH</a></li>
+        <li><a href="#capabilities">// 03. DUAL-STACK</a></li>
+        <li><a href="#timeline">// 04. BATTLE RECORD</a></li>
+        <li><a href="#terminal-hud">// 05. TERMINAL HUD</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="https://github.com/jmacialek" target="_blank" class="btn-glow">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        Enterprise Battle-Tested Operator ➔ Autonomous Systems Architect
+      </div>
+
+      <h1 class="hero-title">
+        15+ Years Carrying Enterprise Operations.<br>
+        <span class="gradient-text-cyan">Now Engineering Autonomous Multi-Agent AI.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        When leadership vacated and the Benefit Configuration Director walked out, I didn't let the machine crash. 
+        I governed <strong>100+ offshore Cognizant engineers</strong>, safeguarded multi-million dollar claims adjudication pipelines, 
+        and ran the engine. Today, I combine that exact <strong>battle-hardened operational grit</strong> with 
+        <strong>Model Context Protocol (MCP)</strong>, multi-agent algorithmic trading, and real-time <strong>TimescaleDB</strong> data infrastructure.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#trading-platform" class="btn-primary">
+          <span>Explore Webull Agentic Mesh</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#terminal-hud" class="btn-secondary">
+          <span>Launch Interactive Terminal HUD</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </a>
+      </div>
+
+      <!-- Stats Grid HUD -->
+      <div class="stats-hud">
+        <div class="stat-card">
+          <div class="stat-value">15<span class="highlight-cyan">+</span></div>
+          <div class="stat-label">Years Enterprise Leadership, Benefit Architecture &amp; High-Stakes Operations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100<span class="highlight-purple">+</span></div>
+          <div class="stat-label">Distributed Offshore Cognizant Engineers &amp; Audit Specialists Governed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">6<span class="highlight-emerald">x</span></div>
+          <div class="stat-label">Coordinated AI Agents in Autonomous Webull &amp; TimescaleDB Trading Mesh</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">99.9<span class="highlight-cyan">%</span></div>
+          <div class="stat-label">Adjudication &amp; Regulatory Compliance Score (CMS, NCQA, HIPAA)</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Section 1: The "Unsung Operator" Manifesto -->
+    <section id="manifesto" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">// 01. EXECUTIVE GENESIS &amp; OPERATIONAL REALITY</div>
+        <h2 class="section-title">The Unsung Operator: From Crisis to Technical Architecture</h2>
+        <p class="section-desc">
+          Titles rarely capture the full truth of corporate trenches. When things broke, I was the one who diagnosed the root cause, pulled the all-nighters, and made it work.
+        </p>
+      </div>
+
+      <div class="manifesto-card">
+        <div class="manifesto-quote">
+          "I’ve always been the hard worker—the person who stepped up and solved what no one else could or would. 
+          When our Director quit, there was no safety net. I effectively operated as the IT Benefit Configuration Director: 
+          steering 100+ offshore resources, negotiating vendor SLAs, untangling millions in claims logic, and taking full ownership."
+        </div>
+
+        <div class="manifesto-grid">
+          <div class="manifesto-pillar">
+            <div class="pillar-icon">⚡</div>
+            <h3 class="pillar-title">Absorbing the Vacuum</h3>
+            <p class="pillar-text">
+              Stepped in seamlessly to run the IT Benefit Configuration directorate without missing a beat. Owned end-to-end operational reviews, high-level vendor governance, executive scorecards, and cross-functional bridging across IT, Clinical, and Product.
+            </p>
+          </div>
+
+          <div class="manifesto-pillar">
+            <div class="pillar-icon">🌐</div>
+            <h3 class="pillar-title">100+ Global Workforce</h3>
+            <p class="pillar-text">
+              Architected auditable QA standards, daily calibration cadences, and training programs across 100+ Cognizant contractors. Established repeatable testing checklists that drastically reduced first-pass defect rates and customer abrasion.
+            </p>
+          </div>
+
+          <div class="manifesto-pillar">
+            <div class="pillar-icon">🚀</div>
+            <h3 class="pillar-title">The Agentic Leap</h3>
+            <p class="pillar-text">
+              Channeling 15 years of process optimization and complex systems management into cutting-edge software engineering: Model Context Protocol (MCP), autonomous multi-agent trading engines, low-latency time-series databases, and full-stack DevOps.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Flagship Architecture (Webull Multi-Agent Trading System) -->
+    <section id="trading-platform" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">// 02. ADVANCED TECHNICAL SHOWCASE</div>
+        <h2 class="section-title">Webull Autonomous Multi-Agent Trading Engine</h2>
+        <p class="section-desc">
+          A production-grade, event-driven trading platform engineered with Model Context Protocol (MCP), coordinating multiple specialized LLM agents over real-time TimescaleDB time-series data and Webull execution APIs.
+        </p>
+      </div>
+
+      <div class="arch-spotlight">
+        <!-- Interactive Tabs -->
+        <div class="arch-tabs">
+          <button class="arch-tab-btn active" onclick="switchTab('topology')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M12 9V5M12 15v4M9 12H5M15 12h4"/></svg>
+            System Topology Mesh
+          </button>
+          <button class="arch-tab-btn" onclick="switchTab('mcp')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            MCP Protocol Tool Spec
+          </button>
+          <button class="arch-tab-btn" onclick="switchTab('timescale')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            TimescaleDB Hypertable Engine
+          </button>
+          <button class="arch-tab-btn" onclick="switchTab('trace')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Live Agent ReAct Log
+          </button>
+        </div>
+
+        <!-- Panel 1: Topology -->
+        <div id="panel-topology" class="arch-panel active">
+          <div class="node-graph-container">
+            <!-- Node 1 -->
+            <div class="agent-node">
+              <div class="node-header">
+                <span class="node-badge">DATA INGEST</span>
+                <span style="color: var(--cyan); font-size: 0.8rem;">● LIVE</span>
+              </div>
+              <h4 class="node-title">Webull WebSocket Streamer</h4>
+              <p class="node-desc">Low-latency market gateway capturing real-time L2 order book updates, trade ticks, and Greeks over persistent duplex sockets.</p>
+              <div class="node-tools">
+                <span class="tool-chip">Webull OpenAPI</span>
+                <span class="tool-chip">Duplex WS</span>
+                <span class="tool-chip">Protobuf</span>
+              </div>
+            </div>
+
+            <!-- Node 2 -->
+            <div class="agent-node">
+              <div class="node-header">
+                <span class="node-badge emerald">HYPERTABLE</span>
+                <span style="color: var(--emerald); font-size: 0.8rem;">10μs LATENCY</span>
+              </div>
+              <h4 class="node-title">TimescaleDB Ingestion Core</h4>
+              <p class="node-desc">Continuous aggregate hypertables computing rolling VWAP, tick volatility, and volume profiles with transparent compression policies.</p>
+              <div class="node-tools">
+                <span class="tool-chip">TimescaleDB</span>
+                <span class="tool-chip">PostgreSQL</span>
+                <span class="tool-chip">Continuous Aggs</span>
+              </div>
+            </div>
+
+            <!-- Node 3 (Hub) -->
+            <div class="agent-node highlight-hub">
+              <div class="node-header">
+                <span class="node-badge purple">MCP HUB</span>
+                <span style="color: #d8b4fe; font-size: 0.8rem;">PROTOCOL ROUTER</span>
+              </div>
+              <h4 class="node-title">Model Context Protocol Server</h4>
+              <p class="node-desc">Standardized MCP gateway exposing structured agent tool schemas for order management, balance auditing, and risk evaluations.</p>
+              <div class="node-tools">
+                <span class="tool-chip">MCP v1.0</span>
+                <span class="tool-chip">JSON-RPC</span>
+                <span class="tool-chip">Node.js / TypeScript</span>
+              </div>
+            </div>
+
+            <!-- Node 4 -->
+            <div class="agent-node">
+              <div class="node-header">
+                <span class="node-badge">AI ANALYST</span>
+                <span style="color: var(--cyan); font-size: 0.8rem;">AGENT 01</span>
+              </div>
+              <h4 class="node-title">Quantitative Alpha Agent</h4>
+              <p class="node-desc">Evaluates multi-timeframe regime shifts, relative volume anomalies, and momentum divergence before proposing high-probability entries.</p>
+              <div class="node-tools">
+                <span class="tool-chip">ReAct Loop</span>
+                <span class="tool-chip">RSI/EMA Sweeps</span>
+                <span class="tool-chip">COT Analysis</span>
+              </div>
+            </div>
+
+            <!-- Node 5 -->
+            <div class="agent-node">
+              <div class="node-header">
+                <span class="node-badge amber">GOVERNOR</span>
+                <span style="color: var(--amber); font-size: 0.8rem;">MANDATORY GATE</span>
+              </div>
+              <h4 class="node-title">Risk &amp; Exposure Governor</h4>
+              <p class="node-desc">Non-negotiable circuit breaker enforcing maximum portfolio drawdown limits, Kelly position sizing, and correlation guardrails.</p>
+              <div class="node-tools">
+                <span class="tool-chip">VaR Modeling</span>
+                <span class="tool-chip">Drawdown Limits</span>
+                <span class="tool-chip">Hard Killswitch</span>
+              </div>
+            </div>
+
+            <!-- Node 6 -->
+            <div class="agent-node">
+              <div class="node-header">
+                <span class="node-badge emerald">EXECUTION</span>
+                <span style="color: var(--emerald); font-size: 0.8rem;">AGENT 02</span>
+              </div>
+              <h4 class="node-title">Smart Order Routing Agent</h4>
+              <p class="node-desc">Deconstructs approved trades into bracketed limit orders, manages trailing stops dynamically, and verifies execution fills.</p>
+              <div class="node-tools">
+                <span class="tool-chip">Webull REST API</span>
+                <span class="tool-chip">Bracket Orders</span>
+                <span class="tool-chip">Fill Webhooks</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: MCP Tool Spec -->
+        <div id="panel-mcp" class="arch-panel">
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-controls">
+                <div class="control-dot dot-red"></div>
+                <div class="control-dot dot-yellow"></div>
+                <div class="control-dot dot-green"></div>
+              </div>
+              <div class="terminal-title">mcp_server_webull.ts — Tool Manifest</div>
+              <div class="node-badge purple">MCP PROTOCOL v1.0</div>
+            </div>
+            <pre class="terminal-body" style="color: #e2e8f0; font-size: 0.82rem;"><code>// MCP Server Tool Definitions for Autonomous Multi-Agent Trading System
+export const webullTradingTools = [
+  {
+    name: "get_market_snapshot",
+    description: "Fetches aggregated tick data & order book imbalance from TimescaleDB hypertable",
+    inputSchema: {
+      type: "object",
+      properties: {
+        ticker: { type: "string", description: "Asset symbol, e.g. NVDA, SPY" },
+        interval_seconds: { type: "number", default: 60 },
+        lookback_bars: { type: "number", default: 20 }
+      },
+      required: ["ticker"]
+    }
+  },
+  {
+    name: "evaluate_risk_budget",
+    description: "Evaluates proposed trade against max portfolio drawdown, margin, and volatility limits",
+    inputSchema: {
+      type: "object",
+      properties: {
+        ticker: { type: "string" },
+        proposed_notional: { type: "number" },
+        stop_loss_price: { type: "number" }
+      },
+      required: ["ticker", "proposed_notional", "stop_loss_price"]
+    }
+  },
+  {
+    name: "submit_bracket_order",
+    description: "Executes atomic parent order with paired stop-loss and take-profit legs via Webull API",
+    inputSchema: {
+      type: "object",
+      properties: {
+        symbol: { type: "string" },
+        action: { type: "string", enum: ["BUY", "SELL"] },
+        quantity: { type: "integer" },
+        limit_price: { type: "number" },
+        take_profit_price: { type: "number" },
+        stop_loss_price: { type: "number" }
+      },
+      required: ["symbol", "action", "quantity", "limit_price", "stop_loss_price"]
+    }
+  }
+];</code></pre>
+          </div>
+        </div>
+
+        <!-- Panel 3: TimescaleDB -->
+        <div id="panel-timescale" class="arch-panel">
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-controls">
+                <div class="control-dot dot-red"></div>
+                <div class="control-dot dot-yellow"></div>
+                <div class="control-dot dot-green"></div>
+              </div>
+              <div class="terminal-title">timescaledb_continuous_agg.sql</div>
+              <div class="node-badge emerald">POSTGRESQL + TIMESCALEDB</div>
+            </div>
+            <pre class="terminal-body" style="color: #e2e8f0; font-size: 0.82rem;"><code>-- Hypertable creation with 1-hour chunk interval for high-frequency tick capture
+CREATE TABLE market_ticks (
+    recorded_at TIMESTAMPTZ NOT NULL,
+    symbol      TEXT NOT NULL,
+    price       NUMERIC(12, 4) NOT NULL,
+    volume      INTEGER NOT NULL,
+    bid_depth   NUMERIC(12, 2),
+    ask_depth   NUMERIC(12, 2)
+);
+SELECT create_hypertable('market_ticks', 'recorded_at', chunk_time_interval => INTERVAL '1 hour');
+
+-- Continuous Aggregate for Real-Time 1-Minute OHLCV & Volume Weighted Average Price (VWAP)
+CREATE MATERIALIZED VIEW ohlcv_1m
+WITH (timescaledb.continuous) AS
+SELECT
+    time_bucket('1 minute', recorded_at) AS bucket,
+    symbol,
+    first(price, recorded_at)            AS open,
+    max(price)                           AS high,
+    min(price)                           AS low,
+    last(price, recorded_at)             AS close,
+    sum(volume)                          AS total_volume,
+    sum(price * volume) / sum(volume)    AS vwap
+FROM market_ticks
+GROUP BY bucket, symbol;
+
+-- Refresh policy: real-time updates every 10 seconds
+SELECT add_continuous_aggregate_policy('ohlcv_1m',
+    start_offset => INTERVAL '2 hours',
+    end_offset   => INTERVAL '10 seconds',
+    schedule_interval => INTERVAL '10 seconds');</code></pre>
+          </div>
+        </div>
+
+        <!-- Panel 4: ReAct Log -->
+        <div id="panel-trace" class="arch-panel">
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-controls">
+                <div class="control-dot dot-red"></div>
+                <div class="control-dot dot-yellow"></div>
+                <div class="control-dot dot-green"></div>
+              </div>
+              <div class="terminal-title">agent_orchestrator.log — Live ReAct Cycle</div>
+              <div class="node-badge">EXECUTION AUDIT</div>
+            </div>
+            <div class="terminal-body" style="font-size: 0.8rem;">
+              <div class="term-line"><span class="term-prompt">[14:32:01.104]</span> <span class="term-purple">THOUGHT (AlphaAgent):</span> Volatility contraction detected on NVDA. 1m VWAP holding $128.40 support. RSI rebounding from 32.7.</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.109]</span> <span class="term-highlight">ACTION:</span> call_tool(mcp:get_market_snapshot, {"ticker": "NVDA", "interval_seconds": 60, "lookback_bars": 15})</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.121]</span> <span class="term-output">OBSERVATION:</span> {"vwap": 128.42, "bid_ask_ratio": 1.48, "volume_surge_sigma": 2.31, "status": "ACCUMULATION"}</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.125]</span> <span class="term-purple">THOUGHT (AlphaAgent):</span> Signal valid. Risk-reward ratio 3.2. Proposing entry: Long 100 shares @ $128.45 with Stop Loss @ $127.80.</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.130]</span> <span class="term-highlight">ACTION:</span> call_tool(mcp:evaluate_risk_budget, {"ticker": "NVDA", "proposed_notional": 12845.00, "stop_loss_price": 127.80})</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.138]</span> <span class="term-warn">OBSERVATION (RiskGovernor):</span> {"approved": true, "max_loss_budget": 65.00, "portfolio_heat": "0.14/1.0", "daily_drawdown_headroom": 98.6}</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.144]</span> <span class="term-highlight">ACTION:</span> call_tool(mcp:submit_bracket_order, {"symbol": "NVDA", "action": "BUY", "quantity": 100, "limit_price": 128.45, "stop_loss_price": 127.80, "take_profit_price": 130.50})</div>
+              <div class="term-line"><span class="term-prompt">[14:32:01.189]</span> <span class="term-highlight">EXECUTION (Webull Gateway):</span> Order #WB-9824718-NVDA FILLED @ $128.45. Bracket legs active [SL: $127.80 | TP: $130.50].</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Dual Capabilities Matrix -->
+    <section id="capabilities" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">// 03. CAPABILITIES MATRIX</div>
+        <h2 class="section-title">The Dual-Threat Arsenal</h2>
+        <p class="section-desc">
+          Most organizations have to choose between a high-level operational leader and a technical builder. I bridge both domains with 15+ years of battle-tested enterprise execution.
+        </p>
+      </div>
+
+      <div class="dual-matrix-grid">
+        <!-- Pillar A: Modern Technical & Agentic Stack -->
+        <div class="matrix-column tech-pillar">
+          <div class="matrix-header">
+            <div class="matrix-header-icon cyan-bg">⚡</div>
+            <div>
+              <h3 class="matrix-title">Modern Agentic &amp; Tech Stack</h3>
+              <p class="matrix-subtitle">Autonomous Systems, APIs, Microservices &amp; Infrastructure</p>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Agentic AI &amp; Multi-Agent Swarms</span>
+              <span class="node-badge">FRONTIER</span>
+            </div>
+            <p class="skill-desc">Model Context Protocol (MCP) servers, ReAct iterative reasoning loops, autonomous tool calling, multi-agent inter-process coordination, and API bridges.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">Model Context Protocol</span>
+              <span class="skill-tag">ReAct Swarms</span>
+              <span class="skill-tag">LLM Tool Calling</span>
+              <span class="skill-tag">Webull API</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Time-Series &amp; Relational Databases</span>
+              <span class="node-badge emerald">DATA ENG</span>
+            </div>
+            <p class="skill-desc">Architecting hypertables, continuous aggregates, indexing strategies, and automated data retention policies for high-throughput transactional and tick feeds.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">TimescaleDB</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">Hypertables</span>
+              <span class="skill-tag">Excel Power Modeling</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Full-Stack &amp; Package Ecosystem</span>
+              <span class="node-badge">DEV STACK</span>
+            </div>
+            <p class="skill-desc">JavaScript/Node.js microservices, npm package management, Python data analysis, asynchronous event loops, REST &amp; WebSocket architectures.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">npm</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">WebSockets</span>
+              <span class="skill-tag">Git / GitHub CLI</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>DevOps, Edge &amp; Systems Architecture</span>
+              <span class="node-badge purple">INFRA</span>
+            </div>
+            <p class="skill-desc">Linux server administration (Ubuntu LTS), Proxmox VE virtualization, Cloudflare Zero Trust Tunnels, Nginx reverse proxies, automated Certbot DNS-01 SSL/TLS renewals.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">Linux / Ubuntu</span>
+              <span class="skill-tag">Proxmox VE</span>
+              <span class="skill-tag">Cloudflare Tunnels</span>
+              <span class="skill-tag">Nginx SSL</span>
+              <span class="skill-tag">Certbot</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar B: Enterprise Operations & Director-Level Governance -->
+        <div class="matrix-column enterprise-pillar">
+          <div class="matrix-header">
+            <div class="matrix-header-icon purple-bg">🏛️</div>
+            <div>
+              <h3 class="matrix-title">Enterprise Operations Directorate</h3>
+              <p class="matrix-subtitle">15+ Years Governance, Adjudication &amp; Global Team Leadership</p>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>100+ Distributed Team Leadership</span>
+              <span class="node-badge purple">EXECUTIVE</span>
+            </div>
+            <p class="skill-desc">Direct operational governance and quality calibration for 100+ offshore Cognizant engineers, audit analysts, and configuration specialists across global timezones.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">100+ Offshore Team</span>
+              <span class="skill-tag">Cognizant Partnership</span>
+              <span class="skill-tag">Daily Calibration</span>
+              <span class="skill-tag">KPI Optimization</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Benefit Configuration &amp; Claims Adjudication</span>
+              <span class="node-badge">CORE SME</span>
+            </div>
+            <p class="skill-desc">Expert validation of complex healthcare benefit logic: accumulators, copays, coinsurance, deductibles, authorization matrices, SPDs, SBCs, and multi-tier network logic.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">Benefit Rules</span>
+              <span class="skill-tag">Claims Adjudication</span>
+              <span class="skill-tag">SPDs &amp; SBCs</span>
+              <span class="skill-tag">ASO Implementations</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Enterprise Risk, Quality &amp; Compliance</span>
+              <span class="node-badge emerald">GOVERNANCE</span>
+            </div>
+            <p class="skill-desc">End-to-end Root Cause Analysis (RCA), corrective action plans (CAP), audit architecture, and strict regulatory alignment with CMS Medicare Stars, NCQA, and HIPAA.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">CMS Medicare Stars</span>
+              <span class="skill-tag">NCQA Standards</span>
+              <span class="skill-tag">Root Cause Analysis</span>
+              <span class="skill-tag">Audit Workflows</span>
+            </div>
+          </div>
+
+          <div class="skill-card-item">
+            <div class="skill-item-title">
+              <span>Vendor Management &amp; C-Suite Dashboards</span>
+              <span class="node-badge amber">STRATEGY</span>
+            </div>
+            <p class="skill-desc">Negotiating contractual SLAs, resolving cross-functional operational roadblocks, managing vendor audits, and designing executive defect-trend scorecards.</p>
+            <div class="skill-item-tags">
+              <span class="skill-tag">SLA Enforcement</span>
+              <span class="skill-tag">Vendor Contract Reviews</span>
+              <span class="skill-tag">Executive Reporting</span>
+              <span class="skill-tag">Crisis Resolution</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Interactive Terminal HUD -->
+    <section id="terminal-hud" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">// 04. LIVE SYSTEM REPL</div>
+        <h2 class="section-title">Interactive Terminal HUD</h2>
+        <p class="section-desc">
+          Inspect background data, query active agent states, view tech infrastructure, or connect directly through this live simulated console.
+        </p>
+      </div>
+
+      <div class="terminal-container" style="box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 35px rgba(0, 240, 255, 0.1);">
+        <div class="terminal-header">
+          <div class="terminal-controls">
+            <div class="control-dot dot-red"></div>
+            <div class="control-dot dot-yellow"></div>
+            <div class="control-dot dot-green"></div>
+          </div>
+          <div class="terminal-title">jason@webcore: ~ (bash / zsh interactive hud)</div>
+          <div class="node-badge">PORT 59969 // SECURE</div>
+        </div>
+
+        <div id="interactive-terminal-body" class="terminal-body" style="min-height: 280px; max-height: 360px;">
+          <div class="term-line"><span class="term-prompt">jason@webcore:~$</span> <span class="term-output">systemctl status profile --summary</span></div>
+          <div class="term-line"><span class="term-highlight">● jason-macialek.service - Enterprise Leader &amp; Agentic AI Architect</span></div>
+          <div class="term-line"><span class="term-output">&nbsp;&nbsp;Status: Active (Operational Directorate + Frontier Agentic Engineering)</span></div>
+          <div class="term-line"><span class="term-output">&nbsp;&nbsp;Location: Farmingville, NY | Infrastructure: Proxmox VE / Cloudflare / Nginx</span></div>
+          <div class="term-line"><span class="term-output">&nbsp;&nbsp;Type <span class="term-highlight">'help'</span> or click the pills below to execute commands.</span></div>
+        </div>
+
+        <!-- Terminal Shortcuts -->
+        <div class="terminal-shortcuts">
+          <span style="font-size: 0.72rem; color: var(--text-dim); display: flex; align-items: center; margin-right: 6px;">QUICK COMMANDS:</span>
+          <button class="cmd-pill" onclick="execCmd('help')">help</button>
+          <button class="cmd-pill" onclick="execCmd('bio')">bio</button>
+          <button class="cmd-pill" onclick="execCmd('agents')">agents</button>
+          <button class="cmd-pill" onclick="execCmd('stack')">stack</button>
+          <button class="cmd-pill" onclick="execCmd('experience')">experience</button>
+          <button class="cmd-pill" onclick="execCmd('github')">github</button>
+          <button class="cmd-pill" onclick="execCmd('contact')">contact</button>
+          <button class="cmd-pill" onclick="execCmd('clear')">clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Battle Record Timeline -->
+    <section id="timeline" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">// 05. PROVEN TRACK RECORD</div>
+        <h2 class="section-title">Career Milestones &amp; Progression</h2>
+        <p class="section-desc">
+          A 15+ year trajectory built on grit, extreme ownership, and progressive elevation from frontline advocate to enterprise knowledge manager and acting director.
+        </p>
+      </div>
+
+      <div class="timeline">
+        <!-- 1: VOKM -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="timeline-role">Vendor Operations Knowledge Manager – Benefit Configuration</span>
+              <span class="timeline-period">05/2021 – PRESENT</span>
+            </div>
+            <div class="timeline-company">EmblemHealth (acting Director-level scope)</div>
+            <ul class="timeline-bullets">
+              <li>Direct operational oversight and quality governance for 100+ offshore Cognizant contractors, audit teams, and configuration resources.</li>
+              <li>Validate mission-critical healthcare benefit logic (deductibles, copays, coinsurance, accumulators, network tiers, authorization rules) against SPDs and SBCs.</li>
+              <li>Designed executive dashboards, SLA trackers, and defect-trend scorecards delivering actionable C-suite visibility into operational risk.</li>
+              <li>Standardized inbound/outbound file ingestion formats, eliminating benefit configuration gaps across core platforms.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2: Non-Clinical Supervisor -->
+        <div class="timeline-item">
+          <div class="timeline-dot purple"></div>
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="timeline-role">Non-Clinical Supervisor – Medical Management</span>
+              <span class="timeline-period">09/2020 – 05/2021</span>
+            </div>
+            <div class="timeline-company">EmblemHealth</div>
+            <ul class="timeline-bullets">
+              <li>Direct supervision of clinical and non-clinical staff, ensuring accurate benefit administration, clinical policy execution, and timely access to care.</li>
+              <li>Evaluated hospital facility volume trends to align staffing with caseload longevity and patient acuity.</li>
+              <li>Enforced full compliance with State, Federal, and NCQA standards, managing weekend coverage and rapid crisis response.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3: Sr. Quality Analyst -->
+        <div class="timeline-item">
+          <div class="timeline-dot dim"></div>
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="timeline-role">Sr. Quality Analyst – Medical Management</span>
+              <span class="timeline-period">06/2020 – 09/2020</span>
+            </div>
+            <div class="timeline-company">EmblemHealth</div>
+            <ul class="timeline-bullets">
+              <li>Partnered directly with the Director in the daily operations of all non-clinical administrative functions.</li>
+              <li>Led business requirement derivation for strategic healthcare projects with non-clinical administrative components.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4: Quality Analyst -->
+        <div class="timeline-item">
+          <div class="timeline-dot dim"></div>
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="timeline-role">Quality Analyst – Medical Management</span>
+              <span class="timeline-period">06/2016 – 06/2020</span>
+            </div>
+            <div class="timeline-company">EmblemHealth</div>
+            <ul class="timeline-bullets">
+              <li>Led multi-site international call center team of 70+ intake advocates; deployed on-site in Manila, Philippines to train and launch remote overseas operations.</li>
+              <li>Diffused high-level corporate and social media escalations; managed ACD routing to guarantee strict SLA adherence.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5: Early Career -->
+        <div class="timeline-item">
+          <div class="timeline-dot dim"></div>
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="timeline-role">Intake Specialist II &amp; Customer Service Specialist II</span>
+              <span class="timeline-period">04/2009 – 06/2016</span>
+            </div>
+            <div class="timeline-company">EmblemHealth / Greystone Staffing</div>
+            <ul class="timeline-bullets">
+              <li>Created widely adopted job aids that reduced cross-departmental escalations and raised first-contact resolution rates.</li>
+              <li>Served as subject matter expert for complex policy disputes, appeals inquiries, and multiline business products (HMO, PPO, EPO, POS, Indemnity).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Contact & Direct Connect HUD -->
+    <section class="section-container">
+      <div class="contact-hud">
+        <h2 style="font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 12px;">
+          Let's Build Something Relentless.
+        </h2>
+        <p style="color: var(--text-muted); max-width: 620px; margin: 0 auto; font-size: 1.05rem;">
+          Whether you need a director-level operator who executes without excuses, or a technical builder architecting autonomous agentic AI and real-time pipelines—let's talk.
+        </p>
+
+        <div class="contact-grid">
+          <a href="mailto:macialek.jason@gmail.com" class="contact-card">
+            <div class="contact-card-icon">✉</div>
+            <div class="contact-card-label">EMAIL</div>
+            <div class="contact-card-val">macialek.jason@gmail.com</div>
+          </a>
+
+          <a href="tel:6314285023" class="contact-card">
+            <div class="contact-card-icon">📞</div>
+            <div class="contact-card-label">DIRECT PHONE</div>
+            <div class="contact-card-val">631-428-5023</div>
+          </a>
+
+          <a href="https://github.com/jmacialek" target="_blank" class="contact-card">
+            <div class="contact-card-icon">🐙</div>
+            <div class="contact-card-label">GITHUB REPOS</div>
+            <div class="contact-card-val">github.com/jmacialek</div>
+          </a>
+
+          <div class="contact-card" onclick="copyContact()" style="cursor: pointer;">
+            <div class="contact-card-icon">📍</div>
+            <div class="contact-card-label">LOCATION</div>
+            <div class="contact-card-val">Farmingville, NY (Click to Copy Info)</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 40px; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim);">
+          HOSTED ON PROXMOX VE (LXC 122) • NGINX 1.28.3 • SECURED VIA LET'S ENCRYPT SSL • ROUTED THROUGH CLOUDFLARE ZERO TRUST TUNNEL
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Toast Message -->
+  <div id="toast" class="toast-msg">Contact info copied to clipboard!</div>
+
+  <!-- Starfield Canvas Script -->
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+
+    const STAR_COUNT = 260;
+    const MAX_DISTANCE = 110;
+    const SPEED = 0.08;
+    const MAX_DISTANCE_SQ = MAX_DISTANCE * MAX_DISTANCE;
+    const LINK_MAX_ALPHA = 0.22;
+    const LINK_WIDTH = 0.5;
+    const MOUSE_LINK_WIDTH = 1.4;
+
+    let width, height;
+    let stars = [];
+    const mouse = { x: -1000, y: -1000 };
+
+    function resize() {
+      const prevWidth = width;
+      const prevHeight = height;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+
+      if (prevWidth && prevHeight && stars.length) {
+        const scaleX = width / prevWidth;
+        const scaleY = height / prevHeight;
+        stars.forEach(star => {
+          star.x *= scaleX;
+          star.y *= scaleY;
+        });
+      }
+    }
+
+    class Star {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = Math.random() * 1.6 + 0.8;
+        const angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(angle) * SPEED;
+        this.vy = Math.sin(angle) * SPEED;
+        this.baseColor = { r: 210, g: 230, b: 255 };
+        this.glowColor = { r: 0, g: 240, b: 255 }; // Cyan glow
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+      }
+      draw(distToMouse) {
+        let r = this.baseColor.r;
+        let g = this.baseColor.g;
+        let b = this.baseColor.b;
+        let alpha = 0.65;
+
+        if (distToMouse < MAX_DISTANCE) {
+          const ratio = 1 - (distToMouse / MAX_DISTANCE);
+          r = Math.round(this.baseColor.r + (this.glowColor.r - this.baseColor.r) * ratio);
+          g = Math.round(this.baseColor.g + (this.glowColor.g - this.baseColor.g) * ratio);
+          b = Math.round(this.baseColor.b + (this.glowColor.b - this.baseColor.b) * ratio);
+          alpha = 0.65 + (0.35 * ratio);
+        }
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function initStars() {
+      resize();
+      stars = [];
+      for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push(new Star());
+      }
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, width, height);
+      stars.forEach(star => star.update());
+
+      // Star-to-star links
+      ctx.lineWidth = LINK_WIDTH;
+      for (let i = 0; i < stars.length; i++) {
+        const a = stars[i];
+        for (let j = i + 1; j < stars.length; j++) {
+          const b = stars[j];
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const distSq = dx * dx + dy * dy;
+          if (distSq >= MAX_DISTANCE_SQ) continue;
+
+          const opacity = (1 - Math.sqrt(distSq) / MAX_DISTANCE) * LINK_MAX_ALPHA;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(180, 210, 255, ${opacity})`;
+          ctx.stroke();
+        }
+      }
+
+      // Cursor links & stars
+      ctx.lineWidth = MOUSE_LINK_WIDTH;
+      stars.forEach(star => {
+        const dx = mouse.x - star.x;
+        const dy = mouse.y - star.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < MAX_DISTANCE) {
+          const opacity = (1 - (dist / MAX_DISTANCE)) * 0.6;
+          ctx.beginPath();
+          ctx.moveTo(star.x, star.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+          ctx.stroke();
+        }
+
+        star.draw(dist);
+      });
+
+      requestAnimationFrame(animateStars);
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+    window.addEventListener('resize', resize);
+
+    initStars();
+    animateStars();
+
+    // Architecture Tabs Switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.arch-tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.arch-panel').forEach(panel => panel.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      const target = document.getElementById('panel-' + tabId);
+      if (target) target.classList.add('active');
+    }
+
+    // Terminal Emulator Simulation
+    const termBody = document.getElementById('interactive-terminal-body');
+
+    function appendTermLine(promptText, outputHtml) {
+      const line = document.createElement('div');
+      line.className = 'term-line';
+      line.innerHTML = `<span class="term-prompt">${promptText}</span> <span class="term-output">${outputHtml}</span>`;
+      termBody.appendChild(line);
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    function execCmd(cmd) {
+      if (cmd === 'clear') {
+        termBody.innerHTML = '';
+        appendTermLine('jason@webcore:~$', 'Console cleared.');
+        return;
+      }
+
+      appendTermLine('jason@webcore:~$', `<span style="color: #fff; font-weight: 600;">${cmd}</span>`);
+
+      switch (cmd) {
+        case 'help':
+          appendTermLine('SYSTEM:', `Available commands: <span class="term-highlight">bio</span>, <span class="term-highlight">agents</span>, <span class="term-highlight">stack</span>, <span class="term-highlight">experience</span>, <span class="term-highlight">github</span>, <span class="term-highlight">contact</span>, <span class="term-highlight">clear</span>`);
+          break;
+        case 'bio':
+          appendTermLine('BIO:', `Jason A. Macialek — Enterprise Operations Leader &amp; Agentic AI Architect. 15+ years at EmblemHealth managing 100+ offshore Cognizant engineers, audit frameworks, claims adjudication rules, and now architecting autonomous MCP multi-agent trading engines.`);
+          break;
+        case 'agents':
+          appendTermLine('AGENTS:', `[1] Webull WS Streamer: <span class="term-highlight">RUNNING</span><br>[2] TimescaleDB Core: <span class="term-highlight">HYPERTABLE ACTIVE (10μs query)</span><br>[3] MCP Protocol Hub: <span class="term-purple">LISTENING (JSON-RPC)</span><br>[4] Alpha Quant Agent: <span class="term-highlight">SCANNING (SPY/NVDA/QQQ)</span><br>[5] Risk Governor: <span class="term-warn">ARMED (0.5% max loss cap)</span><br>[6] Execution Agent: <span class="term-highlight">STANDBY FOR ORDERS</span>`);
+          break;
+        case 'stack':
+          appendTermLine('STACK:', `Modern: <span class="term-highlight">Model Context Protocol (MCP), Node.js, npm, Python, TimescaleDB, PostgreSQL</span><br>Infra: <span class="term-purple">Linux (Ubuntu 26.04), Proxmox VE (CT 122), Cloudflare Tunnels, Nginx SSL, Git/GitHub</span><br>Enterprise: <span class="term-warn">Benefit Configuration, Claims Audit, CMS Stars, NCQA, 100+ Team Leadership</span>`);
+          break;
+        case 'experience':
+          appendTermLine('CAREER:', `• 2021-Pres: Vendor Ops Knowledge Manager (Benefit Configuration) - EmblemHealth<br>• 2020-2021: Non-Clinical Supervisor (Medical Management) - EmblemHealth<br>• 2020-2020: Sr. Quality Analyst - EmblemHealth<br>• 2016-2020: Quality Analyst (Manila Overseas Launch) - EmblemHealth`);
+          break;
+        case 'github':
+          appendTermLine('GITHUB:', `<a href="https://github.com/jmacialek" target="_blank" style="color: var(--cyan); text-decoration: underline;">https://github.com/jmacialek</a> (webcore, orion-site, webull-trading)`);
+          break;
+        case 'contact':
+          appendTermLine('CONTACT:', `Email: <a href="mailto:macialek.jason@gmail.com" style="color: var(--cyan);">macialek.jason@gmail.com</a> | Phone: 631-428-5023 | Farmingville, NY`);
+          break;
+        default:
+          appendTermLine('ERROR:', `Command not recognized: '${cmd}'. Type 'help' for available commands.`);
+      }
+    }
+
+    // Toast Copier
+    function copyContact() {
+      const text = "Jason A. Macialek | Farmingville, NY | 631-428-5023 | macialek.jason@gmail.com | github.com/jmacialek";
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+      });
+    }
+  </script>
+</body>
+</html>
