@@ -427,3 +427,23 @@ models. Full evidence in `vector-td-v12-verification.md`.
   the lock button shows a greyed "TARGET LOCKING ON" for Green Lasers, Spammer and Blue Rays.
 - **Gaps, first bullet**: the v1.2 build *does* carry a version string (`version = "v1.2"` in
   `frame_1/DoAction_2.as`); it is the v1.0 archive build that has none.
+
+---
+
+## Addendum (2026-09-12): can a Booster be sold? No -- confirmed
+
+Question raised by the M1-14 ticket. Read from the v1.2 build (`/tmp/vtd/out_ftd/scripts/`,
+same decompile as the Corrections above).
+
+- `showInfo(n)` in `DefineSprite_536/frame_1/DoAction.as` (lines 1404-1536) branches on
+  `n.Type == "tower"`. For a Damage Booster (`Type = "buffD"`) or Range Booster
+  (`Type = "buffR"`) it takes the `else` branch, which sets `button_upgrade`, `button_firemode`,
+  `button_sell` and `button_acquire` all `_visible = false` and shows only `n.Description`.
+  It also hides the range radar (`if(n.Type != "tower") radar._visible = false`).
+- `sell(n)` (lines 1567-1572: `bank += int(n.cost / 100 * 75); removeTower(n); blankInfo();`)
+  is called only from `button_sell`, so it is unreachable for a Booster. Boosters also have no
+  `cost` field to refund and no `level`, so they cannot be upgraded either.
+
+Consequence for the tribute: once placed, a Booster is permanent. Its Cell stays occupied for
+the rest of the Run, and the Bonus Point is never refunded. The sim's `placeBooster` is
+therefore irreversible and there is no `sellBooster` Command.
