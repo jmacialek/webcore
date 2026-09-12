@@ -3,39 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Starfield</title>
+  <title>Vector TD // Ultra Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg-dark: #07090e;
-      --cyan: #00f0ff;
-      --purple: #a855f7;
-      --emerald: #00ff9d;
+      --bg-space: #07090e;
+      --panel-bg: rgba(14, 11, 28, 0.72);
+      --panel-bg-subtle: rgba(22, 16, 42, 0.65);
+      --panel-bg-hover: rgba(36, 26, 68, 0.85);
+      --panel-header-bg: rgba(28, 20, 54, 0.88);
+      
+      --purple-base: #a855f7;
+      --purple-light: #c084fc;
+      --purple-glow: rgba(168, 85, 247, 0.45);
+      --purple-border: rgba(168, 85, 247, 0.3);
+      --purple-border-hover: rgba(192, 132, 252, 0.7);
+
+      --cyan-base: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.4);
+      --cyan-border: rgba(0, 240, 255, 0.35);
+
+      --pink-base: #f43f5e;
+      --pink-glow: rgba(244, 63, 94, 0.5);
+      --pink-bg: rgba(244, 63, 94, 0.18);
+      --pink-active: #fb7185;
+
+      --emerald-base: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.4);
+
+      --amber-base: #fbbf24;
+
+      --text-main: #f8fafc;
+      --text-dim: #cbd5e1;
+      --text-muted: #84799e;
+
+      --font-display: 'Rajdhani', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-tech: 'Space Grotesk', sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-dark);
-      overflow: hidden;
-      min-height: 100vh;
-      position: relative;
-    }
-
-    /* Interactive Canvas Background */
-    #starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
+    html, body {
       width: 100%;
       height: 100%;
-      z-index: 1;
-      pointer-events: none;
+      overflow: hidden;
+      background-color: var(--bg-space);
+      font-family: var(--font-display);
+      color: var(--text-main);
     }
 
     /* Ambient Nebulas */
@@ -45,55 +69,1094 @@
       filter: blur(140px);
       pointer-events: none;
       z-index: 0;
-      opacity: 0.22;
+      opacity: 0.26;
       animation: pulseGlow 14s ease-in-out infinite alternate;
     }
 
     .nebula-1 {
       top: 5%;
-      left: 10%;
+      left: 8%;
       width: 550px;
       height: 550px;
       background: radial-gradient(circle, #00f0ff 0%, #3b82f6 50%, transparent 70%);
     }
 
     .nebula-2 {
-      bottom: 20%;
+      bottom: 15%;
       right: 5%;
       width: 650px;
       height: 650px;
-      background: radial-gradient(circle, #a855f7 0%, #6366f1 50%, transparent 70%);
+      background: radial-gradient(circle, #a855f7 0%, #7c3aed 50%, transparent 70%);
       animation-delay: -7s;
     }
 
     .nebula-3 {
-      top: 50%;
-      left: 45%;
+      top: 45%;
+      left: 40%;
       width: 500px;
       height: 500px;
       background: radial-gradient(circle, #00ff9d 0%, #0284c7 60%, transparent 75%);
-      opacity: 0.12;
+      opacity: 0.15;
       animation-delay: -3s;
     }
 
     @keyframes pulseGlow {
-      0% { transform: scale(0.9) translate(0, 0); opacity: 0.15; }
-      50% { transform: scale(1.1) translate(20px, -20px); opacity: 0.28; }
-      100% { transform: scale(0.95) translate(-15px, 15px); opacity: 0.18; }
+      0% { transform: scale(0.92) translate(0, 0); opacity: 0.18; }
+      50% { transform: scale(1.08) translate(20px, -20px); opacity: 0.32; }
+      100% { transform: scale(0.96) translate(-15px, 15px); opacity: 0.22; }
+    }
+
+    /* Starfield Canvas */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Game Frame Outer Container */
+    .game-container {
+      position: relative;
+      z-index: 10;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 16px 20px;
+      gap: 14px;
+      max-width: 1720px;
+      margin: 0 auto;
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: var(--panel-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--purple-border);
+      border-radius: 6px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .panel-header-strip {
+      background: var(--panel-header-bg);
+      border-bottom: 1px solid var(--purple-border);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--purple-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-image: repeating-linear-gradient(
+        45deg,
+        rgba(168, 85, 247, 0.04) 0px,
+        rgba(168, 85, 247, 0.04) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       TOP HUD BAR
+       ══════════════════════════════════════════════════════════════════════════ */
+    .top-hud-bar {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.2fr) auto minmax(420px, 1.2fr);
+      gap: 14px;
+      align-items: stretch;
+      min-height: 86px;
+    }
+
+    /* Top Left: Title & Controls */
+    .meta-control-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 14px;
+      gap: 8px;
+    }
+
+    .map-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: 4px;
+      padding: 7px 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      color: var(--cyan-base);
+      text-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .map-status-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan-base);
+      box-shadow: 0 0 8px var(--cyan-base);
+      margin-right: 8px;
+      animation: blink 2s infinite ease-in-out;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.8); }
+    }
+
+    .utility-button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .hud-btn {
+      background: rgba(30, 20, 58, 0.7);
+      border: 1px solid var(--purple-border);
+      border-radius: 4px;
+      color: var(--text-dim);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 7px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+
+    .hud-btn:hover {
+      background: rgba(168, 85, 247, 0.22);
+      border-color: var(--purple-light);
+      color: #ffffff;
+      box-shadow: 0 0 12px var(--purple-glow);
+    }
+
+    .hud-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Top Middle: Send Wave & Auto */
+    .wave-control-panel {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 6px;
+      width: 170px;
+    }
+
+    .btn-send-wave {
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.28) 0%, rgba(225, 29, 72, 0.45) 100%);
+      border: 1px solid var(--pink-base);
+      border-radius: 4px;
+      color: #ffe4e6;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      box-shadow: 0 0 16px var(--pink-glow);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-send-wave:hover {
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.45) 0%, rgba(225, 29, 72, 0.7) 100%);
+      box-shadow: 0 0 24px var(--pink-base);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-send-wave:active {
+      transform: translateY(1px);
+    }
+
+    .btn-auto-wave {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      border-radius: 4px;
+      color: #fda4af;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-auto-wave:hover {
+      border-color: var(--pink-base);
+      color: #fff;
+    }
+
+    .btn-auto-wave.active {
+      background: rgba(244, 63, 94, 0.35);
+      border-color: var(--pink-base);
+      box-shadow: 0 0 12px var(--pink-glow);
+      color: #fff;
+    }
+
+    .checkbox-icon {
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--pink-base);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+
+    /* Top Right: Economy & Status Readouts */
+    .status-matrix-panel {
+      padding: 10px 18px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 6px 16px;
+      align-items: center;
+    }
+
+    .stat-tile {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+      padding-bottom: 3px;
+    }
+
+    .stat-label {
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .stat-value.pink {
+      color: var(--pink-active);
+      text-shadow: 0 0 8px var(--pink-glow);
+    }
+
+    .stat-value.cyan {
+      color: var(--cyan-base);
+      text-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    .stat-value.purple {
+      color: var(--purple-light);
+      text-shadow: 0 0 8px var(--purple-glow);
+    }
+
+    .stat-value.emerald {
+      color: var(--emerald-base);
+      text-shadow: 0 0 8px var(--emerald-glow);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       MAIN WORKSPACE: MAP VIEWPORT + SIDEBAR
+       ══════════════════════════════════════════════════════════════════════════ */
+    .main-game-body {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 14px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* The Center Map Box (Transparent with tactical frame) */
+    .map-viewport-frame {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .tactical-canvas-underlay {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(168, 85, 247, 0.03) 0%, transparent 80%);
+      overflow: hidden;
+    }
+
+    /* Subtle Tactical Coordinates & Grid Overlay */
+    .tactical-grid-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(168, 85, 247, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(168, 85, 247, 0.08) 1px, transparent 1px);
+    }
+
+    /* Corner Bracket Accents */
+    .corner-bracket {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: var(--purple-light);
+      pointer-events: none;
+      opacity: 0.6;
+    }
+    .bracket-tl { top: 10px; left: 10px; border-top: 2px solid; border-left: 2px solid; }
+    .bracket-tr { top: 10px; right: 10px; border-top: 2px solid; border-right: 2px solid; }
+    .bracket-bl { bottom: 10px; left: 10px; border-bottom: 2px solid; border-left: 2px solid; }
+    .bracket-br { bottom: 10px; right: 10px; border-bottom: 2px solid; border-right: 2px solid; }
+
+    .map-center-notice {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0.75;
+    }
+
+    .map-center-title {
+      font-family: var(--font-tech);
+      font-size: 20px;
+      letter-spacing: 0.25em;
+      color: var(--purple-light);
+      text-transform: uppercase;
+      text-shadow: 0 0 16px var(--purple-glow);
+    }
+
+    .map-center-subtitle {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--cyan-base);
+      margin-top: 6px;
+    }
+
+    .map-viewport-footer {
+      background: rgba(14, 11, 28, 0.85);
+      border-top: 1px solid var(--purple-border);
+      padding: 5px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       RIGHT SIDEBAR
+       ══════════════════════════════════════════════════════════════════════════ */
+    .sidebar-workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .sidebar-workspace::-webkit-scrollbar { display: none; }
+
+    /* 1. Towers Section (4x4 Grid) */
+    .towers-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .towers-grid {
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .tower-card {
+      aspect-ratio: 1 / 1;
+      background: rgba(22, 16, 42, 0.7);
+      border: 1px solid var(--purple-border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tower-card:hover {
+      background: var(--panel-bg-hover);
+      border-color: var(--purple-light);
+      box-shadow: 0 0 12px var(--purple-glow);
+      transform: scale(1.04);
+      z-index: 2;
+    }
+
+    .tower-card.selected {
+      border-color: var(--cyan-base);
+      box-shadow: 0 0 14px var(--cyan-glow);
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    .tower-card.locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .tower-card.locked:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: var(--purple-border);
+    }
+
+    .tower-card svg {
+      width: 65%;
+      height: 65%;
+      filter: drop-shadow(0 0 4px currentColor);
+    }
+
+    .lock-badge {
+      position: absolute;
+      top: 3px;
+      left: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #ef4444;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+
+    .tier-badge {
+      position: absolute;
+      bottom: 3px;
+      right: 4px;
+      font-size: 9px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    /* Tower archetype color classes */
+    .color-green { color: #10b981; }
+    .color-red { color: #f43f5e; }
+    .color-purple { color: #c084fc; }
+    .color-blue { color: #38bdf8; }
+
+    /* 2. Inspector / Upgrade Panel */
+    .inspector-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inspector-content {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stats-line-block {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--text-dim);
+    }
+
+    .stats-line-block .stat-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .special-ability-tag {
+      color: var(--emerald-base);
+      font-weight: 700;
+      text-shadow: 0 0 6px var(--emerald-glow);
+      margin: 4px 0;
+    }
+
+    .upgrade-delta-box {
+      background: rgba(168, 85, 247, 0.1);
+      border-left: 2px solid var(--purple-base);
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--purple-light);
+    }
+
+    .btn-upgrade {
+      width: 100%;
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.35) 100%);
+      border: 1px solid var(--cyan-base);
+      border-radius: 4px;
+      color: #e0f2fe;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
+      box-shadow: 0 0 14px var(--cyan-glow);
+      transition: all 0.2s ease;
+    }
+
+    .btn-upgrade:hover {
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.55) 100%);
+      box-shadow: 0 0 20px var(--cyan-base);
+      color: #fff;
+    }
+
+    .targeting-selector-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .target-pill-btn {
+      background: rgba(30, 20, 58, 0.6);
+      border: 1px solid var(--purple-border);
+      border-radius: 3px;
+      color: var(--text-dim);
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 6px 4px;
+      text-align: center;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s ease;
+    }
+
+    .target-pill-btn:hover {
+      border-color: var(--purple-light);
+      color: #fff;
+    }
+
+    .target-pill-btn.active {
+      background: var(--pink-base);
+      border-color: var(--pink-active);
+      color: #fff;
+      box-shadow: 0 0 10px var(--pink-glow);
+    }
+
+    .toggle-sub-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+    }
+
+    .toggle-switch-badge {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--pink-base);
+      color: var(--pink-active);
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .btn-sell {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      border-radius: 3px;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+    }
+    .btn-sell:hover {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+      color: #fff;
+    }
+
+    /* 3. Current & Next Wave Preview */
+    .wave-preview-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wave-rows-container {
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wave-entry-row {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 6px 8px;
+      background: rgba(22, 16, 42, 0.5);
+      border: 1px solid rgba(168, 85, 247, 0.15);
+      border-radius: 4px;
+    }
+
+    .vectoid-icon-preview {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vectoid-spinner-svg {
+      animation: spinVectoid 4s linear infinite;
+    }
+
+    @keyframes spinVectoid {
+      100% { transform: rotate(360deg); }
+    }
+
+    .wave-entity-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .wave-entity-name {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text-main);
+    }
+
+    .wave-entity-stats {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .wave-reward-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--amber-base);
+    }
+
+    /* 4. Bottom Actions (Quit & Pause) */
+    .bottom-action-buttons {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .btn-quit {
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.3) 0%, rgba(225, 29, 72, 0.55) 100%);
+      border: 1px solid var(--pink-base);
+      color: #ffe4e6;
+      border-radius: 4px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 10px 14px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 14px var(--pink-glow);
+      transition: all 0.2s ease;
+    }
+    .btn-quit:hover {
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.45) 0%, rgba(225, 29, 72, 0.75) 100%);
+      color: #fff;
+    }
+
+    .btn-pause {
+      background: rgba(168, 85, 247, 0.2);
+      border: 1px solid var(--purple-border-hover);
+      color: var(--purple-light);
+      border-radius: 4px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 10px 14px;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 14px var(--purple-glow);
+      transition: all 0.2s ease;
+    }
+    .btn-pause:hover {
+      background: rgba(168, 85, 247, 0.35);
+      color: #fff;
+    }
+
+    @media (max-width: 1080px) {
+      .game-container {
+        grid-template-rows: auto auto 1fr;
+        overflow-y: auto;
+      }
+      .top-hud-bar {
+        grid-template-columns: 1fr;
+      }
+      .main-game-body {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background Canvas -->
-  <canvas id="starfield"></canvas>
-
-  <!-- Glowing Nebulas -->
+  <!-- Ambient Nebulas -->
   <div class="nebula-glow nebula-1"></div>
   <div class="nebula-glow nebula-2"></div>
   <div class="nebula-glow nebula-3"></div>
 
+  <!-- Interactive 520-Star Starfield Canvas -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Game User Interface -->
+  <div class="game-container">
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         TOP BAR: CONTROLS, ACTIONS, STATS
+         ══════════════════════════════════════════════════════════════════════ -->
+    <header class="top-hud-bar">
+
+      <!-- Section 1: Map Badge & Utility Controls -->
+      <div class="glass-panel meta-control-panel">
+        <div class="map-badge-row">
+          <div><span class="map-status-dot"></span>CURRENT MAP // <span style="color: #fff;">SWITCHBACK</span></div>
+          <span style="font-size: 11px; opacity: 0.75;">GRID 32×24</span>
+        </div>
+        <div class="utility-button-group">
+          <button class="hud-btn" id="btn-graphics">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Graphics
+          </button>
+          <button class="hud-btn" id="btn-music">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            Music
+          </button>
+          <button class="hud-btn" id="btn-options">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Options
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: Wave Dispatch Controls -->
+      <div class="glass-panel wave-control-panel" style="padding: 8px;">
+        <button class="btn-send-wave" id="btn-send-wave">
+          Send Wave
+        </button>
+        <button class="btn-auto-wave active" id="btn-auto-toggle">
+          <span class="checkbox-icon">✕</span>
+          Auto Wave
+        </button>
+      </div>
+
+      <!-- Section 3: Status & Economy HUD -->
+      <div class="glass-panel status-matrix-panel">
+        <div class="stat-tile">
+          <span class="stat-label">Bank</span>
+          <span class="stat-value pink" id="val-bank">$400</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Lives</span>
+          <span class="stat-value emerald" id="val-lives">20</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Level</span>
+          <span class="stat-value cyan" id="val-level">3 / 50</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Interest</span>
+          <span class="stat-value" id="val-interest">3%</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Score</span>
+          <span class="stat-value purple" id="val-score">30,835</span>
+        </div>
+        <div class="stat-tile">
+          <span class="stat-label">Bonus</span>
+          <span class="stat-value" id="val-bonus">0</span>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- ══════════════════════════════════════════════════════════════════════
+         MAIN WORKSPACE: EMPTY MAP FRAME + RIGHT SIDEBAR
+         ══════════════════════════════════════════════════════════════════════ -->
+    <main class="main-game-body">
+
+      <!-- Center Map Viewport (Empty with starfield backdrop) -->
+      <div class="glass-panel map-viewport-frame">
+        <div class="panel-header-strip">
+          <span>// Tactical Grid Viewport</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; opacity: 0.7;">FPS: 60 // PING: 4ms</span>
+        </div>
+
+        <div class="tactical-canvas-underlay">
+          <div class="tactical-grid-overlay"></div>
+
+          <!-- Tactical Corner Accents -->
+          <div class="corner-bracket bracket-tl"></div>
+          <div class="corner-bracket bracket-tr"></div>
+          <div class="corner-bracket bracket-bl"></div>
+          <div class="corner-bracket bracket-br"></div>
+
+          <div class="map-center-notice">
+            <div class="map-center-title">Sector 01: Switchback</div>
+            <div class="map-center-subtitle">MAP CANVAS EMPTY // STARFIELD ACTIVE</div>
+          </div>
+        </div>
+
+        <div class="map-viewport-footer">
+          <span>COORDINATES: [X: 0.00, Y: 0.00]</span>
+          <span>VECTROID FREQUENCY: 0.85 GHz</span>
+          <span>SYS.VER 2.4.0</span>
+        </div>
+      </div>
+
+      <!-- Right Sidebar (Towers, Inspector, Waves, Controls) -->
+      <aside class="sidebar-workspace">
+
+        <!-- 1. Towers 4x4 Grid Panel -->
+        <section class="glass-panel towers-section">
+          <div class="panel-header-strip">
+            <span>Towers</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">4 ARCHETYPES</span>
+          </div>
+
+          <div class="towers-grid">
+            <!-- Row 1: Green, Red, Purple, Blue Starters -->
+            <div class="tower-card color-green" data-tower="Green Beam Laser" data-dmg="45" data-rng="120m" data-lvl="1" data-special="Single Target DPS" data-updmg="72" data-uprng="135m" data-cost="75">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="18" r="2.5"></circle><line x1="8" y1="16" x2="18" y2="6"></line><circle cx="18" cy="6" r="1.5"></circle></svg>
+              <span class="tier-badge">I</span>
+            </div>
+
+            <div class="tower-card color-red selected" data-tower="Red Refractor" data-dmg="110" data-rng="80m" data-lvl="1" data-special="Splash damage" data-updmg="159" data-uprng="84m" data-cost="100">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="2.5" fill="currentColor"></circle><line x1="12" y1="12" x2="12" y2="4"></line><line x1="12" y1="12" x2="19" y2="8"></line><line x1="12" y1="12" x2="19" y2="16"></line><line x1="12" y1="12" x2="5" y2="8"></line><line x1="12" y1="12" x2="5" y2="16"></line><line x1="12" y1="12" x2="12" y2="20"></line></svg>
+              <span class="tier-badge">I</span>
+            </div>
+
+            <div class="tower-card color-purple" data-tower="Purple Disruptor" data-dmg="60" data-rng="95m" data-lvl="1" data-special="40% Kinetic Slow" data-updmg="95" data-uprng="110m" data-cost="125">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16"></rect><rect x="8" y="8" width="8" height="8"></rect><line x1="4" y1="4" x2="8" y2="8"></line><line x1="20" y1="4" x2="16" y2="8"></line><line x1="4" y1="20" x2="8" y2="16"></line><line x1="20" y1="20" x2="16" y2="16"></line></svg>
+              <span class="tier-badge">I</span>
+            </div>
+
+            <div class="tower-card color-blue" data-tower="Cyan Amplifier" data-dmg="0" data-rng="110m" data-lvl="1" data-special="+30% Range Aura" data-updmg="0" data-uprng="130m" data-cost="150">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><line x1="6" y1="18" x2="18" y2="6"></line></svg>
+              <span class="tier-badge">I</span>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="tower-card color-green" data-tower="Dual Green Laser" data-dmg="90" data-rng="130m" data-lvl="2" data-special="Multi-Beam Tracking" data-updmg="145" data-uprng="145m" data-cost="180">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="14" y2="8"></line><line x1="10" y1="20" x2="20" y2="8"></line><circle cx="14" cy="8" r="2"></circle><circle cx="20" cy="8" r="2"></circle></svg>
+              <span class="tier-badge">II</span>
+            </div>
+
+            <div class="tower-card color-red locked" data-tower="Red Cluster Spire" data-dmg="220" data-rng="90m" data-lvl="2" data-special="Submunition Cluster" data-updmg="340" data-uprng="98m" data-cost="240">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="1.5" fill="currentColor"></circle><circle cx="12" cy="8" r="1.5" fill="currentColor"></circle><circle cx="16" cy="8" r="1.5" fill="currentColor"></circle><circle cx="8" cy="12" r="1.5" fill="currentColor"></circle><circle cx="12" cy="12" r="2" fill="currentColor"></circle><circle cx="16" cy="12" r="1.5" fill="currentColor"></circle><circle cx="8" cy="16" r="1.5" fill="currentColor"></circle><circle cx="12" cy="16" r="1.5" fill="currentColor"></circle><circle cx="16" cy="16" r="1.5" fill="currentColor"></circle></svg>
+              <span class="tier-badge">II</span>
+            </div>
+
+            <div class="tower-card color-purple locked" data-tower="Purple Singularity" data-dmg="140" data-rng="105m" data-lvl="2" data-special="Vortex Pull" data-updmg="210" data-uprng="115m" data-cost="280">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="5" width="14" height="14"></rect><line x1="5" y1="12" x2="19" y2="12"></line><line x1="12" y1="5" x2="12" y2="19"></line></svg>
+              <span class="tier-badge">II</span>
+            </div>
+
+            <div class="tower-card color-blue locked" data-tower="Cyan Radar Dome" data-dmg="0" data-rng="140m" data-lvl="2" data-special="+50% Critical Chance" data-updmg="0" data-uprng="160m" data-cost="320">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="3" x2="12" y2="21"></line></svg>
+              <span class="tier-badge">II</span>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="tower-card color-green locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 12 12 20 5"></polyline><circle cx="20" cy="5" r="2"></circle></svg>
+              <span class="tier-badge">III</span>
+            </div>
+            <div class="tower-card color-red locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 22 22 22"></polygon></svg>
+              <span class="tier-badge">III</span>
+            </div>
+            <div class="tower-card color-purple locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              <span class="tier-badge">III</span>
+            </div>
+            <div class="tower-card locked" style="border-style: dashed; opacity: 0.2;">
+              <span class="tier-badge">III</span>
+            </div>
+
+            <!-- Row 4 -->
+            <div class="tower-card color-red locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line></svg>
+              <span class="tier-badge">IV</span>
+            </div>
+            <div class="tower-card color-green locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"></polygon></svg>
+              <span class="tier-badge">IV</span>
+            </div>
+            <div class="tower-card color-blue locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><text x="8" y="17" fill="currentColor" font-family="monospace" font-size="14" font-weight="bold">$</text></svg>
+              <span class="tier-badge">IV</span>
+            </div>
+            <div class="tower-card color-purple locked">
+              <span class="lock-badge">✕</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(30 12 12)"></ellipse><ellipse cx="12" cy="12" rx="9" ry="4" transform="rotate(-30 12 12)"></ellipse></svg>
+              <span class="tier-badge">IV</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Tower Inspector & Upgrade Box -->
+        <section class="glass-panel inspector-section">
+          <div class="panel-header-strip" style="color: var(--pink-active);">
+            <span id="inspector-name">Red Refractor</span>
+            <span style="font-family: var(--font-mono); font-size: 11px;" id="inspector-level">LVL 1</span>
+          </div>
+
+          <div class="inspector-content">
+            <div class="stats-line-block">
+              <div class="stat-row">
+                <span>Damage:</span>
+                <span style="color: #fff;" id="inspector-dmg">110</span>
+              </div>
+              <div class="stat-row">
+                <span>Range:</span>
+                <span style="color: #fff;" id="inspector-rng">80m</span>
+              </div>
+              <div class="special-ability-tag" id="inspector-special">Splash damage</div>
+            </div>
+
+            <div class="upgrade-delta-box">
+              <div style="font-weight: 700; margin-bottom: 2px;">After Upgrade:</div>
+              <div class="stat-row"><span>Damage:</span> <span style="color: #fff;" id="inspector-updmg">159</span></div>
+              <div class="stat-row"><span>Range:</span> <span style="color: #fff;" id="inspector-uprng">84m</span></div>
+            </div>
+
+            <button class="btn-upgrade" id="btn-upgrade-action">
+              <span>Upgrade</span>
+              <span id="inspector-cost">$100</span>
+            </button>
+
+            <div class="targeting-selector-row">
+              <button class="target-pill-btn" data-target="close">Close</button>
+              <button class="target-pill-btn active" data-target="hard">Hard</button>
+              <button class="target-pill-btn" data-target="weak">Weak</button>
+            </div>
+
+            <div class="toggle-sub-row">
+              <span>Target Locking:</span>
+              <span class="toggle-switch-badge" id="btn-toggle-locking">OFF</span>
+            </div>
+
+            <button class="btn-sell">
+              <span>Sell Tower</span>
+              <span id="inspector-sell">$150</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. Current & Next Wave Preview -->
+        <section class="glass-panel wave-preview-section">
+          <div class="panel-header-strip">
+            <span>Current &amp; Next</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--cyan-base);">WAVE INTEL</span>
+          </div>
+
+          <div class="wave-rows-container">
+            <!-- Current Wave -->
+            <div class="wave-entry-row">
+              <div class="vectoid-icon-preview">
+                <svg class="vectoid-spinner-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2">
+                  <circle cx="12" cy="12" r="3" fill="#38bdf8"></circle>
+                  <path d="M12 3v6M12 15v6M3 12h6M15 12h6M5.6 5.6l4.2 4.2M14.2 14.2l4.2 4.2M5.6 18.4l4.2-4.2M14.2 9.8l4.2-4.2"></path>
+                </svg>
+              </div>
+              <div class="wave-entity-details">
+                <span class="wave-entity-name">Blue Spinner</span>
+                <span class="wave-entity-stats">791 HP &bull; Speed: 1.2x</span>
+              </div>
+              <div class="wave-reward-tag">+$7</div>
+            </div>
+
+            <!-- Next Wave -->
+            <div class="wave-entry-row">
+              <div class="vectoid-icon-preview">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                  <polygon points="12 2 4 20 12 16 20 20 12 2" fill="rgba(16, 185, 129, 0.2)"></polygon>
+                  <line x1="12" y1="6" x2="12" y2="15"></line>
+                </svg>
+              </div>
+              <div class="wave-entity-details">
+                <span class="wave-entity-name">Green Flyer</span>
+                <span class="wave-entity-stats">947 HP &bull; Ignores Maze</span>
+              </div>
+              <div class="wave-reward-tag">+$8</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Bottom Actions: Quit / Submit and Pause -->
+        <div class="bottom-action-buttons">
+          <button class="btn-quit" id="btn-quit-submit">Quit / Submit</button>
+          <button class="btn-pause" id="btn-pause-toggle">Pause</button>
+        </div>
+
+      </aside>
+    </main>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       STARFIELD CANVAS ENGINE + INTERACTIVE UI BINDINGS
+       ══════════════════════════════════════════════════════════════════════════ -->
   <script>
+    /* Starfield Configuration (520 stars at 50% slow drift speed) */
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
 
@@ -137,7 +1200,7 @@
         this.vx = Math.cos(angle) * SPEED;
         this.vy = Math.sin(angle) * SPEED;
         this.baseColor = { r: 210, g: 230, b: 255 };
-        this.glowColor = { r: 0, g: 240, b: 255 };
+        this.glowColor = { r: 168, g: 85, b: 247 }; // Purple glow
       }
       update() {
         this.x += this.vx;
@@ -180,7 +1243,7 @@
       ctx.clearRect(0, 0, width, height);
       stars.forEach(star => star.update());
 
-      // Star-to-star links
+      // Star-to-star constellation links
       ctx.lineWidth = LINK_WIDTH;
       for (let i = 0; i < stars.length; i++) {
         const a = stars[i];
@@ -195,7 +1258,7 @@
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(180, 210, 255, ${opacity})`;
+          ctx.strokeStyle = `rgba(180, 200, 255, ${opacity})`;
           ctx.stroke();
         }
       }
@@ -208,11 +1271,11 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < MAX_DISTANCE) {
-          const opacity = (1 - (dist / MAX_DISTANCE)) * 0.6;
+          const opacity = (1 - (dist / MAX_DISTANCE)) * 0.7;
           ctx.beginPath();
           ctx.moveTo(star.x, star.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+          ctx.strokeStyle = `rgba(192, 132, 252, ${opacity})`;
           ctx.stroke();
         }
 
@@ -234,6 +1297,138 @@
 
     initStars();
     animateStars();
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       SYNTH SOUND FX (Web Audio API - Procedural, no external files)
+       ══════════════════════════════════════════════════════════════════════════ */
+    let audioCtx = null;
+    function playBeep(freq = 440, type = 'sine', duration = 0.08, gainVal = 0.08) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Audio optional
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       INTERACTIVE UI EVENT HANDLERS
+       ══════════════════════════════════════════════════════════════════════════ */
+
+    // Tower card selection -> Updates Inspector panel
+    const towerCards = document.querySelectorAll('.tower-card:not(.locked)');
+    const inspectorName = document.getElementById('inspector-name');
+    const inspectorLevel = document.getElementById('inspector-level');
+    const inspectorDmg = document.getElementById('inspector-dmg');
+    const inspectorRng = document.getElementById('inspector-rng');
+    const inspectorSpecial = document.getElementById('inspector-special');
+    const inspectorUpDmg = document.getElementById('inspector-updmg');
+    const inspectorUpRng = document.getElementById('inspector-uprng');
+    const inspectorCost = document.getElementById('inspector-cost');
+    const inspectorSell = document.getElementById('inspector-sell');
+
+    towerCards.forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.tower-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        playBeep(580, 'sine', 0.06, 0.08);
+
+        const data = card.dataset;
+        if (data.tower) {
+          inspectorName.textContent = data.tower;
+          inspectorLevel.textContent = `LVL ${data.lvl || 1}`;
+          inspectorDmg.textContent = data.dmg || '--';
+          inspectorRng.textContent = data.rng || '--';
+          inspectorSpecial.textContent = data.special || 'Standard Beam';
+          inspectorUpDmg.textContent = data.updmg || '--';
+          inspectorUpRng.textContent = data.uprng || '--';
+          inspectorCost.textContent = `$${data.cost || 100}`;
+          const sellVal = Math.round((parseInt(data.cost) || 100) * 0.7);
+          inspectorSell.textContent = `$${sellVal}`;
+        }
+      });
+    });
+
+    // Targeting priority buttons (Close, Hard, Weak)
+    const targetBtns = document.querySelectorAll('.target-pill-btn');
+    targetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        targetBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        playBeep(720, 'triangle', 0.05, 0.07);
+      });
+    });
+
+    // Auto Wave Toggle
+    const autoBtn = document.getElementById('btn-auto-toggle');
+    autoBtn.addEventListener('click', () => {
+      const active = autoBtn.classList.toggle('active');
+      autoBtn.querySelector('.checkbox-icon').textContent = active ? '✕' : '';
+      playBeep(active ? 880 : 380, 'sine', 0.08, 0.08);
+    });
+
+    // Target Locking Toggle
+    const lockBtn = document.getElementById('btn-toggle-locking');
+    lockBtn.addEventListener('click', () => {
+      const isOff = lockBtn.textContent.trim() === 'OFF';
+      lockBtn.textContent = isOff ? 'ON' : 'OFF';
+      lockBtn.style.color = isOff ? '#10b981' : '#f43f5e';
+      lockBtn.style.borderColor = isOff ? '#10b981' : '#f43f5e';
+      playBeep(isOff ? 960 : 420, 'sine', 0.06, 0.08);
+    });
+
+    // Pause Toggle
+    const pauseBtn = document.getElementById('btn-pause-toggle');
+    pauseBtn.addEventListener('click', () => {
+      const isPaused = pauseBtn.textContent.trim() === 'PAUSE';
+      pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+      pauseBtn.style.borderColor = isPaused ? 'var(--pink-base)' : 'var(--purple-border-hover)';
+      pauseBtn.style.color = isPaused ? 'var(--pink-active)' : 'var(--purple-light)';
+      playBeep(isPaused ? 320 : 640, 'triangle', 0.1, 0.09);
+    });
+
+    // Send Wave Button
+    const sendWaveBtn = document.getElementById('btn-send-wave');
+    sendWaveBtn.addEventListener('click', () => {
+      playBeep(880, 'sawtooth', 0.12, 0.06);
+      sendWaveBtn.style.transform = 'scale(0.97)';
+      setTimeout(() => sendWaveBtn.style.transform = '', 120);
+
+      // Increment wave / level stat placeholder
+      const lvlEl = document.getElementById('val-level');
+      let parts = lvlEl.textContent.split('/');
+      let currentLvl = parseInt(parts[0]) || 3;
+      if (currentLvl < 50) currentLvl++;
+      lvlEl.textContent = `${currentLvl} / 50`;
+    });
+
+    // Upgrade Action
+    const upBtn = document.getElementById('btn-upgrade-action');
+    upBtn.addEventListener('click', () => {
+      playBeep(1040, 'sine', 0.12, 0.08);
+      upBtn.style.transform = 'scale(0.97)';
+      setTimeout(() => upBtn.style.transform = '', 120);
+    });
+
+    // Utility Button clicks
+    ['btn-graphics', 'btn-music', 'btn-options', 'btn-quit-submit'].forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', () => playBeep(520, 'sine', 0.05, 0.06));
+    });
   </script>
 </body>
 </html>
