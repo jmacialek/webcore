@@ -401,15 +401,15 @@
       overflow: hidden;
     }
 
-    /* Subtle Tactical Coordinates & Grid Overlay */
-    .tactical-grid-overlay {
+    /* Tactical 18x22 Vector Grid Canvas */
+    #tactical-grid-canvas {
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      background-size: 40px 40px;
-      background-image: 
-        linear-gradient(to right, rgba(168, 85, 247, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(168, 85, 247, 0.08) 1px, transparent 1px);
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+      z-index: 1;
     }
 
     /* Corner Bracket Accents */
@@ -420,6 +420,7 @@
       border-color: var(--purple-light);
       pointer-events: none;
       opacity: 0.6;
+      z-index: 2;
     }
     .bracket-tl { top: 10px; left: 10px; border-top: 2px solid; border-left: 2px solid; }
     .bracket-tr { top: 10px; right: 10px; border-top: 2px solid; border-right: 2px solid; }
@@ -434,6 +435,7 @@
       text-align: center;
       pointer-events: none;
       opacity: 0.75;
+      z-index: 2;
     }
 
     .map-center-title {
@@ -848,7 +850,7 @@
       <div class="glass-panel meta-control-panel">
         <div class="map-badge-row">
           <div><span class="map-status-dot"></span>Current Map // <span style="color: #fff;">Switchback</span></div>
-          <span style="font-size: 11px; opacity: 0.75;">Grid 32×24</span>
+          <span style="font-size: 11px; opacity: 0.75;">Grid 18×22</span>
         </div>
         <div class="utility-button-group">
           <button class="hud-btn" id="btn-graphics">
@@ -919,8 +921,8 @@
           <span style="font-family: var(--font-mono); font-size: 11px; opacity: 0.7;">FPS: 60 // Ping: 4ms</span>
         </div>
 
-        <div class="tactical-canvas-underlay">
-          <div class="tactical-grid-overlay"></div>
+        <div class="tactical-canvas-underlay" id="tactical-canvas-container">
+          <canvas id="tactical-grid-canvas"></canvas>
 
           <!-- Tactical Corner Accents -->
           <div class="corner-bracket bracket-tl"></div>
@@ -935,8 +937,8 @@
         </div>
 
         <div class="map-viewport-footer">
-          <span>Coordinates: [X: 0.00, Y: 0.00]</span>
-          <span>Vectroid Frequency: 0.85 GHz</span>
+          <span id="viewport-coordinates">Coordinates: [X: --, Y: --]</span>
+          <span>Vectoid Frequency: 0.85 GHz</span>
           <span>Sys.Ver 2.4.0</span>
         </div>
       </div>
@@ -1472,6 +1474,217 @@
       const b = document.getElementById(id);
       if (b) b.addEventListener('click', () => playBeep(520, 'sine', 0.05, 0.06));
     });
+
+    /* ══════════════════════════════════════════════════════════════════════════
+       TACTICAL 18×22 VECTOR GRID ENGINE (22 COLS × 18 ROWS)
+       ══════════════════════════════════════════════════════════════════════════ */
+    const gridCanvas = document.getElementById('tactical-grid-canvas');
+    const gridCtx = gridCanvas ? gridCanvas.getContext('2d') : null;
+    const gridContainer = document.getElementById('tactical-canvas-container');
+    const coordsEl = document.getElementById('viewport-coordinates');
+
+    const GRID_COLS = 22; // 22 horizontal columns (X: 0..21)
+    const GRID_ROWS = 18; // 18 vertical rows (Y: 0..17)
+
+    let gridState = {
+      width: 0,
+      height: 0,
+      cellSize: 0,
+      boardW: 0,
+      boardH: 0,
+      boardX: 0,
+      boardY: 0,
+      hoverCol: -1,
+      hoverRow: -1,
+      hoverSubX: 0,
+      hoverSubY: 0,
+      isHovering: false
+    };
+
+    function resizeGrid() {
+      if (!gridContainer || !gridCanvas || !gridCtx) return;
+      const rect = gridContainer.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      gridState.width = rect.width;
+      gridState.height = rect.height;
+      gridCanvas.width = Math.floor(rect.width * dpr);
+      gridCanvas.height = Math.floor(rect.height * dpr);
+
+      gridCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Sizing square cells to fill available container with breathing room
+      const margin = 14;
+      const availW = Math.max(100, rect.width - margin * 2);
+      const availH = Math.max(100, rect.height - margin * 2);
+
+      gridState.cellSize = Math.floor(Math.min(availW / GRID_COLS, availH / GRID_ROWS));
+      gridState.boardW = gridState.cellSize * GRID_COLS;
+      gridState.boardH = gridState.cellSize * GRID_ROWS;
+      gridState.boardX = Math.floor((rect.width - gridState.boardW) / 2);
+      gridState.boardY = Math.floor((rect.height - gridState.boardH) / 2);
+
+      drawGrid();
+    }
+
+    function drawGrid() {
+      if (!gridCtx) return;
+      const { width, height, cellSize, boardW, boardH, boardX, boardY, hoverCol, hoverRow, isHovering } = gridState;
+      gridCtx.clearRect(0, 0, width, height);
+
+      if (cellSize <= 0) return;
+
+      // 1. Subtle Outer Border of the 18x22 Playing Field
+      gridCtx.strokeStyle = 'rgba(0, 240, 255, 0.38)';
+      gridCtx.lineWidth = 1.5;
+      gridCtx.strokeRect(boardX - 0.5, boardY - 0.5, boardW + 1, boardH + 1);
+
+      // Corner accent markers on the board perimeter
+      const cLen = 9;
+      gridCtx.strokeStyle = 'rgba(0, 240, 255, 0.85)';
+      gridCtx.lineWidth = 2;
+      // TL
+      gridCtx.beginPath(); gridCtx.moveTo(boardX - 4, boardY + cLen); gridCtx.lineTo(boardX - 4, boardY - 4); gridCtx.lineTo(boardX + cLen, boardY - 4); gridCtx.stroke();
+      // TR
+      gridCtx.beginPath(); gridCtx.moveTo(boardX + boardW + 4 - cLen, boardY - 4); gridCtx.lineTo(boardX + boardW + 4, boardY - 4); gridCtx.lineTo(boardX + boardW + 4, boardY + cLen); gridCtx.stroke();
+      // BL
+      gridCtx.beginPath(); gridCtx.moveTo(boardX - 4, boardY + boardH - cLen); gridCtx.lineTo(boardX - 4, boardY + boardH + 4); gridCtx.lineTo(boardX + cLen, boardY + boardH + 4); gridCtx.stroke();
+      // BR
+      gridCtx.beginPath(); gridCtx.moveTo(boardX + boardW + 4 - cLen, boardY + boardH + 4); gridCtx.lineTo(boardX + boardW + 4, boardY + boardH + 4); gridCtx.lineTo(boardX + boardW + 4, boardY + boardH - cLen); gridCtx.stroke();
+
+      // 2. Grid Lines (22 Columns × 18 Rows)
+      gridCtx.lineWidth = 0.6;
+      gridCtx.strokeStyle = 'rgba(168, 85, 247, 0.14)';
+      gridCtx.beginPath();
+      // Vertical lines (Columns)
+      for (let c = 1; c < GRID_COLS; c++) {
+        const x = boardX + c * cellSize;
+        gridCtx.moveTo(x, boardY);
+        gridCtx.lineTo(x, boardY + boardH);
+      }
+      // Horizontal lines (Rows)
+      for (let r = 1; r < GRID_ROWS; r++) {
+        const y = boardY + r * cellSize;
+        gridCtx.moveTo(boardX, y);
+        gridCtx.lineTo(boardX + boardW, y);
+      }
+      gridCtx.stroke();
+
+      // 3. Vector Corner Intersection Crosshairs (+)
+      gridCtx.lineWidth = 0.8;
+      gridCtx.strokeStyle = 'rgba(0, 240, 255, 0.25)';
+      const crossSize = 2.5;
+      gridCtx.beginPath();
+      for (let c = 1; c < GRID_COLS; c++) {
+        for (let r = 1; r < GRID_ROWS; r++) {
+          const x = boardX + c * cellSize;
+          const y = boardY + r * cellSize;
+          gridCtx.moveTo(x - crossSize, y);
+          gridCtx.lineTo(x + crossSize, y);
+          gridCtx.moveTo(x, y - crossSize);
+          gridCtx.lineTo(x, y + crossSize);
+        }
+      }
+      gridCtx.stroke();
+
+      // 4. Active Cell Hover Reticle
+      if (isHovering && hoverCol >= 0 && hoverCol < GRID_COLS && hoverRow >= 0 && hoverRow < GRID_ROWS) {
+        const hx = boardX + hoverCol * cellSize;
+        const hy = boardY + hoverRow * cellSize;
+
+        // Subtle glowing cell fill
+        gridCtx.fillStyle = 'rgba(0, 240, 255, 0.11)';
+        gridCtx.fillRect(hx, hy, cellSize, cellSize);
+
+        // Cell border
+        gridCtx.strokeStyle = 'rgba(0, 240, 255, 0.7)';
+        gridCtx.lineWidth = 1.2;
+        gridCtx.strokeRect(hx + 0.5, hy + 0.5, cellSize - 1, cellSize - 1);
+
+        // Tactical corner bracket reticle on active tile
+        const tLen = Math.min(6, cellSize * 0.28);
+        gridCtx.strokeStyle = '#00f0ff';
+        gridCtx.lineWidth = 1.8;
+        // TL
+        gridCtx.beginPath(); gridCtx.moveTo(hx, hy + tLen); gridCtx.lineTo(hx, hy); gridCtx.lineTo(hx + tLen, hy); gridCtx.stroke();
+        // TR
+        gridCtx.beginPath(); gridCtx.moveTo(hx + cellSize - tLen, hy); gridCtx.lineTo(hx + cellSize, hy); gridCtx.lineTo(hx + cellSize, hy + tLen); gridCtx.stroke();
+        // BL
+        gridCtx.beginPath(); gridCtx.moveTo(hx, hy + cellSize - tLen); gridCtx.lineTo(hx, hy + cellSize); gridCtx.lineTo(hx + tLen, hy + cellSize); gridCtx.stroke();
+        // BR
+        gridCtx.beginPath(); gridCtx.moveTo(hx + cellSize - tLen, hy + cellSize); gridCtx.lineTo(hx + cellSize, hy + cellSize); gridCtx.lineTo(hx + cellSize, hy + cellSize - tLen); gridCtx.stroke();
+
+        // Center reticle pip
+        gridCtx.fillStyle = '#00f0ff';
+        gridCtx.beginPath();
+        gridCtx.arc(hx + cellSize / 2, hy + cellSize / 2, 1.8, 0, Math.PI * 2);
+        gridCtx.fill();
+      }
+    }
+
+    function handleGridMouseMove(e) {
+      if (!gridState.boardW || !gridState.boardH || !gridCanvas) return;
+      const rect = gridCanvas.getBoundingClientRect();
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+
+      const { boardX, boardY, boardW, boardH, cellSize } = gridState;
+
+      if (clientX >= boardX && clientX <= boardX + boardW && clientY >= boardY && clientY <= boardY + boardH) {
+        const col = Math.floor((clientX - boardX) / cellSize);
+        const row = Math.floor((clientY - boardY) / cellSize);
+        const subX = (clientX - boardX) / cellSize;
+        const subY = (clientY - boardY) / cellSize;
+
+        gridState.hoverCol = Math.min(GRID_COLS - 1, Math.max(0, col));
+        gridState.hoverRow = Math.min(GRID_ROWS - 1, Math.max(0, row));
+        gridState.hoverSubX = subX;
+        gridState.hoverSubY = subY;
+        gridState.isHovering = true;
+
+        if (coordsEl) {
+          const padCol = String(gridState.hoverCol).padStart(2, '0');
+          const padRow = String(gridState.hoverRow).padStart(2, '0');
+          coordsEl.textContent = `Coordinates: [X: ${padCol}, Y: ${padRow}] (${subX.toFixed(2)}, ${subY.toFixed(2)})`;
+          coordsEl.style.color = 'var(--cyan-base)';
+          coordsEl.style.textShadow = '0 0 10px var(--cyan-glow)';
+        }
+      } else {
+        gridState.isHovering = false;
+        gridState.hoverCol = -1;
+        gridState.hoverRow = -1;
+        if (coordsEl) {
+          coordsEl.textContent = `Coordinates: [X: --, Y: --]`;
+          coordsEl.style.color = 'var(--text-muted)';
+          coordsEl.style.textShadow = 'none';
+        }
+      }
+      drawGrid();
+    }
+
+    if (gridCanvas) {
+      gridCanvas.addEventListener('mousemove', handleGridMouseMove);
+      gridCanvas.addEventListener('mouseleave', () => {
+        gridState.isHovering = false;
+        gridState.hoverCol = -1;
+        gridState.hoverRow = -1;
+        if (coordsEl) {
+          coordsEl.textContent = `Coordinates: [X: --, Y: --]`;
+          coordsEl.style.color = 'var(--text-muted)';
+          coordsEl.style.textShadow = 'none';
+        }
+        drawGrid();
+      });
+    }
+
+    if (typeof ResizeObserver !== 'undefined' && gridContainer) {
+      const gridResizeObserver = new ResizeObserver(() => {
+        resizeGrid();
+      });
+      gridResizeObserver.observe(gridContainer);
+    }
+    window.addEventListener('resize', resizeGrid);
+    setTimeout(resizeGrid, 50);
   </script>
 </body>
 </html>
