@@ -1177,6 +1177,19 @@
       }
     }
 
+    // Vibrant stellar spectral classes (weighted distribution)
+    const STAR_PALETTES = [
+      { r: 0, g: 240, b: 255 },    // Electric Cyan
+      { r: 0, g: 240, b: 255 },    // Electric Cyan (high weight)
+      { r: 56, g: 189, b: 248 },   // Bright Plasma Blue
+      { r: 168, g: 85, b: 247 },   // Neon Violet
+      { r: 217, g: 70, b: 239 },   // Hot Fuchsia / Orchid
+      { r: 244, g: 63, b: 94 },    // Crimson / Plasma Pink
+      { r: 251, g: 191, b: 36 },   // Solar Amber / Gold
+      { r: 52, g: 211, b: 153 },   // Emerald Nova
+      { r: 255, g: 255, b: 255 },  // Diamond White
+    ];
+
     class Star {
       constructor() {
         this.reset();
@@ -1184,12 +1197,19 @@
       reset() {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
-        this.radius = Math.random() * 1.6 + 0.8;
+        this.isBright = Math.random() < 0.08; // 8% major magnitude stars
+        this.baseRadius = this.isBright ? (Math.random() * 1.2 + 1.8) : (Math.random() * 1.3 + 0.7);
+        this.radius = this.baseRadius;
         const angle = Math.random() * Math.PI * 2;
         this.vx = Math.cos(angle) * SPEED;
         this.vy = Math.sin(angle) * SPEED;
-        this.baseColor = { r: 210, g: 230, b: 255 };
-        this.glowColor = { r: 0, g: 240, b: 255 }; // Electric cyan (#00f0ff - matches Map Canvas Empty)
+        
+        // Random rich stellar color
+        const color = STAR_PALETTES[Math.floor(Math.random() * STAR_PALETTES.length)];
+        this.baseColor = { ...color };
+        this.baseAlpha = Math.random() * 0.35 + 0.65;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.pulseSpeed = Math.random() * 0.02 + 0.01;
       }
       update() {
         this.x += this.vx;
@@ -1200,23 +1220,57 @@
         if (this.y > height) this.y = 0;
       }
       draw(distToMouse) {
+        this.pulsePhase += this.pulseSpeed;
+        const twinkle = Math.sin(this.pulsePhase) * 0.22 + 0.88;
+
         let r = this.baseColor.r;
         let g = this.baseColor.g;
         let b = this.baseColor.b;
-        let alpha = 0.65;
+        let alpha = this.baseAlpha * twinkle;
+        let rad = this.radius * (0.92 + twinkle * 0.12);
 
+        // Proximity to mouse: dynamically flare to electric cyan (#00f0ff)
         if (distToMouse < MAX_DISTANCE) {
           const ratio = 1 - (distToMouse / MAX_DISTANCE);
-          r = Math.round(this.baseColor.r + (this.glowColor.r - this.baseColor.r) * ratio);
-          g = Math.round(this.baseColor.g + (this.glowColor.g - this.baseColor.g) * ratio);
-          b = Math.round(this.baseColor.b + (this.glowColor.b - this.baseColor.b) * ratio);
-          alpha = 0.65 + (0.35 * ratio);
+          r = Math.round(r + (0 - r) * ratio);
+          g = Math.round(g + (240 - g) * ratio);
+          b = Math.round(b + (255 - b) * ratio);
+          alpha = Math.min(1.0, alpha + 0.45 * ratio);
+          rad += ratio * 1.2;
         }
 
+        // 1. Soft atmospheric outer corona / glow
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.arc(this.x, this.y, rad * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.24})`;
         ctx.fill();
+
+        // 2. Rich saturated star body
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, rad, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.95})`;
+        ctx.fill();
+
+        // 3. Ultra-bright white-hot core
+        if (rad > 1.0) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, rad * 0.45, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1.0, alpha * 1.15)})`;
+          ctx.fill();
+        }
+
+        // 4. Subtle 4-point diffraction cross flare on prominent stars
+        if (this.isBright) {
+          const flareLen = rad * 3.2 * twinkle;
+          ctx.beginPath();
+          ctx.moveTo(this.x - flareLen, this.y);
+          ctx.lineTo(this.x + flareLen, this.y);
+          ctx.moveTo(this.x, this.y - flareLen);
+          ctx.lineTo(this.x, this.y + flareLen);
+          ctx.lineWidth = 0.55;
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.42})`;
+          ctx.stroke();
+        }
       }
     }
 
@@ -1232,7 +1286,7 @@
       ctx.clearRect(0, 0, width, height);
       stars.forEach(star => star.update());
 
-      // Star-to-star constellation links
+      // Star-to-star constellation links: PURE WHITE DEFAULT
       ctx.lineWidth = LINK_WIDTH;
       for (let i = 0; i < stars.length; i++) {
         const a = stars[i];
@@ -1247,12 +1301,12 @@
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+          ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
           ctx.stroke();
         }
       }
 
-      // Cursor links & stars
+      // Cursor links: ONLY CYAN LINES CONNECT TO MOUSE
       ctx.lineWidth = MOUSE_LINK_WIDTH;
       stars.forEach(star => {
         const dx = mouse.x - star.x;
@@ -1260,7 +1314,7 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < MAX_DISTANCE) {
-          const opacity = (1 - (dist / MAX_DISTANCE)) * 0.7;
+          const opacity = (1 - (dist / MAX_DISTANCE)) * 0.75;
           ctx.beginPath();
           ctx.moveTo(star.x, star.y);
           ctx.lineTo(mouse.x, mouse.y);
