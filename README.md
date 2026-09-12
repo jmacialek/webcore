@@ -6,7 +6,9 @@ Web configuration and content for `webcore` — the Proxmox LXC container behind
 ## Layout
 
 ```
-index.html                  root page (starfield demo)
+docs/
+  webcore-inventory.md      comprehensive system & application inventory
+index.html                  root page (Vector 3D Ultra Edition HUD & starfield)
 proposal1/                  first profile site
 proposal2/                  current profile site
   index.html                the page — no build step, no framework, no dependencies
