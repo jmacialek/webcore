@@ -11,6 +11,14 @@ export const GRID_ROWS = 18;
 
 export type MapTier = "easy" | "normal" | "hard";
 
+/**
+ * The direction Vectoids travel when they enter the Grid, as written in the
+ * Map file and matching the research `spawnDir`: "up" means the Lane enters
+ * from the top edge (Vectoids come from above and move down), "left" means
+ * it enters from the left edge, and so on.
+ */
+export type EntryDirection = "up" | "down" | "left" | "right";
+
 export interface Cell {
   readonly col: number;
   readonly row: number;
@@ -30,6 +38,8 @@ export interface Lane {
   readonly index: number;
   /** Waypoints in Cell coordinates. First and last are off-Grid. */
   readonly waypoints: readonly Point[];
+  /** Direction Vectoids travel when they enter the Grid on this Lane. */
+  readonly entryDirection: EntryDirection;
   /** Total polyline length in Cells. */
   readonly length: number;
   /** First on-Grid Cell the Lane passes through. */
