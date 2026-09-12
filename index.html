@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vector TD // Ultra Edition</title>
+  <title>Vector 3D Ultra Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Rajdhani:wght@500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
@@ -145,8 +145,8 @@
       padding: 6px 14px;
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-transform: none;
       color: var(--purple-light);
       display: flex;
       align-items: center;
@@ -233,7 +233,6 @@
       justify-content: center;
       gap: 6px;
       transition: all 0.2s ease;
-      text-transform: uppercase;
     }
 
     .hud-btn:hover {
@@ -263,12 +262,11 @@
       font-family: var(--font-display);
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-transform: uppercase;
       box-shadow: 0 0 16px var(--pink-glow);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -292,7 +290,7 @@
       font-family: var(--font-display);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -346,9 +344,8 @@
       font-family: var(--font-display);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.04em;
       color: var(--text-muted);
-      text-transform: uppercase;
     }
 
     .stat-value {
@@ -442,9 +439,8 @@
     .map-center-title {
       font-family: var(--font-tech);
       font-size: 20px;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.18em;
       color: var(--purple-light);
-      text-transform: uppercase;
       text-shadow: 0 0 16px var(--purple-glow);
     }
 
@@ -619,7 +615,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      text-transform: uppercase;
       box-shadow: 0 0 14px var(--cyan-glow);
       transition: all 0.2s ease;
     }
@@ -648,7 +643,6 @@
       padding: 6px 4px;
       text-align: center;
       cursor: pointer;
-      text-transform: uppercase;
       transition: all 0.2s ease;
     }
 
@@ -693,14 +687,13 @@
       font-family: var(--font-display);
       font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       padding: 6px 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
       transition: all 0.2s ease;
-      text-transform: uppercase;
     }
     .btn-sell:hover {
       background: rgba(239, 68, 68, 0.22);
@@ -789,10 +782,9 @@
       font-family: var(--font-display);
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       padding: 10px 14px;
       cursor: pointer;
-      text-transform: uppercase;
       box-shadow: 0 0 14px var(--pink-glow);
       transition: all 0.2s ease;
     }
@@ -809,10 +801,9 @@
       font-family: var(--font-display);
       font-size: 14px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       padding: 10px 14px;
       cursor: pointer;
-      text-transform: uppercase;
       box-shadow: 0 0 14px var(--purple-glow);
       transition: all 0.2s ease;
     }
@@ -856,8 +847,8 @@
       <!-- Section 1: Map Badge & Utility Controls -->
       <div class="glass-panel meta-control-panel">
         <div class="map-badge-row">
-          <div><span class="map-status-dot"></span>CURRENT MAP // <span style="color: #fff;">SWITCHBACK</span></div>
-          <span style="font-size: 11px; opacity: 0.75;">GRID 32×24</span>
+          <div><span class="map-status-dot"></span>Current Map // <span style="color: #fff;">Switchback</span></div>
+          <span style="font-size: 11px; opacity: 0.75;">Grid 32×24</span>
         </div>
         <div class="utility-button-group">
           <button class="hud-btn" id="btn-graphics">
@@ -925,7 +916,7 @@
       <div class="glass-panel map-viewport-frame">
         <div class="panel-header-strip">
           <span>// Tactical Grid Viewport</span>
-          <span style="font-family: var(--font-mono); font-size: 11px; opacity: 0.7;">FPS: 60 // PING: 4ms</span>
+          <span style="font-family: var(--font-mono); font-size: 11px; opacity: 0.7;">FPS: 60 // Ping: 4ms</span>
         </div>
 
         <div class="tactical-canvas-underlay">
@@ -939,14 +930,14 @@
 
           <div class="map-center-notice">
             <div class="map-center-title">Sector 01: Switchback</div>
-            <div class="map-center-subtitle">MAP CANVAS EMPTY // STARFIELD ACTIVE</div>
+            <div class="map-center-subtitle">Map Canvas Empty // Starfield Active</div>
           </div>
         </div>
 
         <div class="map-viewport-footer">
-          <span>COORDINATES: [X: 0.00, Y: 0.00]</span>
-          <span>VECTROID FREQUENCY: 0.85 GHz</span>
-          <span>SYS.VER 2.4.0</span>
+          <span>Coordinates: [X: 0.00, Y: 0.00]</span>
+          <span>Vectroid Frequency: 0.85 GHz</span>
+          <span>Sys.Ver 2.4.0</span>
         </div>
       </div>
 
@@ -957,7 +948,7 @@
         <section class="glass-panel towers-section">
           <div class="panel-header-strip">
             <span>Towers</span>
-            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">4 ARCHETYPES</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">4 Archetypes</span>
           </div>
 
           <div class="towers-grid">
@@ -1054,7 +1045,7 @@
         <section class="glass-panel inspector-section">
           <div class="panel-header-strip" style="color: var(--pink-active);">
             <span id="inspector-name">Red Refractor</span>
-            <span style="font-family: var(--font-mono); font-size: 11px;" id="inspector-level">LVL 1</span>
+            <span style="font-family: var(--font-mono); font-size: 11px;" id="inspector-level">Lvl 1</span>
           </div>
 
           <div class="inspector-content">
@@ -1089,7 +1080,7 @@
 
             <div class="toggle-sub-row">
               <span>Target Locking:</span>
-              <span class="toggle-switch-badge" id="btn-toggle-locking">OFF</span>
+              <span class="toggle-switch-badge" id="btn-toggle-locking">Off</span>
             </div>
 
             <button class="btn-sell">
@@ -1103,7 +1094,7 @@
         <section class="glass-panel wave-preview-section">
           <div class="panel-header-strip">
             <span>Current &amp; Next</span>
-            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--cyan-base);">WAVE INTEL</span>
+            <span style="font-family: var(--font-mono); font-size: 10px; color: var(--cyan-base);">Wave Intel</span>
           </div>
 
           <div class="wave-rows-container">
@@ -1348,7 +1339,7 @@
         const data = card.dataset;
         if (data.tower) {
           inspectorName.textContent = data.tower;
-          inspectorLevel.textContent = `LVL ${data.lvl || 1}`;
+          inspectorLevel.textContent = `Lvl ${data.lvl || 1}`;
           inspectorDmg.textContent = data.dmg || '--';
           inspectorRng.textContent = data.rng || '--';
           inspectorSpecial.textContent = data.special || 'Standard Beam';
@@ -1382,8 +1373,8 @@
     // Target Locking Toggle
     const lockBtn = document.getElementById('btn-toggle-locking');
     lockBtn.addEventListener('click', () => {
-      const isOff = lockBtn.textContent.trim() === 'OFF';
-      lockBtn.textContent = isOff ? 'ON' : 'OFF';
+      const isOff = lockBtn.textContent.trim().toLowerCase() === 'off';
+      lockBtn.textContent = isOff ? 'On' : 'Off';
       lockBtn.style.color = isOff ? '#10b981' : '#f43f5e';
       lockBtn.style.borderColor = isOff ? '#10b981' : '#f43f5e';
       playBeep(isOff ? 960 : 420, 'sine', 0.06, 0.08);
@@ -1392,8 +1383,8 @@
     // Pause Toggle
     const pauseBtn = document.getElementById('btn-pause-toggle');
     pauseBtn.addEventListener('click', () => {
-      const isPaused = pauseBtn.textContent.trim() === 'PAUSE';
-      pauseBtn.textContent = isPaused ? 'RESUME' : 'PAUSE';
+      const isPaused = pauseBtn.textContent.trim().toLowerCase() === 'pause';
+      pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
       pauseBtn.style.borderColor = isPaused ? 'var(--pink-base)' : 'var(--purple-border-hover)';
       pauseBtn.style.color = isPaused ? 'var(--pink-active)' : 'var(--purple-light)';
       playBeep(isPaused ? 320 : 640, 'triangle', 0.1, 0.09);
