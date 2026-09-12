@@ -25,4 +25,12 @@ table are the thing veterans recognise.
    original checked the wrong variable and never applied it.
 2. Blue Frost Rockets: Blue Tier 3, long range, splash slow on impact,
    player-selectable Targeting Mode. Numbers set by a balancing prototype.
-3. Max Upgrade button (behaviour pending).
+3. Max Upgrade: one `upgradeToMax` command raises a Tower as many Ranks as
+   the Bank allows, up to Rank 10; the button label shows the cost of what
+   the click will do. The original required one click per Rank.
+4. Sticky Placement: after placing a Tower or Booster the same kind stays on
+   the cursor until cancelled by Escape, right-click, clicking its sidebar
+   card again, or selecting a placed Tower. If the Bank cannot cover the
+   next one the ghost stays and shows as unaffordable. Each placement is its
+   own `placeTower` command. The original dropped the selection after every
+   placement.

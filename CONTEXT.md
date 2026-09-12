@@ -2,7 +2,8 @@
 
 A web-native tribute to Vector TD (David Scott, 2007), built in this repo
 alongside the static dawnmud.com site. One context: the game itself. Terms
-marked *pending* are still open in the design interview.
+marked *pending* are still open in the design interview. (None as of the
+interview's close on 2026-09-12.)
 
 ## Language
 
@@ -91,9 +92,16 @@ A per-Tower toggle: when on, the Tower keeps its current target until it dies
 or leaves Range; when off, it re-selects before every shot.
 _Avoid_: Focus, sticky targeting
 
-**Max Upgrade** (*pending*: behaviour when the Bank cannot cover all Ranks):
-A single action that raises a Tower to Rank 10 in one click.
+**Max Upgrade**:
+A single command that raises a Tower as many Ranks as the Bank allows, up to
+Rank 10. Its button always shows the cost of what the click will actually do.
 _Avoid_: Auto-upgrade, upgrade all
+
+**Placement**:
+The state in which a chosen Tower or Booster rides the cursor. It persists
+after each placement so the same kind can be placed repeatedly, until the
+player cancels it.
+_Avoid_: Build mode, drag, ghost (the ghost is what Placement draws)
 
 **Sell**:
 Removing a Tower for a refund of a fixed fraction of everything spent on it.
