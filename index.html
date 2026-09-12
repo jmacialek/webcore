@@ -11,10 +11,10 @@
   <style>
     :root {
       --bg-space: #07090e;
-      --panel-bg: rgba(14, 11, 28, 0.72);
-      --panel-bg-subtle: rgba(22, 16, 42, 0.65);
-      --panel-bg-hover: rgba(36, 26, 68, 0.85);
-      --panel-header-bg: rgba(28, 20, 54, 0.88);
+      --panel-bg: rgba(14, 11, 28, 0.35);
+      --panel-bg-subtle: rgba(22, 16, 42, 0.24);
+      --panel-bg-hover: rgba(50, 36, 96, 0.42);
+      --panel-header-bg: rgba(28, 20, 54, 0.4);
       
       --purple-base: #a855f7;
       --purple-light: #c084fc;
@@ -133,16 +133,18 @@
     /* Glass Panels */
     .glass-panel {
       background: var(--panel-bg);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--purple-border);
       border-radius: 6px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       position: relative;
     }
 
     .panel-header-strip {
       background: var(--panel-header-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-bottom: 1px solid var(--purple-border);
       padding: 6px 14px;
       font-size: 13px;
@@ -220,7 +222,7 @@
     }
 
     .hud-btn {
-      background: rgba(30, 20, 58, 0.7);
+      background: rgba(30, 20, 58, 0.32);
       border: 1px solid var(--purple-border);
       border-radius: 4px;
       color: var(--text-dim);
@@ -239,7 +241,7 @@
     }
 
     .hud-btn:hover {
-      background: rgba(168, 85, 247, 0.22);
+      background: rgba(168, 85, 247, 0.28);
       border-color: var(--purple-light);
       color: #ffffff;
       box-shadow: 0 0 12px var(--purple-glow);
@@ -258,7 +260,7 @@
     }
 
     .btn-send-wave {
-      background: linear-gradient(180deg, rgba(244, 63, 94, 0.28) 0%, rgba(225, 29, 72, 0.45) 100%);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.16) 0%, rgba(225, 29, 72, 0.28) 100%);
       border: 1px solid var(--pink-base);
       border-radius: 4px;
       color: #ffe4e6;
@@ -276,7 +278,7 @@
     }
 
     .btn-send-wave:hover {
-      background: linear-gradient(180deg, rgba(244, 63, 94, 0.45) 0%, rgba(225, 29, 72, 0.7) 100%);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.35) 0%, rgba(225, 29, 72, 0.55) 100%);
       box-shadow: 0 0 24px var(--pink-base);
       color: #ffffff;
       transform: translateY(-1px);
@@ -287,7 +289,7 @@
     }
 
     .btn-auto-wave {
-      background: rgba(244, 63, 94, 0.15);
+      background: rgba(244, 63, 94, 0.1);
       border: 1px solid rgba(244, 63, 94, 0.4);
       border-radius: 4px;
       color: #fda4af;
@@ -309,7 +311,7 @@
     }
 
     .btn-auto-wave.active {
-      background: rgba(244, 63, 94, 0.35);
+      background: rgba(244, 63, 94, 0.26);
       border-color: var(--pink-base);
       box-shadow: 0 0 12px var(--pink-glow);
       color: #fff;
@@ -459,7 +461,9 @@
     }
 
     .map-viewport-footer {
-      background: rgba(14, 11, 28, 0.85);
+      background: rgba(14, 11, 28, 0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border-top: 1px solid var(--purple-border);
       padding: 5px 16px;
       display: flex;
@@ -499,7 +503,7 @@
 
     .tower-card {
       aspect-ratio: 1 / 1;
-      background: rgba(22, 16, 42, 0.7);
+      background: rgba(22, 16, 42, 0.28);
       border: 1px solid var(--purple-border);
       border-radius: 4px;
       display: flex;
@@ -608,7 +612,7 @@
 
     .btn-upgrade {
       width: 100%;
-      background: linear-gradient(180deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.35) 100%);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.14) 0%, rgba(14, 165, 233, 0.24) 100%);
       border: 1px solid var(--cyan-base);
       border-radius: 4px;
       color: #e0f2fe;
@@ -627,7 +631,7 @@
     }
 
     .btn-upgrade:hover {
-      background: linear-gradient(180deg, rgba(56, 189, 248, 0.35) 0%, rgba(14, 165, 233, 0.55) 100%);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.3) 0%, rgba(14, 165, 233, 0.48) 100%);
       box-shadow: 0 0 20px var(--cyan-base);
       color: #fff;
     }
@@ -639,7 +643,7 @@
     }
 
     .target-pill-btn {
-      background: rgba(30, 20, 58, 0.6);
+      background: rgba(30, 20, 58, 0.28);
       border: 1px solid var(--purple-border);
       border-radius: 3px;
       color: var(--text-dim);
@@ -729,7 +733,7 @@
       gap: 10px;
       align-items: center;
       padding: 6px 8px;
-      background: rgba(22, 16, 42, 0.5);
+      background: rgba(22, 16, 42, 0.22);
       border: 1px solid rgba(168, 85, 247, 0.15);
       border-radius: 4px;
     }
@@ -784,7 +788,7 @@
     }
 
     .btn-quit {
-      background: linear-gradient(180deg, rgba(244, 63, 94, 0.3) 0%, rgba(225, 29, 72, 0.55) 100%);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.18) 0%, rgba(225, 29, 72, 0.32) 100%);
       border: 1px solid var(--pink-base);
       color: #ffe4e6;
       border-radius: 4px;
@@ -799,12 +803,12 @@
       transition: all 0.2s ease;
     }
     .btn-quit:hover {
-      background: linear-gradient(180deg, rgba(244, 63, 94, 0.45) 0%, rgba(225, 29, 72, 0.75) 100%);
+      background: linear-gradient(180deg, rgba(244, 63, 94, 0.35) 0%, rgba(225, 29, 72, 0.6) 100%);
       color: #fff;
     }
 
     .btn-pause {
-      background: rgba(168, 85, 247, 0.2);
+      background: rgba(168, 85, 247, 0.14);
       border: 1px solid var(--purple-border-hover);
       color: var(--purple-light);
       border-radius: 4px;
@@ -819,7 +823,7 @@
       transition: all 0.2s ease;
     }
     .btn-pause:hover {
-      background: rgba(168, 85, 247, 0.35);
+      background: rgba(168, 85, 247, 0.28);
       color: #fff;
     }
 
