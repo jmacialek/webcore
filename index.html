@@ -1189,7 +1189,7 @@
         this.vx = Math.cos(angle) * SPEED;
         this.vy = Math.sin(angle) * SPEED;
         this.baseColor = { r: 210, g: 230, b: 255 };
-        this.glowColor = { r: 168, g: 85, b: 247 }; // Purple glow
+        this.glowColor = { r: 0, g: 240, b: 255 }; // Electric cyan (#00f0ff - matches Map Canvas Empty)
       }
       update() {
         this.x += this.vx;
@@ -1247,7 +1247,7 @@
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
-          ctx.strokeStyle = `rgba(180, 200, 255, ${opacity})`;
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
           ctx.stroke();
         }
       }
@@ -1264,7 +1264,7 @@
           ctx.beginPath();
           ctx.moveTo(star.x, star.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(192, 132, 252, ${opacity})`;
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
           ctx.stroke();
         }
 
