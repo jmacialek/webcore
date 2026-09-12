@@ -6,5 +6,11 @@
  * supported import.
  */
 export { createRun } from "./engine/run.js";
-export type { Run } from "./engine/run.js";
-export type { Snapshot, SimEvent, RunInputs } from "./types.js";
+export type { Run, RunInputs } from "./engine/run.js";
+export { replayRun, defaultResolver, ReplayError } from "./replay.js";
+export type { ReplayResolver, ReplayResult } from "./replay.js";
+export { digestValue } from "./engine/digest.js";
+export * from "./types.js";
+
+export * from "./map/index.js";
+export * from "./ruleset/index.js";
