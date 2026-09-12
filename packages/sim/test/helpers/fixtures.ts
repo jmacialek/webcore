@@ -30,12 +30,17 @@ export function defineFixture(name: string, build: () => Run, options: FixtureOp
 /** A Ruleset with test-only overrides. Its id and version are changed so it can never be mistaken for a real one. */
 export function overrideRuleset(
   base: Ruleset,
-  patch: { lives?: number; startHp?: number; maxAliveToSend?: number; suffix: string },
+  patch: { lives?: number; startHp?: number; startBank?: number; maxAliveToSend?: number; suffix: string },
 ): Ruleset {
   const tiers = { ...base.economy.tiers };
   if (patch.startHp !== undefined) {
     for (const tier of ["easy", "normal", "hard"] as const) {
       tiers[tier] = { ...tiers[tier], startHp: patch.startHp };
+    }
+  }
+  if (patch.startBank !== undefined) {
+    for (const tier of ["easy", "normal", "hard"] as const) {
+      tiers[tier] = { ...tiers[tier], startBank: patch.startBank };
     }
   }
   return {
