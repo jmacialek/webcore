@@ -19,3 +19,10 @@ rates.
   against a frame-exact trace of the Flash game.
 - Command Logs are stamped in ticks, so server replay cost later scales with
   120 ticks per second.
+- Hit points are floats: a Green Laser's 22 damage per original frame lands
+  as 22/3 per tick, and the colour rule multiplies by 1.5, 0.5, and 0.75. Only
+  Bank, Lives, Score, and Bonus Points stay integers. IEEE + - * / are
+  correctly rounded on every engine, so this costs no determinism.
+- Purple Powers charge on a linear 0 to 1 ramp over 0.75 s; the original's
+  alpha 10 to 100 head start is not reproduced, and Purple Power 3's slow
+  follows the same ramp.

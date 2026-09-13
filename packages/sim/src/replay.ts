@@ -1,11 +1,11 @@
 import { createRun } from "./engine/run.js";
 import type { Run } from "./engine/run.js";
-import { RollingDigest } from "./engine/digest.js";
+import { digestValue, RollingDigest } from "./engine/digest.js";
 import { getMap } from "./map/index.js";
 import type { GameMap } from "./map/types.js";
 import { getRuleset } from "./ruleset/index.js";
 import type { Ruleset } from "./ruleset/types.js";
-import type { CommandResult, RunOutcome, SerialisedRun, Snapshot } from "./types.js";
+import type { CommandResult, RunOutcome, SerialisedRun, SimEvent, Snapshot } from "./types.js";
 
 export interface ReplayResolver {
   ruleset(id: string, version: string): Ruleset | undefined;
@@ -26,8 +26,10 @@ export interface ReplayResult {
   readonly finalDigest: string;
   /** Fold of every per-tick digest, so mid-Run drift is caught too. */
   readonly rollingDigest: string;
-  /** Per-tick digests, index 0 being the state before the first step. */
+  /** Per-tick Snapshot digests, index 0 being the state before the first step. */
   readonly tickDigests: readonly string[];
+  /** Per-tick digests of the Events each step produced, index 0 being an empty list. */
+  readonly tickEventDigests: readonly string[];
 }
 
 export class ReplayError extends Error {
@@ -58,24 +60,26 @@ export function replayRun(
   const run = createRun({ ruleset, map, seed: serialised.seed });
   const rolling = new RollingDigest();
   const tickDigests: string[] = [];
-  const record = (): void => {
+  const tickEventDigests: string[] = [];
+  const record = (events: readonly SimEvent[]): void => {
     const d = run.digest();
+    const e = digestValue(events);
     tickDigests.push(d);
+    tickEventDigests.push(e);
     rolling.add(d);
+    rolling.add(e);
     onTick?.(run);
   };
   const results: CommandResult[] = [];
-  record();
+  record([]);
   for (const command of serialised.commands) {
     while (run.tick < command.tick && run.tick < serialised.ticks) {
-      run.step();
-      record();
+      record(run.step());
     }
     results.push(run.apply(command));
   }
   while (run.tick < serialised.ticks) {
-    run.step();
-    record();
+    record(run.step());
   }
   const snapshot = run.snapshot();
   return {
@@ -86,5 +90,6 @@ export function replayRun(
     finalDigest: run.digest(),
     rollingDigest: rolling.value,
     tickDigests,
+    tickEventDigests,
   };
 }

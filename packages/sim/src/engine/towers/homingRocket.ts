@@ -1,5 +1,5 @@
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
-import { TICKS_PER_SECOND } from "../../types.js";
 import type { HomingRocketMech } from "../projectiles/homingRocket.js";
 
 interface HomingState {
@@ -24,14 +24,10 @@ export const homingRocketBehaviour: TowerBehaviour<HomingState> = {
       speedMax: m.rocketSpeedMax,
       ...(m.splashSlow === undefined ? {} : { splashSlow: m.splashSlow }),
     };
-    return { periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND), mech };
+    return { periodTicks: Engine.ticks(spec.cooldown), mech };
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     const target = engine.resolveTarget(tower);
     if (target === null) return;
     engine.launchProjectile("homingRocket", tower, target, tower.cx, tower.cy, 0, s.mech);

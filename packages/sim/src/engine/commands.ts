@@ -1,3 +1,4 @@
+import { isOnGrid } from "../map/lane.js";
 import type { Cell } from "../map/types.js";
 import type { Command, CommandResult, RejectReason } from "../types.js";
 import type { Engine } from "./engine.js";
@@ -23,19 +24,8 @@ function reject(reason: RejectReason): CommandResult {
 
 const OK: CommandResult = { ok: true };
 
-function isOnGrid(engine: Engine, cell: Cell): boolean {
-  return (
-    Number.isInteger(cell.col) &&
-    Number.isInteger(cell.row) &&
-    cell.col >= 0 &&
-    cell.col < engine.map.cols &&
-    cell.row >= 0 &&
-    cell.row < engine.map.rows
-  );
-}
-
 function checkCell(engine: Engine, cell: Cell): RejectReason | null {
-  if (!isOnGrid(engine, cell)) return "cellOffGrid";
+  if (!Number.isInteger(cell.col) || !Number.isInteger(cell.row) || !isOnGrid(cell)) return "cellOffGrid";
   if (engine.map.isCorridor(cell)) return "cellIsCorridor";
   if (engine.isCellOccupied(cell)) return "cellOccupied";
   return null;

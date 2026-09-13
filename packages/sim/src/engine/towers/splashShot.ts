@@ -1,5 +1,5 @@
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
-import { TICKS_PER_SECOND } from "../../types.js";
 import { distanceSquared } from "../geometry.js";
 
 interface SplashState {
@@ -18,17 +18,13 @@ export const splashShotBehaviour: TowerBehaviour<SplashState> = {
   init(spec) {
     if (spec.mechanics.type !== "splashShot") throw new Error("splashShot behaviour on wrong tower");
     return {
-      periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND),
+      periodTicks: Engine.ticks(spec.cooldown),
       splashRadius: spec.mechanics.splashRadius,
       edgeFraction: spec.mechanics.splashEdgeFraction,
     };
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     const target = engine.resolveTarget(tower);
     if (target === null) return;
     tower.cooldownTicks = s.periodTicks - 1;

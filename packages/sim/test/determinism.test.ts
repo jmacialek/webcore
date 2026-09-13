@@ -89,6 +89,7 @@ describe("worker-thread replay", () => {
 
       expect(remote.tickDigests.length).toBe(serialised.ticks + 1);
       expect(remote.tickDigests).toEqual(main.tickDigests);
+      expect(remote.tickEventDigests).toEqual(main.tickEventDigests);
       expect(remote.finalDigest).toBe(main.finalDigest);
       expect(remote.rollingDigest).toBe(main.rollingDigest);
       expect(remote.outcome).toBe(main.outcome);

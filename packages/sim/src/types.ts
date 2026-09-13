@@ -51,9 +51,7 @@ export type RejectReason =
   | "modeNotSelectable"
   | "notLockable"
   | "sendUnavailable"
-  | "noBonusPoints"
-  | "noSuchBooster"
-  | "boosterNotSellable";
+  | "noBonusPoints";
 
 export type CommandResult =
   | { readonly ok: true }

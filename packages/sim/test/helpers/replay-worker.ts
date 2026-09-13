@@ -31,6 +31,7 @@ export interface ReplayRequest {
 export interface ReplayReply {
   readonly id: number;
   readonly tickDigests: readonly string[];
+  readonly tickEventDigests: readonly string[];
   readonly finalDigest: string;
   readonly rollingDigest: string;
   readonly outcome: RunOutcome | null;
@@ -72,6 +73,7 @@ port.on("message", (request: ReplayRequest) => {
   const reply: ReplayReply = {
     id: request.id,
     tickDigests: replay.tickDigests,
+    tickEventDigests: replay.tickEventDigests,
     finalDigest: replay.finalDigest,
     rollingDigest: replay.rollingDigest,
     outcome: replay.outcome,

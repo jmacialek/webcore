@@ -1,5 +1,5 @@
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
-import { TICKS_PER_SECOND } from "../../types.js";
 import type { RocketFlight } from "../projectiles/homingRocket.js";
 
 interface SpamState {
@@ -20,17 +20,13 @@ export const spamBehaviour: TowerBehaviour<SpamState> = {
     if (spec.mechanics.type !== "spam") throw new Error("spam behaviour on wrong tower");
     const m = spec.mechanics;
     return {
-      periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND),
+      periodTicks: Engine.ticks(spec.cooldown),
       speedMin: m.rocketSpeedMin,
       flight: { tree: spec.tree, acceleration: m.rocketAcceleration, speedMax: m.rocketSpeedMax },
     };
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     const target = engine.pickTarget(tower, "random");
     if (target === null) return;
     const x = tower.cell.col + engine.rng.nextUnit();

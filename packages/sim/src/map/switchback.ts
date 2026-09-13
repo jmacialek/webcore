@@ -8,6 +8,12 @@
 import { parseMap } from "./parse.js";
 import type { GameMap } from "./types.js";
 
+/**
+ * The canonical file is `packages/sim/maps/switchback.map`; this constant
+ * mirrors it so the sim needs no file system, and test/map-files.test.ts
+ * fails if the two ever differ. To add a Map: write the `.map` file, mirror
+ * it in a constant like this one, and register it in registry.ts.
+ */
 export const SWITCHBACK_TEXT = `# Switchback: one Entry on the top edge, one Exit on the right edge.
 id switchback
 name Switchback

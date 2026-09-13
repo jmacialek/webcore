@@ -6,8 +6,9 @@
  * `UPDATE_FIXTURES=1 pnpm vitest run packages/sim/test/fixtures.test.ts`.
  *
  * Three things are asserted per fixture: the live Run and its replay agree
- * on every tick's digest (determinism); a second replay agrees with the
- * first (stability); the replay matches the checked-in expectation (drift).
+ * on every tick's Snapshot and Event digests (determinism); a second replay
+ * agrees with the first (stability); the replay matches the checked-in
+ * expectation (drift).
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -51,6 +52,8 @@ describe("replay fixtures", () => {
       const replay = replayRun(serialised, fixture.resolver);
       expect(replay.tickDigests).toEqual(liveDigests);
       expect(replay.tickDigests).toEqual(again.tickDigests);
+      expect(replay.tickEventDigests).toEqual(again.tickEventDigests);
+      expect(replay.tickEventDigests).toHaveLength(replay.tickDigests.length);
       expect(replay.finalDigest).toBe(live.digest());
       expect(replay.snapshot).toEqual(live.snapshot());
       expect(replay.results).toEqual(live.log().map((entry) => entry.result));

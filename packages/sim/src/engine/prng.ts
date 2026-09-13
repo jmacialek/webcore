@@ -35,9 +35,4 @@ export class Prng {
   nextUnit(): number {
     return this.nextU32() / 4294967296;
   }
-
-  /** Current state, for Snapshot digests. */
-  get state(): number {
-    return this.#state;
-  }
 }

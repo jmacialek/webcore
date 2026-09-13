@@ -1,6 +1,6 @@
 import type { VectoidState } from "../state.js";
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
-import { TICKS_PER_SECOND } from "../../types.js";
 
 interface MultiSlowState {
   periodTicks: number;
@@ -21,17 +21,13 @@ export const multiSlowBehaviour: TowerBehaviour<MultiSlowState> = {
   init(spec) {
     if (spec.mechanics.type !== "multiSlow") throw new Error("multiSlow behaviour on wrong tower");
     return {
-      periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND),
+      periodTicks: Engine.ticks(spec.cooldown),
       slots: spec.mechanics.slots,
       factor: spec.mechanics.factor,
     };
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     const inRange = engine.vectoids.filter((v) => v.alive && engine.inRange(tower, v));
     const chosen: VectoidState[] = [];
     for (const v of inRange) {

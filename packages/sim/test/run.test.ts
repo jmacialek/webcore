@@ -153,14 +153,13 @@ describe("with Lives raised by a test-only Ruleset override", () => {
 });
 
 describe("determinism and replay (ADR 0003)", () => {
-  it("two Runs with the same inputs produce identical per-tick digests", () => {
+  it("two Runs with the same inputs produce identical per-tick digests and Event streams", () => {
     const a = fresh(42);
     const b = fresh(42);
     must(a, { type: "sendWave" });
     must(b, { type: "sendWave" });
     for (let i = 0; i < 2000; i += 1) {
-      a.step();
-      b.step();
+      expect(a.step()).toEqual(b.step());
       expect(a.digest()).toBe(b.digest());
     }
     expect(a.snapshot()).toEqual(b.snapshot());

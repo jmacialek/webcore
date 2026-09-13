@@ -1,3 +1,4 @@
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
 import { TICKS_PER_SECOND } from "../../types.js";
 
@@ -34,7 +35,7 @@ export const chargeBeamBehaviour: TowerBehaviour<ChargeBeamState> = {
   init(spec) {
     if (spec.mechanics.type !== "chargeBeam") throw new Error("chargeBeam behaviour on wrong tower");
     return {
-      periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND),
+      periodTicks: Engine.ticks(spec.cooldown),
       chargeTicks: Math.round(spec.mechanics.chargeSeconds * TICKS_PER_SECOND),
       hitsPerCycle: spec.mechanics.hitsPerCycle,
       slowsDuringCharge: spec.mechanics.slowsDuringCharge,
@@ -43,10 +44,6 @@ export const chargeBeamBehaviour: TowerBehaviour<ChargeBeamState> = {
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     let target;
     if (s.charged >= 0) {
       target = engine.heldTarget(tower);

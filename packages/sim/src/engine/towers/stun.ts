@@ -1,5 +1,5 @@
+import { Engine } from "../engine.js";
 import type { TowerBehaviour } from "./behaviour.js";
-import { TICKS_PER_SECOND } from "../../types.js";
 
 interface StunState {
   periodTicks: number;
@@ -16,14 +16,10 @@ interface StunState {
 export const stunBehaviour: TowerBehaviour<StunState> = {
   init(spec) {
     if (spec.mechanics.type !== "stun") throw new Error("stun behaviour on wrong tower");
-    return { periodTicks: Math.round(spec.cooldown * TICKS_PER_SECOND) };
+    return { periodTicks: Engine.ticks(spec.cooldown) };
   },
 
   tick(tower, s, engine) {
-    if (tower.cooldownTicks > 0) {
-      tower.cooldownTicks -= 1;
-      return;
-    }
     const target = engine.pickTarget(tower, "fastest");
     if (target === null) {
       tower.targetId = null;

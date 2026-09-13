@@ -41,7 +41,7 @@ export class Engine {
   readonly seed: number;
   readonly rng: Prng;
   /** Hit points and Bounty for Waves 1..50 on this Map's tier. */
-  readonly table: readonly { readonly hp: number; readonly bounty: number }[];
+  readonly waveTable: readonly { readonly hp: number; readonly bounty: number }[];
 
   tick = 0;
   bank: number;
@@ -80,7 +80,7 @@ export class Engine {
     this.bank = tier.startBank;
     this.lives = this.ruleset.economy.lives;
     this.interest = this.ruleset.economy.interest;
-    this.table = waveTable(this.ruleset, this.map.tier);
+    this.waveTable = waveTable(this.ruleset, this.map.tier);
   }
 
   // ---------------------------------------------------------------- queries
@@ -385,6 +385,11 @@ export class Engine {
     const wave = this.wave + 1;
     this.wave = wave;
     if (wave > 1) {
+      // Written as v1.2 wrote it, int(bank / 100 * interest), not
+      // trunc(bank * interest / 100): the two differ for a few hundred Banks
+      // (e.g. $410 at 30% pays $122, not $123) and the original's answer is
+      // the one veterans remember (waves-and-economy research 2). IEEE
+      // doubles make it identical on every engine.
       const paid = Math.trunc((this.bank / 100) * this.interest);
       const scoreGained = Math.trunc((this.bank / 100) * (this.interest * this.ruleset.scoring.interestMultiplier));
       this.score += scoreGained;
@@ -392,7 +397,7 @@ export class Engine {
       this.pendingEvents.push({ type: "interestPaid", tick: this.tick, amount: paid, scoreGained });
     }
     this.pendingEvents.push({ type: "waveSent", tick: this.tick, wave });
-    const stats = this.table[wave - 1];
+    const stats = this.waveTable[wave - 1];
     if (stats === undefined) throw new Error(`no Wave ${String(wave)} in the table`);
     const types = waveComposition(this.ruleset, wave);
     const perLane = this.ruleset.movement.vectoidsPerLane;
@@ -538,9 +543,14 @@ export class Engine {
     }
   }
 
+  /** Every Tower with a running cooldown counts it down; the rest act. */
   tickTowers(): void {
     for (const t of this.towers.slice()) {
       if (this.ended) return;
+      if (t.cooldownTicks > 0) {
+        t.cooldownTicks -= 1;
+        continue;
+      }
       towerBehaviour(t.spec.mechanics.type).tick(t, t.mech, this);
     }
   }
