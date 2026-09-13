@@ -12,6 +12,7 @@ import {
   MapParseError,
   SWITCHBACK_TEXT,
   cellOf,
+  cellsCrossed,
   getMap,
   isOnGrid,
   parseMap,
@@ -344,6 +345,82 @@ describe("parseMap rejects malformed Maps with a specific code", () => {
   it("ignores comment and blank lines outside the grid block", () => {
     const parsed = parseMap(`# a comment\n\n${SWITCHBACK_TEXT}\n# trailing\n`);
     expect(parsed.id).toBe("switchback");
+  });
+
+  it("a comment inside the grid block (a '#' line with a space) does not end the block", () => {
+    const text = editLines((lines) => {
+      const grid = lines.indexOf("grid");
+      return [...lines.slice(0, grid + 1), "# grid comment", ...lines.slice(grid + 1, grid + 10), "# another, mid-grid", ...lines.slice(grid + 10)];
+    });
+    expect(parseMap(text).corridorCells).toEqual(switchback.corridorCells);
+  });
+
+  it("laneSegmentOutsideCorridor: a buildable Cell between two waypoints", () => {
+    // Row 3 is ".####################."; Cell (5,3) lies under Lane 0's segment from 1.6,3.4 to 19.6,3.4.
+    const text = editLines((lines) => {
+      const row = lines.indexOf("grid") + 1 + 3;
+      const line = lines[row] ?? "";
+      lines[row] = `${line.slice(0, 5)}.${line.slice(6)}`;
+      return lines;
+    });
+    expectParseError(text, "laneSegmentOutsideCorridor");
+  });
+});
+
+describe("cellsCrossed lists every on-Grid Cell a segment passes through", () => {
+  it("an axis-aligned segment: Lane 0's first segment covers (1,0) to (1,3)", () => {
+    expect(cellsCrossed({ x: 1.6, y: -0.4 }, { x: 1.6, y: 3.4 })).toEqual([
+      { col: 1, row: 0 },
+      { col: 1, row: 1 },
+      { col: 1, row: 2 },
+      { col: 1, row: 3 },
+    ]);
+  });
+
+  it("a leftward segment lists Cells in travel order", () => {
+    expect(cellsCrossed({ x: 3.5, y: 8.6 }, { x: 0.5, y: 8.6 })).toEqual([
+      { col: 3, row: 8 },
+      { col: 2, row: 8 },
+      { col: 1, row: 8 },
+      { col: 0, row: 8 },
+    ]);
+  });
+
+  it("a diagonal segment steps through both axes", () => {
+    expect(cellsCrossed({ x: 0.5, y: 0.5 }, { x: 2.5, y: 1.5 })).toEqual([
+      { col: 0, row: 0 },
+      { col: 1, row: 0 },
+      { col: 1, row: 1 },
+      { col: 2, row: 1 },
+    ]);
+  });
+
+  it("segment endpoints on Grid lines belong to their floor-assigned Cell in either direction", () => {
+    expect(cellsCrossed({ x: 0.5, y: 0.5 }, { x: 2, y: 0.5 })).toEqual([
+      { col: 0, row: 0 },
+      { col: 1, row: 0 },
+      { col: 2, row: 0 },
+    ]);
+    expect(cellsCrossed({ x: 2, y: 0.5 }, { x: 0.5, y: 0.5 })).toEqual([
+      { col: 2, row: 0 },
+      { col: 1, row: 0 },
+      { col: 0, row: 0 },
+    ]);
+  });
+
+  it("a segment entirely off the Grid crosses nothing", () => {
+    expect(cellsCrossed({ x: -3, y: -3 }, { x: -1, y: -1 })).toEqual([]);
+  });
+
+  it("every Cell under both Switchback Lanes is Corridor", () => {
+    for (const lane of switchback.lanes) {
+      for (let i = 0; i + 1 < lane.waypoints.length; i += 1) {
+        const a = lane.waypoints[i];
+        const b = lane.waypoints[i + 1];
+        if (a === undefined || b === undefined) throw new Error("missing waypoint");
+        for (const cell of cellsCrossed(a, b)) expect(switchback.isCorridor(cell)).toBe(true);
+      }
+    }
   });
 });
 

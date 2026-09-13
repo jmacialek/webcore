@@ -30,9 +30,14 @@ table are the thing veterans recognise.
    usual recovery. Chosen with the sim's balancing harness by playing the
    same Refractor economy with two Red Rockets, two Frost Rockets, and one
    of each at equal spend: these numbers leave the Frost build level with
-   the Red build in Waves survived (25 against 24) while Leaking nothing on
-   the Yellow Sprinter Waves it meets (Red Leaks 13), and make the mixed
-   build outlast both (36 Waves).
+   the Red build in Waves survived (25 against 24) while Leaking fewer of
+   the Yellow Sprinters it meets (9 against Red's 12, all on Wave 22), and
+   make the mixed build outlast both (36 Waves, 6 Sprinter Leaks). No
+   neighbouring candidate stops the Sprinters outright without also
+   carrying the Frost-only build well past Red. (An earlier version of this
+   entry claimed zero Sprinter Leaks; the harness had charged Leaks to the
+   latest Wave Sent rather than to the Vectoid's own Wave, and the
+   corrected count is the one above.)
 3. Max Upgrade: one `upgradeToMax` command raises a Tower as many Ranks as
    the Bank allows, up to Rank 10; the button label shows the cost of what
    the click will do. The original required one click per Rank.

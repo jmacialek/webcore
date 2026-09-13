@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture } from "../helpers/fixtures.js";
 import { at, must, stepTicks, stepUntil } from "../helpers/run.js";
 
@@ -8,7 +8,7 @@ import { at, must, stepTicks, stepUntil } from "../helpers/run.js";
  * Refractor's Targeting Mode and Target Lock change mid-Wave; a lock
  * Command on the Laser is rejected (notLockable) and stays in the log.
  */
-export default defineFixture("refractor-targeting", () => {
+export default defineFixture("refractor-targeting", (createRun) => {
   const run = createRun({ ruleset: original, map: switchback, seed: 1 });
   must(run, { type: "sendWave" });
   must(run, { type: "placeTower", kind: "redRefractor", cell: { col: 3, row: 0 } }); // Tower 1, $200 of $275

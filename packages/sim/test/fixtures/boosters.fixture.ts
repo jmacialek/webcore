@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture, overrideRuleset } from "../helpers/fixtures.js";
 import { at, must, stepTicks, stepUntil } from "../helpers/run.js";
 
@@ -20,7 +20,7 @@ const twoCells = overrideRuleset(original, { startHp: 1, startBank: 1000, maxAli
  */
 export default defineFixture(
   "boosters",
-  () => {
+  (createRun) => {
     const run = createRun({ ruleset: twoCells, map: switchback, seed: 1 });
     must(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 0, row: 0 } }); // Tower 1
     must(run, { type: "setTargetingMode", towerId: 1, mode: "hard" });

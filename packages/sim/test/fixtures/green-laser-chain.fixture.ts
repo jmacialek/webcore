@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture, overrideRuleset } from "../helpers/fixtures.js";
 import { must, stepTicks, stepUntil } from "../helpers/run.js";
 
@@ -14,7 +14,7 @@ const rich = overrideRuleset(original, { startBank: 5000, suffix: "green-laser-c
  */
 export default defineFixture(
   "green-laser-chain",
-  () => {
+  (createRun) => {
     const run = createRun({ ruleset: rich, map: switchback, seed: 1 });
     must(run, { type: "placeTower", kind: "greenLaser2", cell: { col: 3, row: 1 } }); // Tower 1
     must(run, { type: "placeTower", kind: "greenLaser3", cell: { col: 0, row: 5 } }); // Tower 2

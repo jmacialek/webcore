@@ -49,43 +49,57 @@ function segmentsOf(waypoints: readonly Point[]): Segment[] {
 }
 
 /**
- * Liang-Barsky clip of one segment against the Grid rectangle
- * [0, GRID_COLS] x [0, GRID_ROWS]. Returns the parameter range [tIn, tOut]
- * (fractions of the segment) that lies inside, or undefined when the segment
- * misses the Grid.
+ * Every on-Grid Cell of the closed segment, in travel order. Find both
+ * sides of every floor transition using the same interpolation as
+ * `positionAt`. Checking only the algebraic Grid-line parameters misses
+ * Cells reached when either coordinate rounds onto a line slightly early.
+ * At mixed-direction corners the exact point can also belong to neither
+ * adjacent interval's Cell. Endpoints use floor too; points on the
+ * right/bottom Grid edges remain off-Grid.
  */
-function clipToGrid(s: Segment): { readonly tIn: number; readonly tOut: number } | undefined {
-  let tIn = 0;
-  let tOut = 1;
-  // Each edge is the constraint p * t <= q.
-  const edges: readonly (readonly [number, number])[] = [
-    [-s.dx, s.ax],
-    [s.dx, GRID_COLS - s.ax],
-    [-s.dy, s.ay],
-    [s.dy, GRID_ROWS - s.ay],
-  ];
-  for (const [p, q] of edges) {
-    if (p === 0) {
-      if (q < 0) return undefined;
-      continue;
+export function cellsCrossed(a: Point, b: Point): Cell[] {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const times = new Set([0, 1]);
+  const crossings = (origin: number, delta: number, limit: number): void => {
+    if (delta === 0) return;
+    for (let line = 0; line <= limit; line += 1) {
+      const startsAbove = origin >= line;
+      if ((origin + delta >= line) === startsAbove) continue;
+      let low = 0;
+      let high = 1;
+      // Interpolation is monotone on each axis. Bisect until low and high
+      // are adjacent doubles, so even a Cell occupied for one parameter
+      // value is included. No epsilon can express that at every magnitude.
+      for (;;) {
+        const middle = low + (high - low) / 2;
+        if (middle === low || middle === high) break;
+        if ((origin + delta * middle >= line) === startsAbove) low = middle;
+        else high = middle;
+      }
+      times.add(low);
+      times.add(high);
     }
-    const t = q / p;
-    if (p < 0) {
-      if (t > tIn) tIn = t;
-    } else if (t < tOut) {
-      tOut = t;
-    }
-  }
-  return tIn <= tOut ? { tIn, tOut } : undefined;
-}
-
-/** The Cell of a point known to be on the Grid boundary or inside it. */
-function boundaryCell(s: Segment, t: number): Cell {
-  const cell = cellOf({ x: s.ax + s.dx * t, y: s.ay + s.dy * t });
-  return {
-    col: Math.min(Math.max(cell.col, 0), GRID_COLS - 1),
-    row: Math.min(Math.max(cell.row, 0), GRID_ROWS - 1),
   };
+  crossings(a.x, dx, GRID_COLS);
+  crossings(a.y, dy, GRID_ROWS);
+  const cells: Cell[] = [];
+  const seen = new Set<number>();
+  const visit = (point: Point): void => {
+    const cell = cellOf(point);
+    const key = cell.row * GRID_COLS + cell.col;
+    if (isOnGrid(cell) && !seen.has(key)) {
+      seen.add(key);
+      cells.push(cell);
+    }
+  };
+  const along = (t: number): Point => ({ x: a.x + dx * t, y: a.y + dy * t });
+  visit(a);
+  for (const t of [...times].sort((left, right) => left - right)) {
+    visit(along(t));
+  }
+  visit(b);
+  return cells;
 }
 
 /**
@@ -96,14 +110,15 @@ function boundaryCell(s: Segment, t: number): Cell {
 export function gridCrossing(
   waypoints: readonly Point[],
 ): { readonly entry: Cell; readonly exit: Cell } | undefined {
-  const segments = segmentsOf(waypoints);
   let entry: Cell | undefined;
   let exit: Cell | undefined;
-  for (const s of segments) {
-    const clip = clipToGrid(s);
-    if (clip === undefined) continue;
-    entry ??= boundaryCell(s, clip.tIn);
-    exit = boundaryCell(s, clip.tOut);
+  for (let i = 0; i + 1 < waypoints.length; i += 1) {
+    const a = waypoints[i];
+    const b = waypoints[i + 1];
+    if (a === undefined || b === undefined) break;
+    const cells = cellsCrossed(a, b);
+    entry ??= cells[0];
+    exit = cells[cells.length - 1] ?? exit;
   }
   return entry !== undefined && exit !== undefined ? { entry, exit } : undefined;
 }

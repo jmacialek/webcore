@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture, overrideRuleset } from "../helpers/fixtures.js";
 import { must, stepUntil } from "../helpers/run.js";
 
@@ -13,7 +13,7 @@ const oneHit = overrideRuleset(original, { startHp: 1, suffix: "send-interest-au
  */
 export default defineFixture(
   "send-interest-auto",
-  () => {
+  (createRun) => {
     const run = createRun({ ruleset: oneHit, map: switchback, seed: 1 });
     must(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 3, row: 1 } });
     must(run, { type: "setAuto", enabled: true });

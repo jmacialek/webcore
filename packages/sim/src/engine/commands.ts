@@ -1,6 +1,7 @@
 import { isOnGrid } from "../map/lane.js";
 import type { Cell } from "../map/types.js";
-import type { Command, CommandResult, RejectReason } from "../types.js";
+import type { SelectableMode, TowerKind } from "../ruleset/types.js";
+import type { BoosterKind, Command, CommandResult, InstantBonusItem, RejectReason } from "../types.js";
 import type { Engine } from "./engine.js";
 
 const TOWER_KINDS = new Set<string>([
@@ -18,11 +19,76 @@ const TOWER_KINDS = new Set<string>([
   "blueFrostRockets",
 ]);
 
+const SELECTABLE_MODES = new Set<string>(["close", "hard", "weak"]);
+const BONUS_ITEMS = new Set<string>(["interestIncrease", "panic"]);
+const BOOSTER_KINDS = new Set<string>(["damageBooster", "rangeBooster"]);
+
 function reject(reason: RejectReason): CommandResult {
   return { ok: false, reason };
 }
 
-const OK: CommandResult = { ok: true };
+const OK: CommandResult = Object.freeze({ ok: true });
+
+type Raw = Readonly<Record<string, unknown>>;
+
+function isRecord(value: unknown): value is Raw {
+  return typeof value === "object" && value !== null;
+}
+
+function isInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value);
+}
+
+/** A fresh Cell from a raw one; non-integer coordinates pass here and fail `checkCell` as off-Grid. */
+function copyCell(value: unknown): Cell | null {
+  if (!isRecord(value) || typeof value["col"] !== "number" || typeof value["row"] !== "number") return null;
+  return { col: value["col"], row: value["row"] };
+}
+
+/**
+ * Validate the shape of a raw Command and return a fresh copy holding only
+ * its known fields, or null when it is not a Command. The copy shares
+ * nothing with the caller's object, so the Command Log can never be
+ * rewritten from outside (ADR 0003). Semantic checks (a known Tower kind,
+ * an existing Tower) are `applyCommand`'s.
+ */
+export function normaliseCommand(raw: unknown): Command | null {
+  if (!isRecord(raw) || !isInteger(raw["tick"])) return null;
+  const tick = raw["tick"];
+  switch (raw["type"]) {
+    case "placeTower": {
+      const cell = copyCell(raw["cell"]);
+      if (typeof raw["kind"] !== "string" || cell === null) return null;
+      return { type: "placeTower", tick, kind: raw["kind"] as TowerKind, cell };
+    }
+    case "upgrade":
+    case "upgradeToMax":
+    case "sell":
+      if (!isInteger(raw["towerId"])) return null;
+      return { type: raw["type"], tick, towerId: raw["towerId"] };
+    case "setTargetingMode":
+      if (!isInteger(raw["towerId"]) || typeof raw["mode"] !== "string" || !SELECTABLE_MODES.has(raw["mode"])) return null;
+      return { type: "setTargetingMode", tick, towerId: raw["towerId"], mode: raw["mode"] as SelectableMode };
+    case "setTargetLock":
+      if (!isInteger(raw["towerId"]) || typeof raw["lock"] !== "boolean") return null;
+      return { type: "setTargetLock", tick, towerId: raw["towerId"], lock: raw["lock"] };
+    case "sendWave":
+      return { type: "sendWave", tick };
+    case "setAuto":
+      if (typeof raw["enabled"] !== "boolean") return null;
+      return { type: "setAuto", tick, enabled: raw["enabled"] };
+    case "useBonusItem":
+      if (typeof raw["item"] !== "string" || !BONUS_ITEMS.has(raw["item"])) return null;
+      return { type: "useBonusItem", tick, item: raw["item"] as InstantBonusItem };
+    case "placeBooster": {
+      const cell = copyCell(raw["cell"]);
+      if (typeof raw["kind"] !== "string" || !BOOSTER_KINDS.has(raw["kind"]) || cell === null) return null;
+      return { type: "placeBooster", tick, kind: raw["kind"] as BoosterKind, cell };
+    }
+    default:
+      return null;
+  }
+}
 
 function checkCell(engine: Engine, cell: Cell): RejectReason | null {
   if (!Number.isInteger(cell.col) || !Number.isInteger(cell.row) || !isOnGrid(cell)) return "cellOffGrid";
@@ -31,13 +97,23 @@ function checkCell(engine: Engine, cell: Cell): RejectReason | null {
   return null;
 }
 
+/** A fresh copy of a Command known to be well-formed (one the sim itself built). */
+export function copyCommand(command: Command): Command {
+  const copy = normaliseCommand(command);
+  if (copy === null) throw new Error(`logged Command is malformed: ${JSON.stringify(command)}`);
+  return copy;
+}
+
 /**
- * Validate and apply one Command at the start of the Engine's current tick.
- * Either applies fully or rejects with a reason and no state change.
+ * Validate and apply one well-formed Command (see `normaliseCommand`) at the
+ * start of the Engine's current tick. Either applies fully or rejects with
+ * a reason and no state change. The tick is checked before the ended state
+ * so a stale Command is never recorded as a `runEnded` rejection that a
+ * replay, reaching that tick with the Run still live, would then accept.
  */
 export function applyCommand(engine: Engine, command: Command): CommandResult {
-  if (engine.ended) return reject("runEnded");
   if (command.tick !== engine.tick) return reject("outOfOrderTick");
+  if (engine.ended) return reject("runEnded");
 
   switch (command.type) {
     case "placeTower": {

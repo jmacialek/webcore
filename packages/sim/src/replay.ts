@@ -1,4 +1,5 @@
 import { createRun } from "./engine/run.js";
+import { normaliseCommand } from "./engine/commands.js";
 import type { Run } from "./engine/run.js";
 import { digestValue, RollingDigest } from "./engine/digest.js";
 import { getMap } from "./map/index.js";
@@ -42,7 +43,8 @@ export class ReplayError extends Error {
 /**
  * Replay a serialised Run and return its final Snapshot and Score (ADR 0003).
  * Commands are applied at their recorded tick, in log order; rejected ones
- * are rejected again identically.
+ * are rejected again identically. Malformed entries receive a result in
+ * input order but cannot advance the Run using their unvalidated tick.
  */
 export function replayRun(
   serialised: SerialisedRun,
@@ -72,7 +74,12 @@ export function replayRun(
   };
   const results: CommandResult[] = [];
   record([]);
-  for (const command of serialised.commands) {
+  for (const raw of serialised.commands) {
+    const command = normaliseCommand(raw);
+    if (command === null) {
+      results.push({ ok: false, reason: "malformedCommand" });
+      continue;
+    }
     while (run.tick < command.tick && run.tick < serialised.ticks) {
       record(run.step());
     }

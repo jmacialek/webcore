@@ -1,7 +1,10 @@
 /**
  * Balancing harness (M1-17): plays a build order headlessly like an eager
  * player without Auto (Sends every Wave the instant `canSend` holds) and
- * records per Wave the Leaks, Bank, Score, and time to clear.
+ * records per Wave the Leaks, Bank, Score, and time to clear. A Leak is
+ * charged to the Wave that spawned the Vectoid, whenever it happens: with
+ * eager Sends several Waves are on the field at once, and a survivor of
+ * Wave 22 reaching the Exit during Wave 24 is Wave 22's Leak.
  *
  * A developer tool, not public surface. It consumes the sim only through
  * `../src/index.js`, exactly as a client would.
@@ -44,7 +47,7 @@ export interface HarnessOptions {
 export interface WaveRow {
   readonly wave: number;
   readonly sentTick: number;
-  /** Leaks between this Send and the next (or the end). */
+  /** Leaks by Vectoids of this Wave, whenever they happened. */
   readonly leaked: number;
   /** Bank at the moment of the next Send (or at the end). */
   readonly bank: number;
@@ -78,12 +81,14 @@ export interface HarnessResult {
 
 export const DEFAULT_TICK_CAP = 30 * 60 * TICKS_PER_SECOND;
 
-/** Mutable per-Wave bookkeeping while the Wave is the latest one Sent. */
-interface OpenWave {
-  wave: number;
-  sentTick: number;
+/** Mutable per-Wave bookkeeping; `leaked` keeps counting after the next Send. */
+interface WaveTally {
+  readonly wave: number;
+  readonly sentTick: number;
   leaked: number;
   clearedTick: number | null;
+  /** Bank and Score at the next Send, or at the end; null while this is the latest Wave. */
+  closed: { readonly bank: number; readonly score: number } | null;
 }
 
 function applyStep(run: Run, step: BuildStep, rejected: RejectedStep[]): void {
@@ -93,15 +98,20 @@ function applyStep(run: Run, step: BuildStep, rejected: RejectedStep[]): void {
   }
 }
 
-function closeWave(run: Run, open: OpenWave): WaveRow {
+function closeWave(run: Run, tally: WaveTally): void {
   const { economy } = run.snapshot();
+  tally.closed = { bank: economy.bank, score: economy.score };
+}
+
+function toRow(tally: WaveTally): WaveRow {
+  if (tally.closed === null) throw new Error(`Wave ${String(tally.wave)} was never closed`);
   return {
-    wave: open.wave,
-    sentTick: open.sentTick,
-    leaked: open.leaked,
-    bank: economy.bank,
-    score: economy.score,
-    clearSeconds: open.clearedTick === null ? null : (open.clearedTick - open.sentTick) / TICKS_PER_SECOND,
+    wave: tally.wave,
+    sentTick: tally.sentTick,
+    leaked: tally.leaked,
+    bank: tally.closed.bank,
+    score: tally.closed.score,
+    clearSeconds: tally.clearedTick === null ? null : (tally.clearedTick - tally.sentTick) / TICKS_PER_SECOND,
   };
 }
 
@@ -125,8 +135,11 @@ export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {})
 
   const run = createRun({ ruleset, map, seed });
   const rejected: RejectedStep[] = [];
-  const waves: WaveRow[] = [];
-  let open: OpenWave | null = null;
+  /** One tally per Wave Sent, in Send order. */
+  const tallies: WaveTally[] = [];
+  /** The Wave each live Vectoid belongs to, by id. */
+  const waveOf = new Map<number, WaveTally>();
+  let open: WaveTally | null = null;
   let outcome: RunOutcome | null = null;
 
   for (const step of stepsFor(0)) applyStep(run, step, rejected);
@@ -140,10 +153,11 @@ export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {})
       const { wave } = run.snapshot();
       checkSend = false;
       if (wave.canSend && wave.next !== null) {
-        if (open !== null) waves.push(closeWave(run, open));
+        if (open !== null) closeWave(run, open);
         const result = run.apply({ type: "sendWave", tick: run.tick });
         if (!result.ok) throw new Error(`sendWave rejected while canSend: ${result.reason}`);
-        open = { wave: wave.next.wave, sentTick: run.tick, leaked: 0, clearedTick: null };
+        open = { wave: wave.next.wave, sentTick: run.tick, leaked: 0, clearedTick: null, closed: null };
+        tallies.push(open);
         sentThisTick = true;
       }
     }
@@ -154,12 +168,19 @@ export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {})
     }
     for (const event of events) {
       switch (event.type) {
+        case "spawned":
+          if (open !== null) waveOf.set(event.vectoidId, open);
+          break;
         case "killed":
+          waveOf.delete(event.vectoidId);
           checkSend = true;
           break;
-        case "leaked":
-          if (open !== null) open.leaked += 1;
+        case "leaked": {
+          const tally = waveOf.get(event.vectoidId);
+          if (tally === undefined) throw new Error(`Vectoid ${String(event.vectoidId)} Leaked before it was seen spawning`);
+          tally.leaked += 1;
           break;
+        }
         case "waveCleared":
           if (open !== null && event.wave === open.wave) open.clearedTick = event.tick;
           break;
@@ -171,7 +192,7 @@ export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {})
       }
     }
   }
-  if (open !== null) waves.push(closeWave(run, open));
+  if (open !== null) closeWave(run, open);
 
   const { economy, tick } = run.snapshot();
   return {
@@ -179,7 +200,7 @@ export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {})
     rulesetId: ruleset.id,
     mapId: map.id,
     seed,
-    waves,
+    waves: tallies.map(toRow),
     rejected,
     outcome,
     capReached: outcome === null,

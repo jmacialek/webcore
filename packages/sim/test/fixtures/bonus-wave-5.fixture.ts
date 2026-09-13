@@ -1,4 +1,4 @@
-import { createRun, original, switchback, TICKS_PER_SECOND } from "../../src/index.js";
+import { original, switchback, TICKS_PER_SECOND } from "../../src/index.js";
 import { defineFixture, overrideRuleset } from "../helpers/fixtures.js";
 import { must, stepTicks } from "../helpers/run.js";
 
@@ -13,7 +13,7 @@ const oneHp = overrideRuleset(original, { startHp: 1, lives: 100_000, maxAliveTo
  */
 export default defineFixture(
   "bonus-wave-5",
-  () => {
+  (createRun) => {
     const run = createRun({ ruleset: oneHp, map: switchback, seed: 1 });
     for (let wave = 1; wave <= 4; wave += 1) must(run, { type: "sendWave" });
     stepTicks(run, 15 * TICKS_PER_SECOND);

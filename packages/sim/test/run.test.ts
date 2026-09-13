@@ -243,3 +243,101 @@ describe("invalid Commands are rejected with a reason and no state change", () =
     expect(replay.snapshot).toEqual(run.snapshot());
   });
 });
+
+describe("malformed Commands are rejected as malformedCommand, never applied, never logged", () => {
+  const malformed: readonly [string, unknown][] = [
+    ["not an object", 42],
+    ["null", null],
+    ["no tick", { type: "sendWave" }],
+    ["a string tick", { type: "sendWave", tick: "0" }],
+    ["a fractional tick", { type: "sendWave", tick: 0.5 }],
+    ["an unknown type", { type: "bogus", tick: 0 }],
+    ["placeTower without a Cell", { type: "placeTower", tick: 0, kind: "greenLaser1" }],
+    ["placeTower with a string Cell", { type: "placeTower", tick: 0, kind: "greenLaser1", cell: "0,0" }],
+    ["placeTower with a non-string kind", { type: "placeTower", tick: 0, kind: 7, cell: { col: 0, row: 0 } }],
+    ["upgrade with a string towerId", { type: "upgrade", tick: 0, towerId: "1" }],
+    ["setAuto with the string \"false\"", { type: "setAuto", tick: 0, enabled: "false" }],
+    ["setTargetLock with lock 1", { type: "setTargetLock", tick: 0, towerId: 1, lock: 1 }],
+    ["setTargetingMode to a fixed mode", { type: "setTargetingMode", tick: 0, towerId: 1, mode: "random" }],
+    ["useBonusItem with an unknown item", { type: "useBonusItem", tick: 0, item: "megaNuke" }],
+    ["placeBooster with an unknown kind", { type: "placeBooster", tick: 0, kind: "speedBooster", cell: { col: 0, row: 0 } }],
+  ];
+
+  it.each(malformed)("%s", (_name, raw) => {
+    const run = fresh();
+    const before = run.snapshot();
+    expect(run.apply(raw as Command)).toEqual({ ok: false, reason: "malformedCommand" });
+    expect(run.snapshot()).toEqual(before);
+    expect(run.log()).toEqual([]);
+  });
+
+  it("a fixed-mode string on setTargetingMode leaves the Tower's mode alone", () => {
+    const run = fresh();
+    must(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 0, row: 0 } });
+    expect(run.apply({ type: "setTargetingMode", tick: 0, towerId: 1, mode: "random" } as unknown as Command)).toEqual({ ok: false, reason: "malformedCommand" });
+    expect(run.snapshot().towers[0]?.mode).toBe("close");
+  });
+
+  it("extra properties are dropped from the logged copy", () => {
+    const run = fresh();
+    expect(run.apply({ type: "sendWave", tick: 0, extra: "ignored" } as unknown as Command)).toEqual({ ok: true });
+    expect(run.log()).toEqual([{ command: { type: "sendWave", tick: 0 }, result: { ok: true } }]);
+  });
+});
+
+describe("the Command Log is the sim's own copy (ADR 0003)", () => {
+  it("mutating the Cell passed to placeTower changes neither the log nor the serialised Run", () => {
+    const run = fresh();
+    const cell = { col: 0, row: 0 };
+    must(run, { type: "placeTower", kind: "greenLaser1", cell });
+    cell.col = 5;
+    cell.row = 9;
+    expect(run.log()[0]?.command).toEqual({ type: "placeTower", tick: 0, kind: "greenLaser1", cell: { col: 0, row: 0 } });
+    expect(run.serialise().commands[0]).toEqual({ type: "placeTower", tick: 0, kind: "greenLaser1", cell: { col: 0, row: 0 } });
+    stepTicks(run, 10);
+    expect(replayRun(run.serialise()).snapshot).toEqual(run.snapshot());
+  });
+
+  it("mutating what log() and serialise() return changes nothing either", () => {
+    const run = fresh();
+    must(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 0, row: 0 } });
+    const logged = run.log()[0]?.command;
+    if (logged?.type !== "placeTower") throw new Error("expected a placeTower");
+    (logged.cell as { col: number }).col = 5;
+    const serialised = run.serialise().commands[0];
+    if (serialised?.type !== "placeTower") throw new Error("expected a placeTower");
+    (serialised.cell as { col: number }).col = 7;
+    expect(run.log()[0]?.command).toEqual({ type: "placeTower", tick: 0, kind: "greenLaser1", cell: { col: 0, row: 0 } });
+    expect(run.serialise().commands[0]).toEqual({ type: "placeTower", tick: 0, kind: "greenLaser1", cell: { col: 0, row: 0 } });
+  });
+});
+
+describe("Commands after the Run has ended", () => {
+  function defeated(): Run {
+    const run = fresh();
+    must(run, { type: "sendWave" });
+    stepUntilEnded(run, 20_000);
+    return run;
+  }
+
+  it("a stale Command is outOfOrderTick, not runEnded, so it never enters the log and the replay still ends in defeat", () => {
+    const run = defeated();
+    const endTick = run.tick;
+    expect(run.apply({ type: "placeTower", tick: 0, kind: "greenLaser1", cell: { col: 0, row: 0 } })).toEqual({ ok: false, reason: "outOfOrderTick" });
+    expect(run.log()).toHaveLength(1);
+    const replay = replayRun(run.serialise());
+    expect(replay.outcome).toBe("defeat");
+    expect(replay.snapshot.towers).toEqual([]);
+    expect(replay.snapshot).toEqual(run.snapshot());
+    expect(replay.snapshot.tick).toBe(endTick);
+  });
+
+  it("a Command at the current tick is runEnded, logged, and rejected identically on replay", () => {
+    const run = defeated();
+    expect(run.apply(at(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 0, row: 0 } }))).toEqual({ ok: false, reason: "runEnded" });
+    stepTicks(run, 3);
+    const replay = replayRun(run.serialise());
+    expect(replay.results).toEqual([{ ok: true }, { ok: false, reason: "runEnded" }]);
+    expect(replay.snapshot).toEqual(run.snapshot());
+  });
+});

@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture } from "../helpers/fixtures.js";
 import { must } from "../helpers/run.js";
 
@@ -7,7 +7,7 @@ import { must } from "../helpers/run.js";
  * Original on Switchback. Runs until Wave 3 is Sent or 4000 ticks pass,
  * whichever comes first, so kills, Bounty, and Score are in the digests.
  */
-export default defineFixture("green-laser-1-economy", () => {
+export default defineFixture("green-laser-1-economy", (createRun) => {
   const run = createRun({ ruleset: original, map: switchback, seed: 1 });
   must(run, { type: "placeTower", kind: "greenLaser1", cell: { col: 3, row: 1 } }); // towers research 1.1: $100
   must(run, { type: "setAuto", enabled: true });

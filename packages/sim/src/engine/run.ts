@@ -1,7 +1,7 @@
 import type { GameMap } from "../map/types.js";
 import type { Ruleset } from "../ruleset/types.js";
 import type { Command, CommandResult, LoggedCommand, SerialisedRun, SimEvent, Snapshot } from "../types.js";
-import { applyCommand } from "./commands.js";
+import { applyCommand, copyCommand, normaliseCommand } from "./commands.js";
 import { digestValue } from "./digest.js";
 import { Engine } from "./engine.js";
 import { buildSnapshot } from "./snapshot.js";
@@ -20,7 +20,12 @@ export interface RunInputs {
 export interface Run {
   /** Index of the tick the next `step()` will simulate. */
   readonly tick: number;
-  /** Validate and apply a Command at the current tick. */
+  /**
+   * Validate and apply a Command at the current tick. Anything that is not
+   * a well-formed Command is rejected as `malformedCommand` without being
+   * looked at further; the type is a promise to the compiler, not a check.
+   * The returned result is a copy, independent of the Command Log.
+   */
   apply(command: Command): CommandResult;
   /** Advance one fixed 1/120 s tick and return the Events it produced. */
   step(): readonly SimEvent[];
@@ -28,7 +33,10 @@ export interface Run {
   snapshot(): Snapshot;
   /** Digest of the current Snapshot. */
   digest(): string;
-  /** Every Command applied so far, with its result. */
+  /**
+   * Every Command applied so far, with its result. Commands and results
+   * are independent copies; callers cannot mutate the retained Log.
+   */
   log(): readonly LoggedCommand[];
   /** The complete serialisable record of this Run so far. */
   serialise(): SerialisedRun;
@@ -47,13 +55,16 @@ class RunImpl implements Run {
     return this.#engine.tick;
   }
 
-  apply(command: Command): CommandResult {
+  apply(raw: Command): CommandResult {
+    // A malformed object is no Command and a Command for another tick
+    // applied at no tick, so neither is part of the Run; everything else,
+    // accepted or rejected, is recorded as the sim's own copy.
+    const command = normaliseCommand(raw);
+    if (command === null) return { ok: false, reason: "malformedCommand" };
     const result = applyCommand(this.#engine, command);
-    // A Command for another tick applied at no tick, so it is not part of
-    // the Run; everything else, accepted or rejected, is recorded.
     if (result.ok || result.reason !== "outOfOrderTick") this.#log.push({ command, result });
     this.#snapshot = null;
-    return result;
+    return { ...result };
   }
 
   step(): readonly SimEvent[] {
@@ -74,7 +85,7 @@ class RunImpl implements Run {
   }
 
   log(): readonly LoggedCommand[] {
-    return this.#log.slice();
+    return this.#log.map((entry) => ({ command: copyCommand(entry.command), result: { ...entry.result } }));
   }
 
   serialise(): SerialisedRun {
@@ -83,7 +94,7 @@ class RunImpl implements Run {
       rulesetVersion: this.#engine.ruleset.version,
       mapId: this.#engine.map.id,
       seed: this.#engine.seed,
-      commands: this.#log.map((entry) => entry.command),
+      commands: this.#log.map((entry) => copyCommand(entry.command)),
       ticks: this.#engine.tick,
     };
   }

@@ -36,8 +36,9 @@ pnpm --filter @vector3d/sim harness frost-rockets --ruleset classic --seed 1
 pnpm --filter @vector3d/sim harness red-rockets --map switchback --ticks 36000
 ```
 
-It prints one row per Wave: the second the Wave was Sent, Vectoids Leaked
-between that Send and the next, Bank and Score at the moment of the next
+It prints one row per Wave: the second the Wave was Sent, Vectoids of that
+Wave that Leaked (whenever they did; with eager Sends a Wave's survivors
+often Leak during a later one), Bank and Score at the moment of the next
 Send (or at the end), and seconds from the Send until the field was clear
 (`-` when the next Send came first). Rejected Commands are printed as
 warnings with their reason; the run is never aborted. The last line gives

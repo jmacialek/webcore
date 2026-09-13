@@ -1,4 +1,4 @@
-import { createRun, original, switchback } from "../../src/index.js";
+import { original, switchback } from "../../src/index.js";
 import { defineFixture, overrideRuleset } from "../helpers/fixtures.js";
 import { must, stepTicks, stepUntil } from "../helpers/run.js";
 
@@ -15,7 +15,7 @@ const ruleset = overrideRuleset(original, { startBank: 5000, suffix: "red-projec
  */
 export default defineFixture(
   "red-projectiles",
-  () => {
+  (createRun) => {
     const run = createRun({ ruleset, map: switchback, seed: 1 });
     must(run, { type: "sendWave" });
     must(run, { type: "placeTower", kind: "littleRedSpammer", cell: { col: 3, row: 0 } }); // Tower 1

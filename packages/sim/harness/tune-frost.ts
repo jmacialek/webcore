@@ -40,7 +40,8 @@ const slow = mechanics.splashSlow;
 const candidates: readonly Candidate[] = [
   { name: "placeholder", damage: 3000, range: 6.0, cooldown: 1.5, radius: 2, factor: 1 / 6, duration: 1 },
   { name: "final", damage: shipped.damage, range: shipped.range, cooldown: shipped.cooldown, radius: slow.radius, factor: slow.factor, duration: slow.duration },
-  // Neighbours of the final numbers, one knob each: more of anything reaches Wave 31's Sprinters and Leaks there; less lets Wave 22's through.
+  // Neighbours of the final numbers, one knob each. Frost alone lets 9 of Wave 22's Sprinters through at the final numbers;
+  // less of anything lets more through, more carries the build to Wave 31 where the 87,850-hp Sprinters Leak in numbers.
   { name: "final-damage-4500", damage: 4500, range: 6.0, cooldown: 3, radius: 1.5, factor: 1 / 2, duration: 1 },
   { name: "final-damage-5500", damage: 5500, range: 6.0, cooldown: 3, radius: 1.5, factor: 1 / 2, duration: 1 },
   { name: "final-cooldown-2.5", damage: 5000, range: 6.0, cooldown: 2.5, radius: 1.5, factor: 1 / 2, duration: 1 },

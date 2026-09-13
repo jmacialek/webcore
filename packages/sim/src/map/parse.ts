@@ -17,11 +17,15 @@
  *
  * The grid block runs from the `grid` line until the next directive line;
  * inside it every whitespace-free line is a row, so a row may begin with
- * '#'. Comments inside the grid block must contain a space (`# like this`).
- * Directives may otherwise appear in any order; a repeated header keeps its
- * last value.
+ * '#'. Comments inside the grid block must contain a space (`# like this`)
+ * and do not end the block. Directives may otherwise appear in any order;
+ * a repeated header keeps its last value.
+ *
+ * Every Lane must stay inside the Corridor for its whole on-Grid length:
+ * not only its waypoints but every Cell a segment crosses, or a Tower could
+ * be built on a Cell Vectoids walk through.
  */
-import { createLane, cellOf, gridCrossing, isOnGrid } from "./lane.js";
+import { createLane, cellOf, cellsCrossed, gridCrossing, isOnGrid } from "./lane.js";
 import { GRID_COLS, GRID_ROWS, MapParseError } from "./types.js";
 import type {
   Cell,
@@ -101,8 +105,9 @@ function readLines(text: string): Header {
       header.gridRows.push(line);
       continue;
     }
-    inGrid = false;
+    // A comment (a '#' line with whitespace in it) never ends the grid block.
     if (line.startsWith("#")) continue;
+    inGrid = false;
     const rest = tokens.slice(1).join(" ");
     const at = `line ${String(lineNo)}`;
     switch (keyword) {
@@ -205,6 +210,19 @@ function parseLane(
       );
     }
   });
+  for (let i = 0; i + 1 < waypoints.length; i += 1) {
+    const a = waypoints[i];
+    const b = waypoints[i + 1];
+    if (a === undefined || b === undefined) break;
+    for (const cell of cellsCrossed(a, b)) {
+      if (!isCorridor(cell)) {
+        fail(
+          "laneSegmentOutsideCorridor",
+          `${at}: segment ${String(i)} from ${String(a.x)},${String(a.y)} to ${String(b.x)},${String(b.y)} crosses buildable Cell (${String(cell.col)},${String(cell.row)})`,
+        );
+      }
+    }
+  }
   const crossing = gridCrossing(waypoints);
   if (crossing === undefined) {
     fail("laneWaypointOutsideCorridor", `${at}: never enters the Grid`);

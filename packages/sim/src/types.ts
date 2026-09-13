@@ -38,8 +38,11 @@ export type Command =
 export type CommandType = Command["type"];
 
 export type RejectReason =
-  | "runEnded"
+  /** Not a Command at all: unknown type, missing or mistyped field. Never logged. */
+  | "malformedCommand"
+  /** Stamped with a tick other than the Run's current one. Never logged. */
   | "outOfOrderTick"
+  | "runEnded"
   | "unknownTowerKind"
   | "towerNotInRuleset"
   | "cellOffGrid"

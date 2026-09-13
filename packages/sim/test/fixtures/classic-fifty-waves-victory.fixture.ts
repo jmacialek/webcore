@@ -1,4 +1,4 @@
-import { classic, createRun, getTowerSpec, switchback } from "../../src/index.js";
+import { classic, getTowerSpec, switchback } from "../../src/index.js";
 import type { Cell, Run, TowerKind } from "../../src/index.js";
 import { defineFixture } from "../helpers/fixtures.js";
 import { must } from "../helpers/run.js";
@@ -109,7 +109,7 @@ function buy(run: Run, purchase: Purchase): void {
   else must(run, { type: "upgradeToMax", towerId: purchase.upgradeToMax });
 }
 
-export default defineFixture("classic-fifty-waves-victory", () => {
+export default defineFixture("classic-fifty-waves-victory", (createRun) => {
   const run = createRun({ ruleset: classic, map: switchback, seed: 1 });
   let next = 0;
   for (let tick = 0; tick < MAX_TICKS; tick += 1) {

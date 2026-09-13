@@ -80,6 +80,7 @@ export type MapParseErrorCode =
   | "laneEntryNotOffGrid"
   | "laneExitNotOffGrid"
   | "laneWaypointOutsideCorridor"
+  | "laneSegmentOutsideCorridor"
   | "badWaypoint"
   | "badTier"
   | "badEntryDirection";
