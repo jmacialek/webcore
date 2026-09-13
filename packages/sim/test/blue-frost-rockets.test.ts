@@ -1,5 +1,5 @@
 /**
- * M1-15: Blue Frost Rockets with placeholder numbers.
+ * M1-15: Blue Frost Rockets (numbers final since M1-18).
  * Decisions: ADR 0001 item 2 (Classic adds the Blue Tier 3: long Range,
  * splash slow on impact, selectable Targeting Mode; Original has no such
  * Tower); spec user stories 5, 11, 15, 35 ($2200, Close by default, Target
@@ -8,16 +8,16 @@
  * +0.1 px/frame^2, retargets the nearest Vectoid if its target dies);
  * damage follows the colour rule with the primary's multiplier for every
  * splash victim (towers research 2.1; under Classic Blue obeys the
- * penalties, ADR 0001 item 1); the slow is Blue Rays 1's maxSpeed / 6
- * (towers research 1.3) and recovery is +0.64 Cells/s^2 (1.3). Damage,
- * Range, cooldown, radius, factor, and duration are placeholders the
- * Ruleset flags for M1-18.
+ * penalties, ADR 0001 item 1); recovery after the slow is +0.64 Cells/s^2
+ * (towers research 1.3). Damage, Range, cooldown, radius, factor, and
+ * duration are the numbers M1-18 tuned with the balancing harness (ADR
+ * 0001 item 2); the Ruleset no longer flags any placeholders.
  *
  * Geometry (red-projectiles.test.ts): Lane 0 walks down x = 1.6 and Lane 1
  * down x = 2.4; the leaders (1 and 15) come on field at tick 30 and a new
  * pair every 60 ticks, 0.8 Cells apart. A Tower on (6,0) (centre 6.5, 0.5)
  * is 4.9 Cells from Lane 0, so a rocket from rest flies about 170 ticks and
- * lands among four Vectoids per Lane, some of them beyond 2 Cells of the
+ * lands among four Vectoids per Lane, some of them beyond 1.5 Cells of the
  * impact. A Tower on (3,0) reaches both Lanes at once and its rocket lands
  * within 100 ticks. Scenario method from colour-rule.test.ts: Send Waves
  * 1..N-1 at tick 0, walk them 15 s, then Send Wave N and place the Tower.
@@ -29,13 +29,13 @@ import { overrideRuleset } from "./helpers/fixtures.js";
 import { at, eventsOfType, must, stepTicks, stepUntil } from "./helpers/run.js";
 
 const FROST_COST = 2200; // spec user story 35; ADR 0001 item 2
-const FROST_DAMAGE = 3000; // placeholder (M1-18)
-const FROST_RANGE = 6; // placeholder (M1-18): as Red Rockets, towers research 1.1
-const FROST_COOLDOWN = 1.5; // placeholder (M1-18)
-const FROST_PERIOD_TICKS = FROST_COOLDOWN * TICKS_PER_SECOND; // 180 ticks
-const SLOW_RADIUS = 2; // placeholder (M1-18): Cells from the impact
-const SLOW_FACTOR = 1 / 6; // placeholder (M1-18): as Blue Rays 1, towers research 1.3
-const SLOW_DURATION = 1; // placeholder (M1-18): seconds the slow holds
+const FROST_DAMAGE = 5000; // ADR 0001 item 2 (M1-18): a sixth of Red Rockets, paid to every splash victim
+const FROST_RANGE = 6; // ADR 0001 item 2: as Red Rockets, towers research 1.1
+const FROST_COOLDOWN = 3; // ADR 0001 item 2 (M1-18)
+const FROST_PERIOD_TICKS = FROST_COOLDOWN * TICKS_PER_SECOND; // 360 ticks
+const SLOW_RADIUS = 1.5; // ADR 0001 item 2 (M1-18): Cells from the impact
+const SLOW_FACTOR = 1 / 2; // ADR 0001 item 2 (M1-18): a Sprinter drops to walking pace
+const SLOW_DURATION = 1; // ADR 0001 item 2 (M1-18): seconds the slow holds
 const SLOW_HOLD_TICKS = SLOW_DURATION * TICKS_PER_SECOND; // 120 ticks
 const HOMING_ROCKET_SPEED_MAX = 4.8; // spec Units and time: 3 px/frame
 const ROCKET_ACCELERATION = 6.4; // towers research 1.3: 0.1 px/frame^2
@@ -46,19 +46,19 @@ const GREEN_LASER_1_PER_TICK = (22 * 40) / TICKS_PER_SECOND; // towers research 
 const ORIGINAL_TOWER_COUNT = 11; // spec user story 5: eleven original Towers
 const LEADERS_ENTER_TICK = 30;
 
-/** M1-18 clears these; set to [] when the numbers are final. */
-const PLACEHOLDER_FIELDS = ["damage", "range", "cooldown", "mechanics.splashSlow.radius", "mechanics.splashSlow.factor", "mechanics.splashSlow.duration"];
+/** M1-15 flagged six placeholder numbers; M1-18 made them final, so nothing is flagged. */
+const PLACEHOLDER_FIELDS: readonly string[] = [];
 
 /** A Cell by the Entry within Range of both Lanes' first Cells. */
 const BY_THE_ENTRY = { col: 0, row: 0 } as const;
 /** A Cell that reaches both Lanes at once; its rocket lands within 100 ticks. */
 const NEAR_CELL = { col: 3, row: 0 } as const;
-/** 4.9 Cells from Lane 0: a rocket from rest takes over 180 ticks to reach Lane 0's leader, so two are in flight at a time. */
+/** 4.9 Cells from Lane 0: a rocket from rest takes about 170 ticks to reach Lane 0's leader, well inside the 360-tick cooldown. */
 const FAR_CELL = { col: 6, row: 0 } as const;
 /**
  * Placing the Tower this late puts Wave 1's leaders 5 Cells down the Lanes
  * (Lane 0 has turned along y = 3.4) while newcomers still enter 0.8 apart,
- * so a rocket at the newest Vectoid lands with several beyond 2 Cells.
+ * so a rocket at the newest Vectoid lands with several beyond 1.5 Cells.
  */
 const LATE_TICK = 400;
 
@@ -237,7 +237,7 @@ describe("Blue Frost Rockets exists in Classic and not in Original (ADR 0001 ite
     });
   });
 
-  it("flags exactly its six placeholder numbers, and no other Tower in either Ruleset flags any", () => {
+  it("flags no placeholder numbers (M1-18 made them final), and neither does any other Tower in either Ruleset", () => {
     const spec = getTowerSpec(classic, "blueFrostRockets");
     expect(spec?.placeholders ?? []).toEqual(PLACEHOLDER_FIELDS);
     for (const t of [...classic.towers, ...original.towers]) {
@@ -247,8 +247,8 @@ describe("Blue Frost Rockets exists in Classic and not in Original (ADR 0001 ite
   });
 });
 
-describe("the rocket's impact slows and damages every Vectoid within 2 Cells (ADR 0001 item 2; spec user story 35)", () => {
-  it("launches one homingRocket from the Tower centre at rest every 180 ticks at the nearest Vectoid (Close), holding it by lock", () => {
+describe("the rocket's impact slows and damages every Vectoid within 1.5 Cells (ADR 0001 item 2; spec user story 35)", () => {
+  it("launches one homingRocket from the Tower centre at rest every 360 ticks at the nearest Vectoid (Close), holding it by lock", () => {
     const run = runWith(frost, [{ kind: "blueFrostRockets", cell: FAR_CELL }]);
     stepTicks(run, LEADERS_ENTER_TICK);
     expect(run.snapshot().projectiles).toEqual([]);
@@ -263,13 +263,13 @@ describe("the rocket's impact slows and damages every Vectoid within 2 Cells (AD
     expect(first?.speed).toBeCloseTo(ROCKET_ACCELERATION / TICKS_PER_SECOND, 12);
     stepTicks(run, FROST_PERIOD_TICKS - 1);
     expect(run.snapshot().projectiles.filter((p) => p.id === 2)).toEqual([]);
-    run.step(); // tick 210: the second rocket, still at the held target
+    run.step(); // tick 390: the second rocket, still at the held target
     s = run.snapshot();
     expect(s.projectiles.map((p) => ({ id: p.id, targetId: p.targetId }))).toContainEqual({ id: 2, targetId: 15 });
     expect(tower(s, 1).targetId).toBe(15);
   });
 
-  it("under Classic the primary (a Blue Spinner, 150%) and every Vectoid within 2 Cells lose 4500 and drop to maxSpeed / 6; those beyond keep full speed and hit points", () => {
+  it("under Classic the primary (a Blue Spinner, 150%) and every Vectoid within 1.5 Cells lose 7500 and drop to maxSpeed / 2; those beyond keep full speed and hit points", () => {
     const run = runWith(frost, [{ kind: "blueFrostRockets", cell: NEAR_CELL }], LATE_TICK);
     const t = tower(run.snapshot(), 1);
     const { before, after, primary, near, far } = firstImpact(run);
@@ -280,7 +280,7 @@ describe("the rocket's impact slows and damages every Vectoid within 2 Cells (AD
     expect(far.length).toBeGreaterThan(0);
     for (const v of near) {
       expect(v.speed).toBeCloseTo(v.maxSpeed * SLOW_FACTOR, 12);
-      expect(v.speed).toBeCloseTo(BASE_SPEED / 6, 12);
+      expect(v.speed).toBeCloseTo(BASE_SPEED / 2, 12);
       expect(vectoid(before, v.id).hp - v.hp).toBeCloseTo(t.damage * 1.5, 9);
       expect(vectoid(before, v.id).hp - v.hp).toBeCloseTo(FROST_DAMAGE * 1.5, 9);
     }
@@ -349,7 +349,7 @@ describe("the rocket's impact slows and damages every Vectoid within 2 Cells (AD
     // Both Blue hits at 150% on a Blue Spinner under Classic.
     expect(stopped.maxHp - stopped.hp).toBeCloseTo(BR2_DAMAGE * 1.5 + FROST_DAMAGE * 1.5, 9);
     expect(stopped.speed).toBe(0);
-    // The other victims are at maxSpeed / 6 as usual.
+    // The other victims are at maxSpeed / 2 as usual.
     const others = s.vectoids.filter((v) => v.id !== 1 && onField(v) && distance(stopped.x, stopped.y, v.x, v.y) <= SLOW_RADIUS);
     expect(others.length).toBeGreaterThan(0);
     for (const v of others) expect(v.speed).toBeCloseTo(v.maxSpeed * SLOW_FACTOR, 12);
@@ -367,16 +367,16 @@ describe("the rocket's impact slows and damages every Vectoid within 2 Cells (AD
 
   const cases = [
     // Wave 1 is Blue Spinner: the Tree's own colour, 150%.
-    { wave: 1, type: "blueSpinner", damage: 4500, walk: 15 },
+    { wave: 1, type: "blueSpinner", damage: 7500, walk: 15 },
     // Wave 2 is Red Shredder: no affinity with Blue, 100%.
-    { wave: 2, type: "redShredder", damage: 3000, walk: 15 },
+    { wave: 2, type: "redShredder", damage: 5000, walk: 15 },
     // Wave 5 is Hard Grey: 75% from every Tower.
-    { wave: 5, type: "hardGrey", damage: 2250, walk: 15 },
+    { wave: 5, type: "hardGrey", damage: 3750, walk: 15 },
     // Wave 8 is Big Purple Box: the opposite colour, 50% under Classic (ADR 0001 item 1).
-    { wave: 8, type: "bigPurpleBox", damage: 1500, walk: 22 },
+    { wave: 8, type: "bigPurpleBox", damage: 2500, walk: 22 },
   ] as const;
 
-  it.each(cases)("deals $damage of 3000 to each of Wave $wave's $type near the impact (towers research 2.1)", ({ wave, type, damage, walk }) => {
+  it.each(cases)("deals $damage of 5000 to each of Wave $wave's $type near the impact (towers research 2.1)", ({ wave, type, damage, walk }) => {
     const run = runWithEarlierWavesGone(frost, wave, walk);
     must(run, { type: "sendWave" });
     must(run, { type: "placeTower", kind: "blueFrostRockets", cell: NEAR_CELL });
@@ -391,7 +391,7 @@ describe("the rocket's impact slows and damages every Vectoid within 2 Cells (AD
     }
   });
 
-  it("splash victims take the primary's multiplier: Big Purple Boxes walking with a Blue Spinner primary lose 4500, not 1500", () => {
+  it("splash victims take the primary's multiplier: Big Purple Boxes walking with a Blue Spinner primary lose 7500, not 2500", () => {
     // Waves 7 (Blue Spinners) and 8 Sent together spawn on the same spots and walk at the same speed, so Spinners and Boxes overlap.
     const run = runWithEarlierWavesGone(frost, 7, 22);
     must(run, { type: "sendWave" }); // Wave 7
@@ -429,7 +429,7 @@ describe("Targeting Mode and Target Lock Commands (spec user stories 11, 12, 15,
     expect(tower(run.snapshot(), 1).lock).toBe(true);
   });
 
-  it("lock off re-picks by Hard for every rocket: after a Green Laser 1 wears the first target down, the second rocket flies at a fresh Vectoid", () => {
+  it("lock off re-picks by Hard for every rocket: after the first rocket and a Green Laser 1 wear the first target down, the second rocket flies at a fresh Vectoid", () => {
     const scenario = (lock: boolean): Snapshot => {
       // Frost first (Tower 1) so it picks before the laser (Tower 2) lands its first hit.
       const run = runWith(frost, [
@@ -441,24 +441,19 @@ describe("Targeting Mode and Target Lock Commands (spec user stories 11, 12, 15,
       stepTicks(run, LEADERS_ENTER_TICK + FROST_PERIOD_TICKS + 1);
       return run.snapshot();
     };
+    // A rocket flies for about 170 ticks, so the first has landed on 1 before the second launches at tick 390.
     const held = scenario(true);
     expect(tower(held, 1)).toMatchObject({ mode: "hard", lock: true, targetId: 1 });
-    expect(held.projectiles.map((p) => ({ id: p.id, targetId: p.targetId }))).toEqual([
-      { id: 1, targetId: 1 },
-      { id: 2, targetId: 1 },
-    ]);
+    expect(held.projectiles.map((p) => ({ id: p.id, targetId: p.targetId }))).toEqual([{ id: 2, targetId: 1 }]);
+    expect(vectoid(held, 1).hp).toBeLessThan(100_000 - FROST_DAMAGE * 1.5);
 
     const free = scenario(false);
     expect(tower(free, 1)).toMatchObject({ mode: "hard", lock: false });
-    expect(tower(free, 2).targetId).toBe(1);
-    // The laser has hit 1 for 181 ticks while the first rocket is still in flight, so Hard re-picks the earliest-spawned Vectoid in Range at full hit points (2).
-    expect(vectoid(free, 1).hp).toBeCloseTo(100_000 - 181 * GREEN_LASER_1_PER_TICK, 6);
+    // The laser has hit 1 since tick 30 and the first rocket landed on it, so Hard re-picks a Vectoid at full hit points: not 1.
+    expect(vectoid(free, 1).hp).toBeLessThan(100_000 - FROST_DAMAGE * 1.5 - 100 * GREEN_LASER_1_PER_TICK);
     const fresh = hardPick(free, tower(free, 1));
-    expect(fresh).toBe(2);
+    expect(fresh).not.toBe(1);
     expect(vectoid(free, fresh).hp).toBe(100_000);
-    expect(free.projectiles.map((p) => ({ id: p.id, targetId: p.targetId }))).toEqual([
-      { id: 1, targetId: 1 },
-      { id: 2, targetId: fresh },
-    ]);
+    expect(free.projectiles.map((p) => ({ id: p.id, targetId: p.targetId }))).toEqual([{ id: 2, targetId: fresh }]);
   });
 });

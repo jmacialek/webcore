@@ -19,14 +19,18 @@ import { must } from "../helpers/run.js";
  *    Those rows sit between two Corridor double-rows, so a Tower there sees
  *    both Lanes four times per lap, and the Refractor's 2-Cell splash
  *    (towers research 1.3) hits the whole 0.8-Cell-spaced stream.
- *  - Waves 24 and 30: one Blue Frost Rocket each (splash slow and 150% to
- *    the 22 Blue Spinner Waves), Ranked to 10.
- *  - Wave 46: with Interest at 30 points the Bank covers ten Red Rockets at
- *    Rank 10 in one go; they finish Waves 46..50. Wave 50's Bonus Point
- *    buys Panic, the one instant Bonus Item still worth anything.
+ *  - Waves 24 and 30: one Blue Frost Rockets each at Rank 1 (the splash
+ *    slow does not grow with Rank, and 150% to the 22 Blue Spinner Waves),
+ *    Ranked to 10 only from Wave 40 once the Bank is ahead.
+ *  - Waves 28 and 34: one Red Rockets each, Ranked to 10: the damage the
+ *    Frost's slow sets up (ADR 0001 item 2, M1-18).
+ *  - Wave 42: ten Red Rockets on the four golden rows, placed at Rank 1
+ *    first for coverage, then Ranked to 10 from Wave 48 as the Bank
+ *    allows. Wave 50's Bonus Point buys Panic, the one instant Bonus Item
+ *    still worth anything.
  *
  * Sends are eager (whenever `canSend`), so Waves overlap and the Run ends in
- * about 110,000 ticks without losing a Life. Any Bounty, Interest, upgrade,
+ * about 135,000 ticks with 17 Lives left. Any Bounty, Interest, upgrade,
  * or targeting drift changes the Command Log and the digests. Replaying
  * takes a couple of seconds because every tick is digested; the sim
  * project's `testTimeout` allows for it.
@@ -38,7 +42,21 @@ type Purchase =
   | { readonly fromWave: number; readonly upgrade: number }
   | { readonly fromWave: number; readonly upgradeToMax: number };
 
-/** Tower ids are 1-based in placement order (Refractors 1..4, Frost Rockets 5..6, Red Rockets 7..16). */
+/** Cells for the ten late Red Rockets (Towers 9..18), on the four golden rows. */
+const RED_ROCKET_CELLS: readonly Cell[] = [
+  { col: 9, row: 10 },
+  { col: 6, row: 10 },
+  { col: 6, row: 13 },
+  { col: 16, row: 10 },
+  { col: 16, row: 13 },
+  { col: 15, row: 7 },
+  { col: 2, row: 10 },
+  { col: 0, row: 13 },
+  { col: 6, row: 4 },
+  { col: 12, row: 10 },
+];
+
+/** Tower ids are 1-based in placement order (Refractors 1..4, Frost Rockets 5 and 7, Red Rockets 6 and 8, then Red Rockets 9..18). */
 const BUILD_ORDER: readonly Purchase[] = [
   { fromWave: 0, place: "redRefractor", cell: { col: 8, row: 4 } }, // Tower 1: $200 (towers research 1.1)
   { fromWave: 0, upgrade: 1 }, // each Rank int(200 / 2) = $100 (towers research 1.2)
@@ -52,30 +70,21 @@ const BUILD_ORDER: readonly Purchase[] = [
   { fromWave: 0, place: "redRefractor", cell: { col: 12, row: 7 } }, // Tower 4
   { fromWave: 0, upgradeToMax: 4 },
   { fromWave: 24, place: "blueFrostRockets", cell: { col: 14, row: 4 } }, // Tower 5: $2,200 (Classic, ADR 0001 item 2)
-  { fromWave: 24, upgradeToMax: 5 },
-  { fromWave: 30, place: "blueFrostRockets", cell: { col: 16, row: 7 } }, // Tower 6
-  { fromWave: 30, upgradeToMax: 6 },
-  // Wave 46: ten Red Rockets ($2,500 + 9 x $1,250 each; towers research 1.1, 1.2) on the four golden rows.
-  ...(
-    [
-      { col: 10, row: 7 },
-      { col: 9, row: 10 },
-      { col: 6, row: 10 },
-      { col: 6, row: 13 },
-      { col: 16, row: 10 },
-      { col: 16, row: 13 },
-      { col: 15, row: 7 },
-      { col: 15, row: 4 },
-      { col: 2, row: 10 },
-      { col: 0, row: 13 },
-    ] as const
-  ).flatMap((cell, i): Purchase[] => [
-    { fromWave: 46, place: "redRockets", cell },
-    { fromWave: 46, upgradeToMax: 7 + i },
-  ]),
+  { fromWave: 28, place: "redRockets", cell: { col: 16, row: 7 } }, // Tower 6: $2,500 + 9 x $1,250 (towers research 1.1, 1.2)
+  { fromWave: 28, upgradeToMax: 6 },
+  { fromWave: 30, place: "blueFrostRockets", cell: { col: 10, row: 7 } }, // Tower 7
+  { fromWave: 34, place: "redRockets", cell: { col: 15, row: 4 } }, // Tower 8
+  { fromWave: 34, upgradeToMax: 8 },
+  // Wave 40: the Frost Rockets' Ranks (9 x $1,100 each), now that the Bank is ahead of the Waves.
+  { fromWave: 40, upgradeToMax: 5 },
+  { fromWave: 40, upgradeToMax: 7 },
+  // Wave 42: ten Red Rockets at Rank 1 on the four golden rows, for coverage first.
+  ...RED_ROCKET_CELLS.map((cell): Purchase => ({ fromWave: 42, place: "redRockets", cell })),
+  // Wave 48: their Ranks, in placement order.
+  ...RED_ROCKET_CELLS.map((_, i): Purchase => ({ fromWave: 48, upgradeToMax: 9 + i })),
 ];
 
-/** Well above the ~110,000 ticks the Run needs; a regression that stalls the Run fails here instead of hanging. */
+/** Well above the ~135,000 ticks the Run needs; a regression that stalls the Run fails here instead of hanging. */
 const MAX_TICKS = 200_000;
 
 /** True when the next line of the build order is unlocked and the Bank covers it in full. */

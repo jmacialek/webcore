@@ -317,16 +317,16 @@ describe("Classic Ruleset (ADR 0001: Original plus an explicit diff)", () => {
     expect(original.variants).toEqual({ blueTowersSkipPenalties: true });
   });
 
-  it("Blue Frost Rockets is the Blue Tier 3 with placeholder numbers", () => {
+  it("Blue Frost Rockets is the Blue Tier 3 with the numbers ADR 0001 item 2 records (M1-18)", () => {
     const spec = tower(classic, "blueFrostRockets");
     expect(spec).toMatchObject({
       displayName: "Blue Frost Rockets",
       tree: "blue",
       tier: 3,
       cost: 2200,
-      damage: 3000,
+      damage: 5000,
       range: 6.0,
-      cooldown: 1.5,
+      cooldown: 3,
       defaultMode: "close",
       selectableModes: true,
       lockable: true,
@@ -334,19 +334,14 @@ describe("Classic Ruleset (ADR 0001: Original plus an explicit diff)", () => {
         type: "homingRocket",
         rocketSpeedMax: 4.8,
         rocketAcceleration: 6.4,
-        splashSlow: { radius: 2, factor: 1 / 6, duration: 1 },
+        splashSlow: { radius: 1.5, factor: 1 / 2, duration: 1 },
       },
     });
-    expect(spec.placeholders).toEqual([
-      "damage",
-      "range",
-      "cooldown",
-      "mechanics.splashSlow.radius",
-      "mechanics.splashSlow.factor",
-      "mechanics.splashSlow.duration",
-    ]);
-    for (const other of classic.towers.filter((t) => t.kind !== "blueFrostRockets")) {
-      expect(other.placeholders ?? []).toEqual([]);
+  });
+
+  it("no Tower in Classic carries placeholders (M1-18 made Blue Frost Rockets final)", () => {
+    for (const spec of classic.towers) {
+      expect(spec.placeholders ?? []).toEqual([]);
     }
   });
 

@@ -432,7 +432,7 @@ describe("Red Rockets (towers research 1.1, 1.3, 3.1, 3.2)", () => {
 });
 
 describe("Blue Frost Rockets share the homing rocket and slow every Vectoid near the impact (ADR 0001 improvement 2)", () => {
-  it("under Classic the primary takes damage x 1.5 against a Blue Spinner and everything within 2 Cells drops to maxSpeed / 6", () => {
+  it("under Classic the primary takes damage x 1.5 against a Blue Spinner and everything within 1.5 Cells drops to maxSpeed / 2 (ADR 0001 item 2, M1-18)", () => {
     const frosty = overrideRuleset(classic, { startBank: 10_000, startHp: 100_000, lives: 100_000, maxAliveToSend: 100_000, suffix: "frost" });
     const run = runWith(frosty, [{ kind: "blueFrostRockets", cell: SPAMMER_CELL }]);
     const t = tower(run.snapshot(), 1);
@@ -454,11 +454,11 @@ describe("Blue Frost Rockets share the homing rocket and slow every Vectoid near
     expect(before.projectiles).toHaveLength(1);
     expect(after.projectiles).toEqual([]);
     expect(vectoid(before, primary.id).hp - primary.hp).toBeCloseTo(t.damage * 1.5, 9);
-    const near = after.vectoids.filter((v) => onField(v) && distance(primary.x, primary.y, v.x, v.y) <= 2);
+    const near = after.vectoids.filter((v) => onField(v) && distance(primary.x, primary.y, v.x, v.y) <= 1.5); // splash radius, ADR 0001 item 2
     expect(near.map((v) => v.id)).toContain(primary.id);
     expect(near.length).toBeGreaterThan(1);
     for (const v of near) {
-      expect(v.speed).toBeCloseTo(v.maxSpeed / 6, 12);
+      expect(v.speed).toBeCloseTo(v.maxSpeed / 2, 12); // slow factor 1/2, ADR 0001 item 2
       expect(vectoid(before, v.id).hp - v.hp).toBeCloseTo(t.damage * 1.5, 9);
     }
     for (const v of after.vectoids) {

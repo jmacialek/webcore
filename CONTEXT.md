@@ -67,8 +67,8 @@ has three Tiers; Blue Frost Rockets, the Blue Tier 3, is new to this tribute.
 
 **Blue Frost Rockets**:
 The new Blue Tier 3: long-range rockets whose impact slows every Vectoid near
-it, with player-selectable Targeting Mode. Numbers set by a balancing
-prototype.
+it, with player-selectable Targeting Mode. Numbers recorded in ADR 0001,
+improvement 2.
 _Avoid_: Blue 3, ice rockets, frost tower
 _Avoid_: Mark, level, model
 

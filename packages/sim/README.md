@@ -56,10 +56,22 @@ Checked-in examples:
 - `red-rockets` (Original): Red Refractors early, Red Rockets by Wave 15.
 - `frost-rockets` (Classic): the `red-rockets` economy with Blue Frost
   Rockets as the Tier 3, for comparing the two at equal spend (M1-18).
+- `mixed-rockets` (Classic): the `red-rockets` economy with Red Rockets at
+  Wave 15 and one Blue Frost Rockets at Wave 19 in place of two Ranks, for
+  checking that damage plus slow beats either alone (M1-18).
 
 From a test or script, `runHarness(buildOrder, { ruleset, seed, map, tickCap })`
 returns the same data as a `HarnessResult`, and `formatReport(result)` gives
-the text lines.
+the text lines. `ruleset` may be a registered id or a `Ruleset` object, so a
+candidate built with `applyRulesetDiff` can be played without registering it.
+
+`pnpm --filter @vector3d/sim tune-frost [--seeds N] [--only a,b] [--grid]
+[--compact]` (`harness/tune-frost.ts`) is the M1-18 tuning run: it plays
+`red-rockets`, `frost-rockets`, and `mixed-rockets` under Classic with each
+candidate Blue Frost Rockets spec swapped in and prints Markdown tables of
+Waves survived, Leaks on the Yellow Sprinter Waves, and Score. The shipped
+numbers are the candidate named `final`; `--grid` sweeps a coarse grid
+instead of the curated list.
 
 The CLI runs straight from source on Node 24's type stripping;
 `harness/loader.ts` retries `.js` specifiers as `.ts` so the harness can

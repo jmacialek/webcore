@@ -7,7 +7,7 @@
  * `../src/index.js`, exactly as a client would.
  */
 import { createRun, getMap, getRuleset, TICKS_PER_SECOND } from "../src/index.js";
-import type { Command, RejectReason, Run, RunOutcome, SimEvent } from "../src/index.js";
+import type { Command, RejectReason, Ruleset, Run, RunOutcome, SimEvent } from "../src/index.js";
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
@@ -33,7 +33,8 @@ export interface BuildOrder {
 }
 
 export interface HarnessOptions {
-  readonly ruleset?: string;
+  /** A registered Ruleset id, or a Ruleset object (for candidates that are not registered, as when tuning). */
+  readonly ruleset?: string | Ruleset;
   readonly seed?: number;
   readonly map?: string;
   /** Ticks to simulate at most. Default 30 sim minutes. */
@@ -105,8 +106,8 @@ function closeWave(run: Run, open: OpenWave): WaveRow {
 }
 
 export function runHarness(buildOrder: BuildOrder, options: HarnessOptions = {}): HarnessResult {
-  const rulesetId = options.ruleset ?? buildOrder.ruleset;
-  const ruleset = getRuleset(rulesetId);
+  const rulesetId = typeof options.ruleset === "object" ? options.ruleset.id : (options.ruleset ?? buildOrder.ruleset);
+  const ruleset = typeof options.ruleset === "object" ? options.ruleset : getRuleset(rulesetId);
   if (ruleset === undefined) throw new Error(`unknown Ruleset "${rulesetId}"`);
   const mapId = options.map ?? "switchback";
   const map = getMap(mapId);

@@ -7,7 +7,7 @@ const ruleset = overrideRuleset(classic, { startBank: 5000, suffix: "blue-frost-
 
 /**
  * M1-15: Waves 1 and 2 on Switchback under Classic (Original hit points, so
- * a 3000 x 1.5 rocket kills a Wave 1 Spinner) with a Blue Frost Rockets on
+ * a 5000 x 1.5 rocket kills a Wave 1 Spinner) with a Blue Frost Rockets on
  * (3,0), where its rockets reach both Lanes and their splash slows the
  * pack. Wave 2 (Red Shredders, 100%) is Sent as soon as the gate allows;
  * the mode switches to Hard 600 ticks in and the lock is turned off

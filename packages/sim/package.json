@@ -18,6 +18,7 @@
     "build": "tsc -b",
     "typecheck": "tsc -p tsconfig.test.json",
     "test": "vitest run",
-    "harness": "node --import ./harness/loader.ts harness/cli.ts"
+    "harness": "node --import ./harness/loader.ts harness/cli.ts",
+    "tune-frost": "node --import ./harness/loader.ts harness/tune-frost.ts"
   }
 }
