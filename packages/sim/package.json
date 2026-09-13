@@ -17,6 +17,7 @@
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc -p tsconfig.test.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "harness": "node --import ./harness/loader.ts harness/cli.ts"
   }
 }
