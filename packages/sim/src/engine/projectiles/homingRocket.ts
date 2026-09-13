@@ -77,11 +77,12 @@ export const homingRocketBehaviour: ProjectileBehaviour = {
     const holdTicks = Math.round(splash.duration * TICKS_PER_SECOND);
     // Collect victims before dealing damage so a kill mid-loop cannot change the set.
     const victims = engine.vectoidsWithin(p.x, p.y, splash.radius * splash.radius);
-    engine.slow(target, target.maxSpeed * splash.factor, holdTicks);
+    // Never speed a Vectoid up: min(current, maxSpeed * factor), as Blue Rays 1 does.
+    engine.slow(target, Math.min(target.speed, target.maxSpeed * splash.factor), holdTicks);
     engine.dealDamage(target, damage, p.towerId);
     for (const v of victims) {
       if (v.id === target.id) continue;
-      engine.slow(v, v.maxSpeed * splash.factor, holdTicks);
+      engine.slow(v, Math.min(v.speed, v.maxSpeed * splash.factor), holdTicks);
       engine.dealDamage(v, damage, p.towerId);
     }
   },
